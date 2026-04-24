@@ -13,7 +13,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import backend.database.DatabaseManager;
+import backend.repositories.MySQLUserRepository;
+import backend.services.AuthenticationService;
+import backend.exceptions.AuthenticationException;
+import java.sql.Connection;
 
 public class LoginPage {
 
@@ -43,14 +50,41 @@ public class LoginPage {
         pwBox.setPromptText("Enter password");
         grid.add(pwBox, 1, 2);
 
+        // Error / Success Label
+        Label messageLabel = new Label();
+        messageLabel.setTextFill(Color.RED);
+        grid.add(messageLabel, 1, 5);
+
         // Login button
         Button btnLogin = new Button("Login");
         btnLogin.setMaxWidth(Double.MAX_VALUE);
         grid.add(btnLogin, 1, 3);
         
         btnLogin.setOnAction(e -> {
-            System.out.println("Login Attempted:");
-            System.out.println("Username: " + userTextField.getText());
+            String identifier = userTextField.getText();
+            String password = pwBox.getText();
+            
+            try {
+                Connection conn = DatabaseManager.getConnection();
+                MySQLUserRepository repo = new MySQLUserRepository(conn);
+                AuthenticationService authService = new AuthenticationService(repo);
+                
+                authService.login(identifier, password);
+                
+                messageLabel.setTextFill(Color.GREEN);
+                messageLabel.setText("Login Successful!");
+                
+                System.out.println("Login Successful for user: " + identifier);
+                // primaryStage.setScene(DashboardPage.getScene(primaryStage));
+                
+            } catch (AuthenticationException authException) {
+                messageLabel.setTextFill(Color.RED);
+                messageLabel.setText(authException.getMessage());
+            } catch (Exception ex) {
+                messageLabel.setTextFill(Color.RED);
+                messageLabel.setText("Database Connection Error.");
+                ex.printStackTrace();
+            }
         });
 
         // Forgot password & Sign up links
