@@ -11,13 +11,20 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class SignUpPage {
+import backend.database.DatabaseManager;
+import backend.repositories.MySQLUserRepository;
+import backend.services.AuthenticationService;
+import backend.exceptions.AuthenticationException;
+import java.sql.Connection;
 
+// SignUpPage class for user registration, allowing new users to create an account. It includes form fields for username, email, and password, along with validation and error handling. The page also provides a link to the LoginPage for existing users.
+public class SignUpPage {
     public static Scene getScene(Stage primaryStage) {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -50,18 +57,43 @@ public class SignUpPage {
         PasswordField pwBox = new PasswordField();
         pwBox.setPromptText("Enter password");
         grid.add(pwBox, 1, 3);
+        
+        // Error / Success Label
+        Label messageLabel = new Label();
+        messageLabel.setTextFill(Color.RED);
+        grid.add(messageLabel, 1, 6);
 
         // Sign Up button
         Button btnSignUp = new Button("Sign Up");
         btnSignUp.setMaxWidth(Double.MAX_VALUE); // To make it stretch
         
-        // Optional: Action event for the button
+        // Action event for the button using MySQL backend
         btnSignUp.setOnAction(e -> {
-            System.out.println("Sign Up Attempted:");
-            System.out.println("Username: " + userTextField.getText());
-            System.out.println("Email: " + emailTextField.getText());
-            // Redirect to Login Page automatically after sign up
-            primaryStage.setScene(LoginPage.getScene(primaryStage));
+            String username = userTextField.getText();
+            String email = emailTextField.getText();
+            String password = pwBox.getText();
+            
+            try {
+                Connection conn = DatabaseManager.getConnection();
+                MySQLUserRepository repo = new MySQLUserRepository(conn);
+                AuthenticationService authService = new AuthenticationService(repo);
+                
+                authService.signup(username, email, password);
+                
+                messageLabel.setTextFill(Color.GREEN);
+                messageLabel.setText("Sign Up Successful! Redirecting...");
+                
+                // Redirect to Login Page automatically after short delay or immediately
+                primaryStage.setScene(LoginPage.getScene(primaryStage));
+                
+            } catch (AuthenticationException authException) {
+                messageLabel.setTextFill(Color.RED);
+                messageLabel.setText(authException.getMessage());
+            } catch (Exception ex) {
+                messageLabel.setTextFill(Color.RED);
+                messageLabel.setText("Database Connection Error.");
+                ex.printStackTrace();
+            }
         });
 
         // Add button to the layout
