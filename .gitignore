@@ -4,3 +4,5 @@
 # Ignore the .vscode directory
 .vscode/
 
+# Ignore the lib files also
+lib/
