@@ -6,3 +6,6 @@
 
 # Ignore the lib files also
 lib/
+
+// ignore .env
+.env
