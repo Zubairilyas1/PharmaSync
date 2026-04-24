@@ -1,0 +1,6 @@
+# Ignore the build output directory
+/bin
+
+# Ignore the .vscode directory
+.vscode/
+
