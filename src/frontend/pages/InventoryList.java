@@ -48,29 +48,9 @@ public class InventoryList {
     }
     
     public static Scene createInventoryListScene(Stage stage) {
-        return createInventoryListScene(stage, null);
-    }
-    
-    public static Scene createInventoryListScene(Stage stage, App app) {
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f5f5f5;");
-        
-        // Top navigation bar
-        HBox navBar = new HBox(10);
-        navBar.setAlignment(Pos.CENTER_LEFT);
-        navBar.setPadding(new Insets(10));
-        navBar.setStyle("-fx-background-color: white; -fx-border-color: #ddd;");
-        
-        Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-padding: 8; -fx-background-color: #667eea; -fx-text-fill: white; -fx-cursor: hand;");
-        if (app != null) {
-            backButton.setOnAction(e -> app.showScene("dashboard"));
-        } else {
-            backButton.setDisable(true);
-        }
-        
-        navBar.getChildren().add(backButton);
         
         // Title
         Label titleLabel = new Label("Inventory Management");
@@ -245,7 +225,6 @@ public class InventoryList {
         
         // Add all to root
         root.getChildren().addAll(
-            navBar,
             titleLabel,
             searchContainer,
             new Label("Medicine Inventory"),
