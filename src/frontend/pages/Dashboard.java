@@ -26,7 +26,7 @@ public class Dashboard {
         mainLayout.getChildren().addAll(header, content);
         VBox.setVgrow(content, javafx.scene.layout.Priority.ALWAYS);
         
-        return new Scene(mainLayout, 1200, 800);
+        return new Scene(mainLayout, 720, 720);
     }
     
     private static Stage currentStage;
@@ -54,25 +54,25 @@ public class Dashboard {
     
     private static VBox createContent(Stage stage) {
         currentStage = stage;
-        VBox content = new VBox(30);
-        content.setPadding(new Insets(40));
+        VBox content = new VBox(15); 
+        content.setPadding(new Insets(20)); 
         content.setAlignment(Pos.TOP_CENTER);
         
         // Welcome section
         Label welcomeLabel = new Label("Welcome to PharmaSync");
-        welcomeLabel.setStyle("-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #333;");
-        
+        welcomeLabel.setStyle("-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill:rgb(0, 39, 215);"); // Reduced font size
+
         Label descriptionLabel = new Label("Choose an action below to get started");
         descriptionLabel.setStyle("-fx-font-size: 14; -fx-text-fill: #666;");
         
-        VBox welcomeBox = new VBox(10);
+        VBox welcomeBox = new VBox(5); 
         welcomeBox.setAlignment(Pos.CENTER);
         welcomeBox.getChildren().addAll(welcomeLabel, descriptionLabel);
         
         // Menu cards grid
         GridPane gridPane = new GridPane();
-        gridPane.setHgap(30);
-        gridPane.setVgap(30);
+        gridPane.setHgap(15); 
+        gridPane.setVgap(15); 
         gridPane.setAlignment(Pos.CENTER);
         
         // Inventory Card
@@ -135,21 +135,20 @@ public class Dashboard {
         gridPane.add(reportsCard, 1, 1);
         gridPane.add(settingsCard, 0, 2);
         
-        // Quick stats section
-        HBox statsBox = createStatsBox();
+        // Quick stats section is removed to save space
         
-        content.getChildren().addAll(welcomeBox, gridPane, statsBox);
+        content.getChildren().addAll(welcomeBox, gridPane);
         VBox.setVgrow(gridPane, javafx.scene.layout.Priority.ALWAYS);
         
         return content;
     }
     
     private static VBox createMenuCard(String icon, String title, String description, String color, Runnable action) {
-        VBox card = new VBox(15);
-        card.setPadding(new Insets(25));
+        VBox card = new VBox(5); 
+        card.setPadding(new Insets(10)); 
         card.setAlignment(Pos.TOP_CENTER);
-        card.setPrefWidth(280);
-        card.setPrefHeight(220);
+        card.setPrefWidth(220); 
+        card.setPrefHeight(150); 
         card.setStyle("-fx-background-color: white; " +
                      "-fx-border-color: " + color + "; " +
                      "-fx-border-width: 2; " +
@@ -159,24 +158,24 @@ public class Dashboard {
         
         // Icon
         Label iconLabel = new Label(icon);
-        iconLabel.setStyle("-fx-font-size: 48;");
+        iconLabel.setStyle("-fx-font-size: 32;"); 
         
         // Title
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #333;");
+        titleLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #333;"); // Reduced font size
         titleLabel.setWrapText(true);
         
         // Description
         Label descLabel = new Label(description);
-        descLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #666; -fx-text-alignment: center;");
+        descLabel.setStyle("-fx-font-size: 10; -fx-text-fill: #666; -fx-text-alignment: center;"); // Reduced font size
         descLabel.setWrapText(true);
         
         // Button
         Button button = new Button("Open →");
         button.setStyle("-fx-background-color: " + color + "; " +
                        "-fx-text-fill: white; " +
-                       "-fx-padding: 10 25; " +
-                       "-fx-font-size: 12; " +
+                       "-fx-padding: 5 15; " + 
+                       "-fx-font-size: 11; " +
                        "-fx-font-weight: bold; " +
                        "-fx-cursor: hand; " +
                        "-fx-border-radius: 5; " +
@@ -198,61 +197,6 @@ public class Dashboard {
                                                  "-fx-border-radius: 10; " +
                                                  "-fx-background-radius: 10; " +
                                                  "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);"));
-        
-        return card;
-    }
-    
-    private static HBox createStatsBox() {
-        HBox statsBox = new HBox(20);
-        statsBox.setPadding(new Insets(20));
-        statsBox.setStyle("-fx-background-color: white; " +
-                         "-fx-border-color: #ddd; " +
-                         "-fx-border-radius: 8; " +
-                         "-fx-background-radius: 8; " +
-                         "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 3, 0, 0, 1);");
-        statsBox.setAlignment(Pos.CENTER);
-        
-        // Stat 1: Total Medicines
-        VBox stat1 = createStatCard("📦", "Medicines", "250", "#4CAF50");
-        
-        // Stat 2: Low Stock
-        VBox stat2 = createStatCard("⚠️", "Low Stock", "15", "#FF9800");
-        
-        // Stat 3: Expiring Soon
-        VBox stat3 = createStatCard("⏰", "Expiring Soon", "8", "#F44336");
-        
-        // Stat 4: Today's Sales
-        VBox stat4 = createStatCard("💰", "Today's Sales", "Rs. 5,420", "#2196F3");
-        
-        statsBox.getChildren().addAll(stat1, stat2, stat3, stat4);
-        HBox.setHgrow(stat1, javafx.scene.layout.Priority.ALWAYS);
-        HBox.setHgrow(stat2, javafx.scene.layout.Priority.ALWAYS);
-        HBox.setHgrow(stat3, javafx.scene.layout.Priority.ALWAYS);
-        HBox.setHgrow(stat4, javafx.scene.layout.Priority.ALWAYS);
-        
-        return statsBox;
-    }
-    
-    private static VBox createStatCard(String icon, String label, String value, String color) {
-        VBox card = new VBox(8);
-        card.setAlignment(Pos.CENTER);
-        card.setPadding(new Insets(15));
-        card.setStyle("-fx-background-color: #f9f9f9; " +
-                     "-fx-border-color: " + color + "; " +
-                     "-fx-border-width: 1; " +
-                     "-fx-border-radius: 5; " +
-                     "-fx-background-radius: 5;");
-        
-        Label iconLabel = new Label(icon);
-        iconLabel.setStyle("-fx-font-size: 28;");
-        
-        Label labelText = new Label(label);
-        labelText.setStyle("-fx-font-size: 11; -fx-text-fill: #666;");
-        
-        Label valueText = new Label(value);
-        valueText.setStyle("-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
-        
-        card.getChildren().addAll(iconLabel, valueText, labelText);
         
         return card;
     }
