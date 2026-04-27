@@ -1,20 +1,13 @@
 import javafx.application.Application;
-import javafx.stage.Stage;
 import javafx.scene.Scene;
-import frontend.pages.Dashboard;
+import javafx.stage.Stage;
+import frontend.pages.LoginPage;
 
 public class App extends Application {
-    
     @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("PharmaSync - Pharmacy Management System");
-        
-        // Get the scene from our Dashboard class
-        Scene scene = Dashboard.createDashboardScene(primaryStage);
-        
-        primaryStage.setScene(scene);
-        primaryStage.setWidth(1200);
-        primaryStage.setHeight(800);
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("PharmaSync - Login");
+        primaryStage.setScene(LoginPage.getScene(primaryStage));
         primaryStage.show();
     }
 
