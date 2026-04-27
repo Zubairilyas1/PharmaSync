@@ -21,6 +21,7 @@ import backend.repositories.MySQLUserRepository;
 import backend.services.AuthenticationService;
 import backend.exceptions.AuthenticationException;
 import java.sql.Connection;
+import frontend.pages.Dashboard;
 
 public class LoginPage {
 
@@ -75,7 +76,8 @@ public class LoginPage {
                 messageLabel.setText("Login Successful!");
                 
                 System.out.println("Login Successful for user: " + identifier);
-                // primaryStage.setScene(DashboardPage.getScene(primaryStage));
+                // Transition to the main application dashboard
+                primaryStage.setScene(Dashboard.createDashboardScene(primaryStage));
                 
             } catch (AuthenticationException authException) {
                 messageLabel.setTextFill(Color.RED);
