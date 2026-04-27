@@ -1,5 +1,7 @@
 package frontend.pages;
 
+import backend.exceptions.InventoryException;
+import backend.services.InventoryService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,23 +14,23 @@ import javafx.stage.Stage;
 import java.time.LocalDate;
 
 public class EditMedicinePage {
-    
-    public static void showEditMedicineDialog(Stage ownerStage, InventoryList.Medicine medicine, Callback<InventoryList.Medicine, Void> onEdit) {
+
+    public static void showEditMedicineDialog(Stage ownerStage, InventoryService inventoryService, backend.models.Medicine medicine, Callback<backend.models.Medicine, Void> onEdit) {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(ownerStage);
         dialogStage.setTitle("Edit Medicine");
         dialogStage.setWidth(500);
         dialogStage.setHeight(500);
-        
+
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f5f5f5;");
-        
+
         // Title
         Label titleLabel = new Label("Edit Medicine Details");
         titleLabel.setStyle("-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #333;");
-        
+
         // Medicine Name
         HBox nameBox = new HBox(10);
         nameBox.setAlignment(Pos.CENTER_LEFT);
@@ -38,7 +40,7 @@ public class EditMedicinePage {
         nameField.setText(medicine.getName());
         nameField.setPrefWidth(300);
         nameBox.getChildren().addAll(nameLabel, nameField);
-        
+
         // Batch ID
         HBox batchBox = new HBox(10);
         batchBox.setAlignment(Pos.CENTER_LEFT);
@@ -48,7 +50,7 @@ public class EditMedicinePage {
         batchField.setText(medicine.getBatchId());
         batchField.setPrefWidth(300);
         batchBox.getChildren().addAll(batchLabel, batchField);
-        
+
         // Expiry Date
         HBox expiryBox = new HBox(10);
         expiryBox.setAlignment(Pos.CENTER_LEFT);
@@ -58,16 +60,16 @@ public class EditMedicinePage {
         expiryDatePicker.setValue(medicine.getExpiryDate());
         expiryDatePicker.setPrefWidth(300);
         expiryBox.getChildren().addAll(expiryLabel, expiryDatePicker);
-        
+
         // Quantity
         HBox quantityBox = new HBox(10);
         quantityBox.setAlignment(Pos.CENTER_LEFT);
         Label quantityLabel = new Label("Quantity:");
         quantityLabel.setPrefWidth(120);
-        Spinner<Integer> quantitySpinner = new Spinner<>(1, 1000, medicine.getQuantity());
+        Spinner<Integer> quantitySpinner = new Spinner<>(1, 1000, medicine.getStockQuantity());
         quantitySpinner.setPrefWidth(300);
         quantityBox.getChildren().addAll(quantityLabel, quantitySpinner);
-        
+
         // Status
         HBox statusBox = new HBox(10);
         statusBox.setAlignment(Pos.CENTER_LEFT);
@@ -78,11 +80,11 @@ public class EditMedicinePage {
         statusCombo.setValue(medicine.getStatus());
         statusCombo.setPrefWidth(300);
         statusBox.getChildren().addAll(statusLabel, statusCombo);
-        
+
         // Buttons
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
-        
+
         Button updateButton = new Button("Update");
         updateButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-padding: 10; -fx-font-size: 12;");
         updateButton.setOnAction(e -> {
@@ -90,22 +92,32 @@ public class EditMedicinePage {
                 showAlert(Alert.AlertType.WARNING, "Validation Error", "Please fill all required fields!");
                 return;
             }
-            
+
             // Update the medicine object
-            medicine.setQuantity(quantitySpinner.getValue());
+            medicine.setName(nameField.getText());
+            medicine.setBatchId(batchField.getText());
+            medicine.setExpiryDate(expiryDatePicker.getValue());
+            medicine.setStockQuantity(quantitySpinner.getValue());
             medicine.setStatus(statusCombo.getValue());
-            
-            onEdit.call(medicine);
-            dialogStage.close();
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Medicine updated successfully!");
+
+            try {
+                inventoryService.updateMedicine(medicine);
+                onEdit.call(medicine);
+                dialogStage.close();
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Medicine updated successfully!");
+            } catch (InventoryException ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to update medicine: " + ex.getMessage());
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", "An unexpected error occurred: " + ex.getMessage());
+            }
         });
-        
+
         Button cancelButton = new Button("Cancel");
         cancelButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 10; -fx-font-size: 12;");
         cancelButton.setOnAction(e -> dialogStage.close());
-        
+
         buttonBox.getChildren().addAll(updateButton, cancelButton);
-        
+
         // Add all to root
         root.getChildren().addAll(
             titleLabel,
@@ -118,12 +130,12 @@ public class EditMedicinePage {
             new Separator(),
             buttonBox
         );
-        
+
         Scene scene = new Scene(root);
         dialogStage.setScene(scene);
         dialogStage.showAndWait();
     }
-    
+
     private static void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -131,7 +143,7 @@ public class EditMedicinePage {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    
+
     @FunctionalInterface
     public interface Callback<T, R> {
         R call(T param);
