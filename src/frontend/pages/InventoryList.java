@@ -1,5 +1,10 @@
 package frontend.pages;
 
+import backend.database.DatabaseManager;
+import backend.exceptions.InventoryException;
+import backend.models.User;
+import backend.services.InventoryService;
+import backend.repositories.MySQLMedicineRepository;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -17,37 +22,20 @@ import java.time.temporal.ChronoUnit;
 
 public class InventoryList {
     
-    // Medicine data model
-    public static class Medicine {
-        private String name;
-        private String batchId;
-        private LocalDate expiryDate;
-        private int quantity;
-        private String status;
-        
-        public Medicine(String name, String batchId, LocalDate expiryDate, int quantity, String status) {
-            this.name = name;
-            this.batchId = batchId;
-            this.expiryDate = expiryDate;
-            this.quantity = quantity;
-            this.status = status;
+    public static Scene createInventoryListScene(Stage stage) {
+        InventoryService inventoryService = null;
+        try {
+            java.sql.Connection conn = DatabaseManager.getConnection();
+            MySQLMedicineRepository repo = new MySQLMedicineRepository(conn);
+            inventoryService = new InventoryService(repo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Unable to connect to the database.");
+            return new Scene(new VBox(new Label("Database Connection Error")), 720, 720);
         }
         
-        // Getters and Setters
-        public String getName() { return name; }
-        public String getBatchId() { return batchId; }
-        public LocalDate getExpiryDate() { return expiryDate; }
-        public int getQuantity() { return quantity; }
-        public String getStatus() { return status; }
-        
-        public void setName(String name) { this.name = name; }
-        public void setBatchId(String batchId) { this.batchId = batchId; }
-        public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
-        public void setQuantity(int quantity) { this.quantity = quantity; }
-        public void setStatus(String status) { this.status = status; }
-    }
-    
-    public static Scene createInventoryListScene(Stage stage) {
+        final InventoryService finalInventoryService = inventoryService;
+
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f5f5f5;");
@@ -73,69 +61,81 @@ public class InventoryList {
         searchContainer.getChildren().addAll(searchLabel, searchField);
         HBox.setHgrow(searchField, Priority.ALWAYS);
         
-        // Create sample data
-        ObservableList<Medicine> medicines = FXCollections.observableArrayList(
-            new Medicine("Aspirin", "BATCH001", LocalDate.now().plusDays(15), 5, "Active"),
-            new Medicine("Paracetamol", "BATCH002", LocalDate.now().plusDays(60), 25, "Active"),
-            new Medicine("Amoxicillin", "BATCH003", LocalDate.now().plusDays(3), 8, "Active"),
-            new Medicine("Ibuprofen", "BATCH004", LocalDate.now().plusDays(120), 50, "Active"),
-            new Medicine("Metformin", "BATCH005", LocalDate.now().minusDays(5), 3, "Expired"),
-            new Medicine("Lisinopril", "BATCH006", LocalDate.now().plusDays(45), 12, "Active"),
-            new Medicine("Atorvastatin", "BATCH007", LocalDate.now().plusDays(90), 30, "Active"),
-            new Medicine("Cetirizine", "BATCH008", LocalDate.now().plusDays(25), 9, "Active")
-        );
-        
-        // Create filtered list
-        FilteredList<Medicine> filteredMedicines = new FilteredList<>(medicines, p -> true);
-        
         // Create table
-        TableView<Medicine> table = new TableView<>();
-        table.setItems(filteredMedicines);
+        TableView<backend.models.Medicine> table = new TableView<>();
         table.setStyle("-fx-font-size: 12;");
         table.setPrefHeight(400);
         
+        ObservableList<backend.models.Medicine> medicines = FXCollections.observableArrayList();
+        try {
+            medicines.addAll(finalInventoryService.getAllMedicines());
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to load inventory: " + e.getMessage());
+        }
+        
+        FilteredList<backend.models.Medicine> filteredMedicines = new FilteredList<>(medicines, p -> true);
+        table.setItems(filteredMedicines);
+        
         // Name column
-        TableColumn<Medicine, String> nameColumn = new TableColumn<>("Medicine Name");
+        TableColumn<backend.models.Medicine, String> nameColumn = new TableColumn<>("Medicine Name");
         nameColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getName()));
         nameColumn.setPrefWidth(150);
         
         // Batch ID column
-        TableColumn<Medicine, String> batchIdColumn = new TableColumn<>("Batch ID");
+        TableColumn<backend.models.Medicine, String> batchIdColumn = new TableColumn<>("Batch ID");
         batchIdColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getBatchId()));
         batchIdColumn.setPrefWidth(100);
         
         // Expiry Date column
-        TableColumn<Medicine, String> expiryDateColumn = new TableColumn<>("Expiry Date");
+        TableColumn<backend.models.Medicine, String> expiryDateColumn = new TableColumn<>("Expiry Date");
         expiryDateColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getExpiryDate().toString()));
         expiryDateColumn.setPrefWidth(120);
         
         // Quantity column
-        TableColumn<Medicine, Integer> quantityColumn = new TableColumn<>("Quantity");
-        quantityColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getQuantity()));
+        TableColumn<backend.models.Medicine, Integer> quantityColumn = new TableColumn<>("Quantity");
+        quantityColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getStockLevel()));
         quantityColumn.setPrefWidth(80);
         
+        // Custom cell factory for Quantity column to make low stock red
+        quantityColumn.setCellFactory(column -> {
+            return new TableCell<backend.models.Medicine, Integer>() {
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(item.toString());
+                        // Apply red text if quantity is less than 10 (background handled by row)
+                        if (item < 10) {
+                            setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold; -fx-alignment: center;");
+                        } else {
+                            setStyle("-fx-text-fill: black; -fx-alignment: center;");
+                        }
+                    }
+                }
+            };
+        });
+
         // Status column with badge
-        TableColumn<Medicine, String> statusColumn = new TableColumn<>("Status");
+        TableColumn<backend.models.Medicine, String> statusColumn = new TableColumn<>("Status");
         statusColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(getStatusBadge(cellData.getValue())));
         statusColumn.setPrefWidth(150);
         
         table.getColumns().addAll(nameColumn, batchIdColumn, expiryDateColumn, quantityColumn, statusColumn);
         
-        // Apply row styling based on conditions
-        table.setRowFactory(tv -> new TableRow<Medicine>() {
+        // Row-level styling for low stock warning
+        table.setRowFactory(tv -> new TableRow<backend.models.Medicine>() {
             @Override
-            protected void updateItem(Medicine medicine, boolean empty) {
+            protected void updateItem(backend.models.Medicine medicine, boolean empty) {
                 super.updateItem(medicine, empty);
-                
                 if (empty || medicine == null) {
                     setStyle("");
+                } else if (medicine.getStockLevel() < 10) {
+                    setStyle("-fx-background-color: #ffcccc;"); // Light red background for low stock
                 } else {
-                    // Check quantity for low stock
-                    if (medicine.getQuantity() < 10) {
-                        setStyle("-fx-background-color: #ffcccc;");  // Light red for low stock
-                    } else {
-                        setStyle("");
-                    }
+                    setStyle(""); 
                 }
             }
         });
@@ -178,7 +178,7 @@ public class InventoryList {
         Button addButton = new Button("+ Add Medicine");
         addButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10; -fx-font-size: 12; -fx-cursor: hand;");
         addButton.setOnAction(e -> {
-            AddMedicinePage.showAddMedicineDialog(stage, null, medicine -> {
+            AddMedicinePage.showAddMedicineDialog(stage, finalInventoryService, medicine -> {
                 medicines.add(medicine);
                 updateSummary(medicines, summaryBox);
                 return null;
@@ -188,12 +188,17 @@ public class InventoryList {
         Button editButton = new Button("✏️ Edit");
         editButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-padding: 8; -fx-font-size: 12; -fx-cursor: hand;");
         editButton.setOnAction(e -> {
-            Medicine selectedMedicine = table.getSelectionModel().getSelectedItem();
+            backend.models.Medicine selectedMedicine = table.getSelectionModel().getSelectedItem();
             if (selectedMedicine == null) {
                 showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a medicine to edit!");
                 return;
             }
-            EditMedicinePage.showEditMedicineDialog(stage, selectedMedicine, medicine -> {
+            EditMedicinePage.showEditMedicineDialog(stage, finalInventoryService, selectedMedicine, medicine -> {
+                // To reflect the update, we can simply refresh the table and update the list if needed
+                int index = medicines.indexOf(selectedMedicine);
+                if(index != -1) {
+                    medicines.set(index, medicine); // replace with updated medicine
+                }
                 table.refresh();
                 updateSummary(medicines, summaryBox);
                 return null;
@@ -203,21 +208,25 @@ public class InventoryList {
         Button deleteButton = new Button("🗑️ Delete");
         deleteButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 8; -fx-font-size: 12; -fx-cursor: hand;");
         deleteButton.setOnAction(e -> {
-            Medicine selectedMedicine = table.getSelectionModel().getSelectedItem();
+            backend.models.Medicine selectedMedicine = table.getSelectionModel().getSelectedItem();
             if (selectedMedicine == null) {
                 showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a medicine to delete!");
                 return;
             }
             
-            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmAlert.setTitle("Confirm Delete");
-            confirmAlert.setHeaderText(null);
-            confirmAlert.setContentText("Are you sure you want to delete " + selectedMedicine.getName() + "?");
+            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION, 
+                "Are you sure you want to delete " + selectedMedicine.getName() + "?", 
+                ButtonType.YES, ButtonType.NO);
+            confirmAlert.showAndWait();
             
-            if (confirmAlert.showAndWait().get() == ButtonType.OK) {
-                medicines.remove(selectedMedicine);
-                updateSummary(medicines, summaryBox);
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Medicine deleted successfully!");
+            if (confirmAlert.getResult() == ButtonType.YES) {
+                try {
+                    finalInventoryService.removeMedicine(selectedMedicine.getId());
+                    medicines.remove(selectedMedicine);
+                    updateSummary(medicines, summaryBox);
+                } catch (InventoryException ex) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete medicine: " + ex.getMessage());
+                }
             }
         });
         
@@ -235,26 +244,13 @@ public class InventoryList {
         
         VBox.setVgrow(table, Priority.ALWAYS);
         
-        return new Scene(root, 1000, 700);
-    }
-    
-    /**
-     * Update summary labels with current data
-     */
-    private static void updateSummaryWithLabels(ObservableList<Medicine> medicines, Label totalLabel, Label lowStockLabel, Label expiringLabel) {
-        totalLabel.setText("Total Medicines: " + medicines.size());
-        
-        long lowStockCount = medicines.stream().filter(m -> m.getQuantity() < 10).count();
-        lowStockLabel.setText("Low Stock: " + lowStockCount);
-        
-        long expiringCount = medicines.stream().filter(m -> ChronoUnit.DAYS.between(LocalDate.now(), m.getExpiryDate()) <= 30 && ChronoUnit.DAYS.between(LocalDate.now(), m.getExpiryDate()) >= 0).count();
-        expiringLabel.setText("Expiring Soon: " + expiringCount);
+        return new Scene(root, 720, 720);
     }
     
     /**
      * Update summary box
      */
-    private static void updateSummary(ObservableList<Medicine> medicines, HBox summaryBox) {
+    private static void updateSummary(ObservableList<backend.models.Medicine> medicines, HBox summaryBox) {
         if (summaryBox.getChildren().size() >= 3) {
             Label totalLabel = (Label) summaryBox.getChildren().get(0);
             Label lowStockLabel = (Label) summaryBox.getChildren().get(1);
@@ -263,40 +259,45 @@ public class InventoryList {
         }
     }
     
-    /**
-     * Show alert dialog
-     */
+    private static void updateSummaryWithLabels(ObservableList<backend.models.Medicine> medicines, 
+                                             Label totalLabel, Label lowStockLabel, Label expiringLabel) {
+        int total = medicines.size();
+        long lowStock = medicines.stream().filter(m -> m.getStockLevel() < 10).count();
+        long expiringSoon = medicines.stream().filter(m -> {
+            LocalDate now = LocalDate.now();
+            long daysBetween = ChronoUnit.DAYS.between(now, m.getExpiryDate());
+            return daysBetween > 0 && daysBetween <= 30;
+        }).count();
+        
+        totalLabel.setText("Total Medicines: " + total);
+        lowStockLabel.setText("Low Stock: " + lowStock + " items");
+        expiringLabel.setText("Expiring Soon (<30 days): " + expiringSoon + " items");
+    }
+    
+    private static String getStatusBadge(backend.models.Medicine medicine) {
+        LocalDate now = LocalDate.now();
+        if (medicine.getExpiryDate().isBefore(now)) {
+            return "Expired (No Sale)";
+        }
+        
+        long daysUntilExpiry = ChronoUnit.DAYS.between(now, medicine.getExpiryDate());
+        if (daysUntilExpiry <= 30) {
+            return "Expiring Soon";
+        }
+        
+        if (medicine.getStockLevel() == 0) {
+            return "Out of Stock";
+        }
+        
+        // Return the actual status (Active, Inactive, Discontinued)
+        return medicine.getStatus() != null && !medicine.getStatus().isEmpty() ? medicine.getStatus() : "Active";
+    }
+    
     private static void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-    
-    /**
-     * Generate status badge based on medicine conditions
-     */
-    private static String getStatusBadge(Medicine medicine) {
-        StringBuilder badge = new StringBuilder();
-        
-        LocalDate today = LocalDate.now();
-        long daysUntilExpiry = ChronoUnit.DAYS.between(today, medicine.getExpiryDate());
-        
-        // Check expiry status
-        if (daysUntilExpiry < 0) {
-            badge.append("🔴 EXPIRED");
-        } else if (daysUntilExpiry <= 30) {
-            badge.append("⚠️ EXPIRING SOON");
-        } else {
-            badge.append("✓ Active");
-        }
-        
-        // Add quantity info
-        if (medicine.getQuantity() < 10) {
-            badge.append(" | 📉 LOW STOCK");
-        }
-        
-        return badge.toString();
     }
 }
