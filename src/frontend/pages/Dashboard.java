@@ -135,6 +135,18 @@ public class Dashboard {
             }
         );
         
+        // Audit Logs Card
+        VBox auditLogsCard = createMenuCard(
+            "🔐",
+            "Audit Logs & Security",
+            "Monitor user activities, manage\nsecurity and account control",
+            "#ff6b6b",
+            () -> {
+                Scene scene = AuditLogs.createAuditLogsScene(stage);
+                stage.setScene(scene);
+            }
+        );
+        
         // Settings Card
         VBox settingsCard = createMenuCard(
             "⚙️",
@@ -149,7 +161,7 @@ public class Dashboard {
         gridPane.add(prescriptionCard, 0, 1);
         gridPane.add(returnsCard, 1, 1);
         gridPane.add(reportsCard, 0, 2);
-        gridPane.add(settingsCard, 1, 2);
+        gridPane.add(auditLogsCard, 1, 2);
         
         // Quick stats section is removed to save space
         
