@@ -111,6 +111,18 @@ public class Dashboard {
             }
         );
         
+        // Returns Management Card
+        VBox returnsCard = createMenuCard(
+            "↩️",
+            "Returns Management",
+            "Process returns, manage refunds,\nupdate inventory",
+            "#FF5722",
+            () -> {
+                Scene scene = Returns.createReturnsScene(stage);
+                stage.setScene(scene);
+            }
+        );
+        
         // Reports Card
         VBox reportsCard = createMenuCard(
             "📊",
@@ -132,8 +144,9 @@ public class Dashboard {
         gridPane.add(inventoryCard, 0, 0);
         gridPane.add(salesCard, 1, 0);
         gridPane.add(prescriptionCard, 0, 1);
-        gridPane.add(reportsCard, 1, 1);
-        gridPane.add(settingsCard, 0, 2);
+        gridPane.add(returnsCard, 1, 1);
+        gridPane.add(reportsCard, 0, 2);
+        gridPane.add(settingsCard, 1, 2);
         
         // Quick stats section is removed to save space
         
@@ -146,9 +159,10 @@ public class Dashboard {
     private static VBox createMenuCard(String icon, String title, String description, String color, Runnable action) {
         VBox card = new VBox(5); 
         card.setPadding(new Insets(10)); 
-        card.setAlignment(Pos.TOP_CENTER);
+        card.setAlignment(Pos.CENTER);
         card.setPrefWidth(220); 
-        card.setPrefHeight(150); 
+        card.setPrefHeight(150);
+        card.setCursor(javafx.scene.Cursor.HAND);
         card.setStyle("-fx-background-color: white; " +
                      "-fx-border-color: " + color + "; " +
                      "-fx-border-width: 2; " +
@@ -162,41 +176,55 @@ public class Dashboard {
         
         // Title
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #333;"); // Reduced font size
+        titleLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #333;");
         titleLabel.setWrapText(true);
         
         // Description
         Label descLabel = new Label(description);
-        descLabel.setStyle("-fx-font-size: 10; -fx-text-fill: #666; -fx-text-alignment: center;"); // Reduced font size
+        descLabel.setStyle("-fx-font-size: 10; -fx-text-fill: #666; -fx-text-alignment: center;");
         descLabel.setWrapText(true);
         
         // Button
         Button button = new Button("Open →");
+        button.setPrefWidth(150);
         button.setStyle("-fx-background-color: " + color + "; " +
                        "-fx-text-fill: white; " +
-                       "-fx-padding: 5 15; " + 
-                       "-fx-font-size: 11; " +
+                       "-fx-padding: 8 20; " + 
+                       "-fx-font-size: 12; " +
                        "-fx-font-weight: bold; " +
                        "-fx-cursor: hand; " +
                        "-fx-border-radius: 5; " +
                        "-fx-background-radius: 5;");
-        button.setOnAction(e -> action.run());
+        button.setOnAction(e -> {
+            System.out.println("Button clicked for: " + title);
+            action.run();
+        });
         
         card.getChildren().addAll(iconLabel, titleLabel, descLabel, button);
         
+        // Make card clickable as well
+        card.setOnMouseClicked(e -> {
+            System.out.println("Card clicked for: " + title);
+            action.run();
+        });
+        
         // Hover effect
-        card.setOnMouseEntered(e -> card.setStyle("-fx-background-color: white; " +
-                                                  "-fx-border-color: " + color + "; " +
-                                                  "-fx-border-width: 2; " +
-                                                  "-fx-border-radius: 10; " +
-                                                  "-fx-background-radius: 10; " +
-                                                  "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 3);"));
-        card.setOnMouseExited(e -> card.setStyle("-fx-background-color: white; " +
-                                                 "-fx-border-color: " + color + "; " +
-                                                 "-fx-border-width: 2; " +
-                                                 "-fx-border-radius: 10; " +
-                                                 "-fx-background-radius: 10; " +
-                                                 "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);"));
+        card.setOnMouseEntered(e -> {
+            card.setStyle("-fx-background-color: #f0f0f0; " +
+                         "-fx-border-color: " + color + "; " +
+                         "-fx-border-width: 3; " +
+                         "-fx-border-radius: 10; " +
+                         "-fx-background-radius: 10; " +
+                         "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);");
+        });
+        card.setOnMouseExited(e -> {
+            card.setStyle("-fx-background-color: white; " +
+                         "-fx-border-color: " + color + "; " +
+                         "-fx-border-width: 2; " +
+                         "-fx-border-radius: 10; " +
+                         "-fx-background-radius: 10; " +
+                         "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        });
         
         return card;
     }

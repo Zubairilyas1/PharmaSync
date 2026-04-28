@@ -1,13 +1,13 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import frontend.pages.LoginPage;
+import frontend.pages.Dashboard;
 
 public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("PharmaSync - Login");
-        primaryStage.setScene(LoginPage.getScene(primaryStage));
+        primaryStage.setTitle("PharmaSync - Dashboard");
+        primaryStage.setScene(Dashboard.createDashboardScene(primaryStage));
         primaryStage.show();
     }
 

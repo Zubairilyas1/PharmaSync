@@ -218,6 +218,50 @@ public class SalesTerminal {
         stockWarning.setStyle("-fx-text-fill: #d32f2f; -fx-font-weight: bold; -fx-font-size: 11;");
         stockWarning.setVisible(false);
         
+        // ==================== CUSTOMER INFO SECTION ====================
+        VBox customerBox = new VBox(10);
+        customerBox.setPadding(new Insets(10));
+        customerBox.setStyle("-fx-background-color: #e3f2fd; -fx-border-color: #2196F3; -fx-border-radius: 5;");
+        
+        Label customerLabel = new Label("👤 Customer Information");
+        customerLabel.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1565c0;");
+        
+        HBox customerInputBox = new HBox(10);
+        customerInputBox.setAlignment(Pos.CENTER_LEFT);
+        
+        Label nameLabel = new Label("Customer Name:");
+        nameLabel.setPrefWidth(120);
+        
+        TextField customerNameField = new TextField();
+        customerNameField.setPromptText("Enter customer name...");
+        customerNameField.setStyle("-fx-padding: 8; -fx-font-size: 12;");
+        customerNameField.setPrefWidth(250);
+        
+        Button recordCustomerButton = new Button("✓ Record");
+        recordCustomerButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-padding: 8 16; -fx-cursor: hand;");
+        
+        Label customerIdLabel = new Label("");
+        customerIdLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #1565c0; -fx-font-weight: bold;");
+        
+        customerInputBox.getChildren().addAll(nameLabel, customerNameField, recordCustomerButton, customerIdLabel);
+        customerBox.getChildren().addAll(customerLabel, customerInputBox);
+        
+        // Reference to currently selected customer
+        final CustomerDatabase.Customer[] currentCustomer = new CustomerDatabase.Customer[1];
+        
+        recordCustomerButton.setOnAction(e -> {
+            String customerName = customerNameField.getText().trim();
+            if (customerName.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "Invalid Input", "Please enter customer name!");
+                return;
+            }
+            
+            currentCustomer[0] = CustomerDatabase.getOrCreateCustomer(customerName);
+            customerIdLabel.setText("ID: " + currentCustomer[0].customerId);
+            customerNameField.setStyle("-fx-padding: 8; -fx-font-size: 12; -fx-control-inner-background: #c8e6c9;");
+            showNotification("✓ Customer: " + currentCustomer[0].customerName);
+        });
+        
         // Summary section
         VBox summaryBox = new VBox(8);
         summaryBox.setPadding(new Insets(10));
@@ -316,14 +360,42 @@ public class SalesTerminal {
                 return;
             }
             
+            if (currentCustomer[0] == null) {
+                showAlert(Alert.AlertType.WARNING, "No Customer", "Please record customer name first!");
+                return;
+            }
+            
             if (cartItems.stream().anyMatch(CartItem::isInsufficientStock)) {
                 showAlert(Alert.AlertType.ERROR, "Stock Issue", "Cannot checkout: Some items have insufficient stock!");
                 return;
             }
             
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Order placed successfully!");
+            // Record all transactions
+            for (CartItem item : cartItems) {
+                CustomerDatabase.addSaleTransaction(
+                    currentCustomer[0].customerId,
+                    item.getMedicineName(),
+                    item.getBatchId(),
+                    item.getQuantity(),
+                    item.getPrice()
+                );
+            }
+            
+            double subtotal = cartItems.stream().mapToDouble(CartItem::getSubtotal).sum();
+            double tax = subtotal * 0.10;
+            double total = subtotal + tax;
+            
+            showAlert(Alert.AlertType.INFORMATION, "✓ Success", 
+                "Order placed successfully!\n\nCustomer: " + currentCustomer[0].customerName +
+                "\nTotal: Rs. " + String.format("%.2f", total) +
+                "\n\nTransaction recorded in customer history.");
+            
             cartItems.clear();
             validationResult.setVisible(false);
+            customerNameField.clear();
+            customerNameField.setStyle("-fx-padding: 8; -fx-font-size: 12;");
+            customerIdLabel.setText("");
+            currentCustomer[0] = null;
         });
         
         Button clearButton = new Button("🗑️ Clear Cart");
@@ -336,6 +408,7 @@ public class SalesTerminal {
             rightTitle,
             cartTable,
             stockWarning,
+            customerBox,
             summaryBox,
             clinicalCheckBox,
             buttonsBox
@@ -456,5 +529,9 @@ public class SalesTerminal {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    
+    private static void showNotification(String message) {
+        System.out.println(message);
     }
 }
