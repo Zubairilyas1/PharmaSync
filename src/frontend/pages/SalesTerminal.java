@@ -66,9 +66,34 @@ public class SalesTerminal {
     }
     
     public static Scene createSalesTerminalScene(Stage stage) {
-        HBox mainContainer = new HBox(15);
+        VBox mainContainer = new VBox(15);
         mainContainer.setPadding(new Insets(20));
         mainContainer.setStyle("-fx-background-color: #f5f5f5;");
+        
+        // Header with back button
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setStyle("-fx-background: linear-gradient(to right, #1e3c72, #2a5298); -fx-padding: 12; -fx-border-radius: 5;");
+        
+        Button backButton = new Button("← Back to Dashboard");
+        backButton.setStyle("-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
+        backButton.setOnAction(e -> {
+            Scene dashboardScene = Dashboard.createDashboardScene(stage);
+            stage.setScene(dashboardScene);
+        });
+        
+        Label headerTitle = new Label("Sales Terminal");
+        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;");
+        
+        header.getChildren().addAll(backButton, headerTitle);
+        HBox.setHgrow(headerTitle, Priority.ALWAYS);
+        mainContainer.getChildren().add(header);
+        
+        // Content area
+        HBox contentArea = new HBox(15);
+        contentArea.setStyle("-fx-background-color: #f5f5f5;");
+        mainContainer.getChildren().add(contentArea);
+        VBox.setVgrow(contentArea, Priority.ALWAYS);
         
         // ==================== LEFT SIDE ====================
         VBox leftPanel = new VBox(15);
@@ -416,8 +441,8 @@ public class SalesTerminal {
         
         VBox.setVgrow(cartTable, Priority.ALWAYS);
         
-        // Add both panels to main container
-        mainContainer.getChildren().addAll(leftPanel, rightPanel);
+        // Add both panels to content area
+        contentArea.getChildren().addAll(leftPanel, rightPanel);
         HBox.setHgrow(leftPanel, Priority.ALWAYS);
         HBox.setHgrow(rightPanel, Priority.ALWAYS);
         

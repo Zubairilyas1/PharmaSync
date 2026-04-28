@@ -40,6 +40,25 @@ public class InventoryList {
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f5f5f5;");
         
+        // Header with back button
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setStyle("-fx-background: linear-gradient(to right, #1e3c72, #2a5298); -fx-padding: 12; -fx-border-radius: 5;");
+        
+        Button backButton = new Button("← Back to Dashboard");
+        backButton.setStyle("-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
+        backButton.setOnAction(e -> {
+            Scene dashboardScene = Dashboard.createDashboardScene(stage);
+            stage.setScene(dashboardScene);
+        });
+        
+        Label headerTitle = new Label("Inventory Management");
+        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;");
+        
+        header.getChildren().addAll(backButton, headerTitle);
+        HBox.setHgrow(headerTitle, Priority.ALWAYS);
+        root.getChildren().add(header);
+        
         // Title
         Label titleLabel = new Label("Inventory Management");
         titleLabel.setStyle("-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #333;");
