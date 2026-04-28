@@ -129,7 +129,10 @@ public class Dashboard {
             "Reports & Analytics",
             "View sales reports, stock analysis,\nexpiry notifications",
             "#FF9800",
-            () -> showAlert("Reports feature coming soon!")
+            () -> {
+                Scene scene = Reports.createReportsScene(stage);
+                stage.setScene(scene);
+            }
         );
         
         // Settings Card
