@@ -147,6 +147,18 @@ public class Dashboard {
             }
         );
         
+        // Procurement Card
+        VBox procurementCard = createMenuCard(
+            "📦",
+            "Procurement Management",
+            "Manage stock levels, create\npurchase orders, supplier selection",
+            "#FF6F00",
+            () -> {
+                Scene scene = Procurement.createProcurementScene(stage);
+                stage.setScene(scene);
+            }
+        );
+        
         // Settings Card
         VBox settingsCard = createMenuCard(
             "⚙️",
@@ -162,6 +174,8 @@ public class Dashboard {
         gridPane.add(returnsCard, 1, 1);
         gridPane.add(reportsCard, 0, 2);
         gridPane.add(auditLogsCard, 1, 2);
+        gridPane.add(procurementCard, 0, 3);
+        gridPane.add(settingsCard, 1, 3);
         
         // Quick stats section is removed to save space
         
