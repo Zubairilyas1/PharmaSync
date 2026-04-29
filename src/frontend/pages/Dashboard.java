@@ -165,7 +165,10 @@ public class Dashboard {
             "Settings",
             "Configure system settings,\nuser preferences, database",
             "#9C27B0",
-            () -> showAlert("Settings feature coming soon!")
+            () -> {
+                Scene scene = Settings.createSettingsScene(stage);
+                stage.setScene(scene);
+            }
         );
         
         gridPane.add(inventoryCard, 0, 0);
