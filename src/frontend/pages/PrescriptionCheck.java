@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 import javafx.scene.control.ScrollPane;
 
 public class PrescriptionCheck {
+    private static final String APP_BG = "#F4F7FB";
+    private static final String PRIMARY_BLUE = "#0056B3";
     
     private static Stage currentStage;
     private static String currentPrescriptionId = "";
@@ -22,7 +24,7 @@ public class PrescriptionCheck {
         
         // Main container
         VBox mainLayout = new VBox(0);
-        mainLayout.setStyle("-fx-background-color: #f5f5f5;");
+        mainLayout.setStyle("-fx-background-color: " + APP_BG + ";");
         
         // Header bar
         HBox header = createHeader(stage);
@@ -30,7 +32,7 @@ public class PrescriptionCheck {
         // Main content area with scroll
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-control-inner-background: #f5f5f5;");
+        scrollPane.setStyle("-fx-control-inner-background: " + APP_BG + ";");
         VBox content = createContent(stage);
         scrollPane.setContent(content);
         
@@ -42,29 +44,30 @@ public class PrescriptionCheck {
     
     private static HBox createHeader(Stage stage) {
         HBox header = new HBox();
-        header.setPadding(new Insets(15, 20, 15, 20));
-        header.setStyle("-fx-background: linear-gradient(to right, #667eea, #764ba2); -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);");
+        header.setPadding(new Insets(12, 16, 12, 16));
+        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
         header.setAlignment(Pos.CENTER_LEFT);
         
         // Back button
         Button backButton = new Button("← Back");
-        backButton.setStyle("-fx-background-color: rgba(255,255,255,0.2); " +
-                           "-fx-text-fill: white; " +
+        backButton.setStyle("-fx-background-color: #EEF4FF; " +
+                           "-fx-text-fill: " + PRIMARY_BLUE + "; " +
                            "-fx-padding: 8 15; " +
                            "-fx-font-size: 11; " +
+                           "-fx-font-weight: 700; " +
                            "-fx-cursor: hand; " +
-                           "-fx-border-radius: 5; " +
-                           "-fx-background-radius: 5;");
+                           "-fx-border-radius: 10; " +
+                           "-fx-background-radius: 10;");
         backButton.setOnAction(e -> {
             Scene scene = Dashboard.createDashboardScene(stage);
             stage.setScene(scene);
         });
         
         Label title = new Label("Prescription Check");
-        title.setStyle("-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: white;");
+        title.setStyle("-fx-font-size: 26; -fx-font-weight: 800; -fx-text-fill: #111827;");
         
         Label subtitle = new Label("Verify prescription and perform clinical checks");
-        subtitle.setStyle("-fx-font-size: 12; -fx-text-fill: #e0e0e0;");
+        subtitle.setStyle("-fx-font-size: 12; -fx-text-fill: #6B7280;");
         
         VBox titleBox = new VBox(3);
         titleBox.getChildren().addAll(title, subtitle);
@@ -80,7 +83,7 @@ public class PrescriptionCheck {
     private static VBox createContent(Stage stage) {
         VBox content = new VBox(30);
         content.setPadding(new Insets(40));
-        content.setStyle("-fx-background-color: #f5f5f5;");
+        content.setStyle("-fx-background-color: " + APP_BG + ";");
         
         // Search section
         VBox searchSection = createSearchSection();
