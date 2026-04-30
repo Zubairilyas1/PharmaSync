@@ -28,7 +28,7 @@ import java.sql.Connection;
 public class SignUpPage {
     public static Scene getScene(Stage primaryStage) {
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: linear-gradient(to bottom, #f8fbff, #edf4fc);");
+        root.setStyle("-fx-background-color: #F4F7FB;");
 
         Label phaseBadge = new Label("●  Phase 1.0: Authentication & Dashboard Prototype");
         phaseBadge.setStyle(
@@ -50,10 +50,10 @@ public class SignUpPage {
         card.setStyle(
                 "-fx-background-color: white;" +
                 "-fx-background-radius: 18;" +
-                "-fx-border-color: #1a1a1a;" +
-                "-fx-border-width: 2;" +
+                "-fx-border-color: #E5EAF2;" +
+                "-fx-border-width: 1;" +
                 "-fx-border-radius: 18;" +
-                "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.16), 20, 0.2, 0, 5);"
+                "-fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.10), 16, 0, 0, 4);"
         );
 
         VBox leftPanel = new VBox(14);
