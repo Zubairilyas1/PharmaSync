@@ -21,6 +21,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 public class InventoryList {
+    private static final String APP_BG = "#F4F7FB";
+    private static final String PRIMARY_BLUE = "#0056B3";
     
     public static Scene createInventoryListScene(Stage stage) {
         InventoryService inventoryService = null;
@@ -38,22 +40,23 @@ public class InventoryList {
 
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
-        root.setStyle("-fx-background-color: #f5f5f5;");
+        root.setStyle("-fx-background-color: " + APP_BG + ";");
         
         // Header with back button
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
-        header.setStyle("-fx-background: linear-gradient(to right, #1e3c72, #2a5298); -fx-padding: 12; -fx-border-radius: 5;");
+        header.setPadding(new Insets(12, 16, 12, 16));
+        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
         
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
+        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
         });
         
         Label headerTitle = new Label("Inventory Management");
-        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;");
+        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
         
         header.getChildren().addAll(backButton, headerTitle);
         HBox.setHgrow(headerTitle, Priority.ALWAYS);
@@ -67,7 +70,7 @@ public class InventoryList {
         HBox searchContainer = new HBox(10);
         searchContainer.setAlignment(Pos.CENTER_LEFT);
         searchContainer.setPadding(new Insets(10));
-        searchContainer.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;");
+        searchContainer.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #E5EAF2; -fx-border-radius: 12;");
         
         Label searchLabel = new Label("Search by Medicine Name:");
         searchLabel.setStyle("-fx-font-size: 12;");
@@ -173,7 +176,7 @@ public class InventoryList {
         HBox summaryBox = new HBox(20);
         summaryBox.setAlignment(Pos.CENTER_LEFT);
         summaryBox.setPadding(new Insets(10));
-        summaryBox.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;");
+        summaryBox.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #E5EAF2; -fx-border-radius: 12;");
         
         Label totalLabel = new Label();
         totalLabel.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
