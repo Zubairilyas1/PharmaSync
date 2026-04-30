@@ -6,336 +6,235 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Dashboard {
-    
+
+    private static final String PRIMARY_BLUE = "#0056B3";
+    private static final String PANEL_BG = "#FFFFFF";
+    private static final String APP_BG = "#F4F7FB";
+
     public static Scene createDashboardScene(Stage stage) {
-        // Main container using BorderPane for better layout
         BorderPane mainLayout = new BorderPane();
-        mainLayout.setStyle("-fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);");
-        
-        // Header bar
-        HBox header = createHeader();
-        mainLayout.setTop(header);
-        
-        // Main content area with scroll
+        mainLayout.setStyle("-fx-background-color: " + APP_BG + ";");
+
+        VBox shell = new VBox(16);
+        shell.setPadding(new Insets(22));
+
+        shell.getChildren().add(createTopHeader());
+        shell.getChildren().add(createDashboardBody(stage));
+
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-width: 0;");
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        
-        VBox content = createContent(stage);
-        scrollPane.setContent(content);
-        
+        scrollPane.setContent(shell);
+
         mainLayout.setCenter(scrollPane);
-        
+
         Scene scene = new Scene(mainLayout, 1200, 800);
         stage.setResizable(true);
         stage.setMinWidth(1000);
         stage.setMinHeight(700);
-        
+
         return scene;
     }
-    
-    private static Stage currentStage;
-    
-    private static HBox createHeader() {
-        HBox header = new HBox();
-        header.setPadding(new Insets(20, 30, 20, 30));
-        header.setStyle("-fx-background: linear-gradient(to right, #1e3c72, #2a5298); -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 3);");
+
+    private static HBox createTopHeader() {
+        HBox header = new HBox(12);
         header.setAlignment(Pos.CENTER_LEFT);
-        
-        Label title = new Label("🏥 PharmaSync");
-        title.setStyle("-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, rgba(255,255,255,0.5), 1, 0, 0, 0);");
-        
-        Label subtitle = new Label("Advanced Pharmacy Management System");
-        subtitle.setStyle("-fx-font-size: 14; -fx-text-fill: #e8f4f8; -fx-font-weight: 300;");
-        
-        VBox titleBox = new VBox(5);
-        titleBox.getChildren().addAll(title, subtitle);
-        titleBox.setAlignment(Pos.CENTER_LEFT);
-        
-        // Add a logout button or user info
-        Button userButton = new Button("👤 Admin");
-        userButton.setStyle("-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 20; -fx-background-radius: 20; -fx-padding: 8 15; -fx-font-size: 12;");
-        userButton.setOnAction(e -> {
-            // Handle user menu
-        });
-        
-        header.getChildren().addAll(titleBox);
-        HBox.setHgrow(titleBox, javafx.scene.layout.Priority.ALWAYS);
-        header.getChildren().add(userButton);
-        
+        header.setPadding(new Insets(12, 18, 12, 18));
+        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; "
+                + "-fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
+
+        VBox titleWrap = new VBox(2);
+        Label title = new Label("PharmaSync");
+        title.setStyle("-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #111827;");
+        Label subtitle = new Label("PharmaSync Executive Dashboard");
+        subtitle.setStyle("-fx-font-size: 12; -fx-text-fill: #6B7280;");
+        titleWrap.getChildren().addAll(title, subtitle);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label welcome = new Label("Welcome back, Admin");
+        welcome.setStyle("-fx-font-size: 12; -fx-text-fill: #475467;");
+
+        Button profileButton = new Button("Admin");
+        profileButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; "
+                + "-fx-font-weight: 700; -fx-background-radius: 12; -fx-padding: 7 14;");
+
+        header.getChildren().addAll(titleWrap, spacer, welcome, profileButton);
         return header;
     }
-    
-    private static VBox createContent(Stage stage) {
-        currentStage = stage;
-        VBox content = new VBox(25); 
-        content.setPadding(new Insets(30)); 
-        content.setAlignment(Pos.TOP_CENTER);
-        content.setStyle("-fx-background-color: transparent;");
-        
-        // Welcome section
-        Label welcomeLabel = new Label("Welcome to PharmaSync");
-        welcomeLabel.setStyle("-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
-        
-        Label descriptionLabel = new Label("Streamline your pharmacy operations with our comprehensive management system");
-        descriptionLabel.setStyle("-fx-font-size: 16; -fx-text-fill: #7f8c8d; -fx-text-alignment: center;");
-        descriptionLabel.setWrapText(true);
-        descriptionLabel.setMaxWidth(600);
-        
-        VBox welcomeBox = new VBox(10); 
-        welcomeBox.setAlignment(Pos.CENTER);
-        welcomeBox.getChildren().addAll(welcomeLabel, descriptionLabel);
-        
-        // Quick Stats Section
-        HBox statsBox = createQuickStats();
-        
-        // Menu cards grid
-        GridPane gridPane = new GridPane();
-        gridPane.setHgap(20); 
-        gridPane.setVgap(20); 
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setPadding(new Insets(20, 0, 20, 0));
-        
-        // Inventory Card
-        VBox inventoryCard = createMenuCard(
-            "📦",
-            "Inventory Management",
-            "Manage medicines, track stock,\nmonitor expiry dates",
-            "#4CAF50",
-            () -> {
-                Scene scene = InventoryList.createInventoryListScene(stage);
-                stage.setScene(scene);
-            }
-        );
-        
-        // Sales Terminal Card
-        VBox salesCard = createMenuCard(
-            "💳",
-            "Sales Terminal",
-            "Process orders, calculate dosage,\nvalidate clinical checks",
-            "#2196F3",
-            () -> {
-                Scene scene = SalesTerminal.createSalesTerminalScene(stage);
-                stage.setScene(scene);
-            }
-        );
-        
-        // Prescription Check Card
-        VBox prescriptionCard = createMenuCard(
-            "📋",
-            "Prescription Check",
-            "Verify prescriptions, check for\nclinical interactions",
-            "#00BCD4",
-            () -> {
-                Scene scene = PrescriptionCheck.createPrescriptionCheckScene(stage);
-                stage.setScene(scene);
-            }
-        );
-        
-        // Returns Management Card
-        VBox returnsCard = createMenuCard(
-            "↩️",
-            "Returns Management",
-            "Process returns, manage refunds,\nupdate inventory",
-            "#FF5722",
-            () -> {
-                Scene scene = Returns.createReturnsScene(stage);
-                stage.setScene(scene);
-            }
-        );
-        
-        // Reports Card
-        VBox reportsCard = createMenuCard(
-            "📊",
-            "Reports & Analytics",
-            "View sales reports, stock analysis,\nexpiry notifications",
-            "#FF9800",
-            () -> {
-                Scene scene = Reports.createReportsScene(stage);
-                stage.setScene(scene);
-            }
-        );
-        
-        // Audit Logs Card
-        VBox auditLogsCard = createMenuCard(
-            "🔐",
-            "Audit Logs & Security",
-            "Monitor user activities, manage\nsecurity and account control",
-            "#ff6b6b",
-            () -> {
-                Scene scene = AuditLogs.createAuditLogsScene(stage);
-                stage.setScene(scene);
-            }
-        );
-        
-        // Procurement Card
-        VBox procurementCard = createMenuCard(
-            "📦",
-            "Procurement Management",
-            "Manage stock levels, create\npurchase orders, supplier selection",
-            "#FF6F00",
-            () -> {
-                Scene scene = Procurement.createProcurementScene(stage);
-                stage.setScene(scene);
-            }
-        );
-        
-        // Settings Card
-        VBox settingsCard = createMenuCard(
-            "⚙️",
-            "Settings",
-            "Configure system settings,\nuser preferences, database",
-            "#9C27B0",
-            () -> {
-                Scene scene = Settings.createSettingsScene(stage);
-                stage.setScene(scene);
-            }
-        );
-        
-        gridPane.add(inventoryCard, 0, 0);
-        gridPane.add(salesCard, 1, 0);
-        gridPane.add(prescriptionCard, 2, 0);
-        gridPane.add(returnsCard, 3, 0);
-        gridPane.add(reportsCard, 0, 1);
-        gridPane.add(auditLogsCard, 1, 1);
-        gridPane.add(procurementCard, 2, 1);
-        gridPane.add(settingsCard, 3, 1);
-        
-        content.getChildren().addAll(welcomeBox, statsBox, gridPane);
-        
-        return content;
+
+    private static HBox createDashboardBody(Stage stage) {
+        HBox body = new HBox(20);
+        body.getChildren().addAll(createSidebar(stage), createMainPanel(stage));
+        HBox.setHgrow(body.getChildren().get(1), Priority.ALWAYS);
+        return body;
     }
-    
-    private static HBox createQuickStats() {
-        HBox statsBox = new HBox(20);
-        statsBox.setAlignment(Pos.CENTER);
-        statsBox.setPadding(new Insets(20));
-        statsBox.setStyle("-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
-        
-        VBox stat1 = createStatCard("📊", "Total Medicines", "1,247", "#4CAF50");
-        VBox stat2 = createStatCard("💰", "Today's Sales", "$2,450", "#2196F3");
-        VBox stat3 = createStatCard("⚠️", "Low Stock Items", "12", "#FF5722");
-        VBox stat4 = createStatCard("📅", "Expiring Soon", "8", "#FF9800");
-        
-        statsBox.getChildren().addAll(stat1, stat2, stat3, stat4);
-        return statsBox;
+
+    private static VBox createSidebar(Stage stage) {
+        VBox side = new VBox(10);
+        side.setPrefWidth(250);
+        side.setPadding(new Insets(18));
+        side.setStyle("-fx-background-color: " + PRIMARY_BLUE + "; -fx-background-radius: 16;");
+
+        Label brand = new Label("PharmaSync");
+        brand.setStyle("-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: 800;");
+        Label moduleLabel = new Label("All Branch Modules");
+        moduleLabel.setStyle("-fx-text-fill: #C7DBFF; -fx-font-size: 11;");
+
+        side.getChildren().addAll(brand, moduleLabel, createSideSpacer(14));
+        side.getChildren().addAll(
+            createNavButton("Dashboard", true, () -> stage.setScene(createDashboardScene(stage))),
+            createNavButton("Inventory", false, () -> stage.setScene(InventoryList.createInventoryListScene(stage))),
+            createNavButton("Sales & Dispensing", false, () -> stage.setScene(SalesTerminal.createSalesTerminalScene(stage))),
+            createNavButton("Sales Returns", false, () -> stage.setScene(Returns.createReturnsScene(stage))),
+            createNavButton("Prescriptions", false, () -> stage.setScene(PrescriptionCheck.createPrescriptionCheckScene(stage))),
+            createNavButton("Reports", false, () -> stage.setScene(Reports.createReportsScene(stage))),
+            createNavButton("Procurement", false, () -> stage.setScene(Procurement.createProcurementScene(stage))),
+            createNavButton("Admin", false, () -> stage.setScene(Settings.createSettingsScene(stage)))
+        );
+        return side;
     }
-    
-    private static VBox createStatCard(String icon, String title, String value, String color) {
-        VBox card = new VBox(5);
-        card.setPadding(new Insets(15));
-        card.setAlignment(Pos.CENTER);
-        card.setPrefWidth(180);
-        card.setStyle("-fx-background-color: white; -fx-border-color: " + color + "; -fx-border-width: 1; -fx-border-radius: 10; -fx-background-radius: 10;");
-        
-        Label iconLabel = new Label(icon);
-        iconLabel.setStyle("-fx-font-size: 24;");
-        
+
+    private static VBox createMainPanel(Stage stage) {
+        VBox main = new VBox(16);
+        main.setPadding(new Insets(2));
+        HBox.setHgrow(main, Priority.ALWAYS);
+
+        VBox hero = createPanel(16);
+        Label heroTitle = new Label("PharmaSync: Executive Overview");
+        heroTitle.setStyle("-fx-font-size: 26; -fx-font-weight: 800; -fx-text-fill: #0F172A;");
+        Label heroSub = new Label("Unified Branch Dashboard");
+        heroSub.setStyle("-fx-font-size: 14; -fx-text-fill: #667085;");
+        hero.getChildren().addAll(heroTitle, heroSub);
+
+        GridPane statsGrid = new GridPane();
+        statsGrid.setHgap(14);
+        statsGrid.setVgap(14);
+        statsGrid.add(createMetricCard("Sales Performance Today", "$14,250.00", "Top Medicine: Panadol 500mg", "#0056B3"), 0, 0);
+        statsGrid.add(createAlertCard(stage), 1, 0);
+        statsGrid.add(createMetricCard("Procurement & Vendor Health", "92%", "Supplier API Health", "#0B8A86"), 0, 1);
+        statsGrid.add(createMetricCard("Pending Validations", "7", "Prescriptions: 5 | Returns: 2", "#0056B3"), 1, 1);
+        statsGrid.add(createMetricCard("Security Audit Trail", "24h", "Critical security events", "#1D4ED8"), 0, 2);
+        statsGrid.add(createActionCard(stage), 1, 2);
+
+        main.getChildren().addAll(hero, statsGrid);
+        return main;
+    }
+
+    private static VBox createMetricCard(String title, String value, String subtitle, String accentColor) {
+        VBox card = createPanel(14);
+        card.setPrefWidth(420);
+        card.setMinHeight(140);
+
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #111827;");
+
         Label valueLabel = new Label(value);
-        valueLabel.setStyle("-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
-        
-        Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #666;");
-        
-        card.getChildren().addAll(iconLabel, valueLabel, titleLabel);
+        valueLabel.setStyle("-fx-font-size: 38; -fx-font-weight: 800; -fx-text-fill: " + accentColor + ";");
+
+        Label sub = new Label(subtitle);
+        sub.setStyle("-fx-font-size: 12; -fx-text-fill: #6B7280;");
+
+        card.getChildren().addAll(titleLabel, valueLabel, sub);
         return card;
     }
-    
-    private static VBox createMenuCard(String icon, String title, String description, String color, Runnable action) {
-        VBox card = new VBox(8); 
-        card.setPadding(new Insets(20)); 
-        card.setAlignment(Pos.CENTER);
-        card.setPrefWidth(250); 
-        card.setPrefHeight(180);
-        card.setCursor(javafx.scene.Cursor.HAND);
-        card.setStyle("-fx-background-color: white; " +
-                     "-fx-border-color: " + color + "; " +
-                     "-fx-border-width: 2; " +
-                     "-fx-border-radius: 15; " +
-                     "-fx-background-radius: 15; " +
-                     "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 8, 0, 0, 3);");
-        
-        // Icon
-        Label iconLabel = new Label(icon);
-        iconLabel.setStyle("-fx-font-size: 40;"); 
-        
-        // Title
-        Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
-        titleLabel.setWrapText(true);
-        titleLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-        
-        // Description
-        Label descLabel = new Label(description);
-        descLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #7f8c8d; -fx-text-alignment: center;");
-        descLabel.setWrapText(true);
-        descLabel.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-        
-        // Button
-        Button button = new Button("Access Module →");
-        button.setPrefWidth(200);
-        button.setPrefHeight(35);
-        button.setStyle("-fx-background-color: " + color + "; " +
-                       "-fx-text-fill: white; " +
-                       "-fx-padding: 10 20; " + 
-                       "-fx-font-size: 14; " +
-                       "-fx-font-weight: bold; " +
-                       "-fx-cursor: hand; " +
-                       "-fx-border-radius: 8; " +
-                       "-fx-background-radius: 8; " +
-                       "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);");
-        button.setOnAction(e -> {
-            System.out.println("Button clicked for: " + title);
-            action.run();
-        });
-        
-        card.getChildren().addAll(iconLabel, titleLabel, descLabel, button);
-        
-        // Make card clickable as well
-        card.setOnMouseClicked(e -> {
-            System.out.println("Card clicked for: " + title);
-            action.run();
-        });
-        
-        // Enhanced hover effect
-        card.setOnMouseEntered(e -> {
-            card.setStyle("-fx-background-color: #f8f9fa; " +
-                         "-fx-border-color: " + color + "; " +
-                         "-fx-border-width: 3; " +
-                         "-fx-border-radius: 15; " +
-                         "-fx-background-radius: 15; " +
-                         "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 15, 0, 0, 8);");
-            iconLabel.setScaleX(1.1);
-            iconLabel.setScaleY(1.1);
-        });
-        card.setOnMouseExited(e -> {
-            card.setStyle("-fx-background-color: white; " +
-                         "-fx-border-color: " + color + "; " +
-                         "-fx-border-width: 2; " +
-                         "-fx-border-radius: 15; " +
-                         "-fx-background-radius: 15; " +
-                         "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 8, 0, 0, 3);");
-            iconLabel.setScaleX(1.0);
-            iconLabel.setScaleY(1.0);
-        });
-        
+
+    private static VBox createAlertCard(Stage stage) {
+        VBox card = createPanel(12);
+        card.setPrefWidth(420);
+        card.setMinHeight(140);
+
+        Label title = new Label("Inventory at Risk (FEFO/Quarantine)");
+        title.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #111827;");
+
+        Label alertStrip = new Label("Red-Alert: 12 Items");
+        alertStrip.setStyle("-fx-font-size: 13; -fx-font-weight: 700; -fx-text-fill: #1F2937; "
+                + "-fx-background-color: #FACC15; -fx-background-radius: 8; -fx-padding: 7 10;");
+
+        Label detail = new Label("Warfarin 5mg (Quarantine)   •   Aspirin 81mg (Near-Expiry)");
+        detail.setWrapText(true);
+        detail.setStyle("-fx-font-size: 12; -fx-text-fill: #475467;");
+
+        Button cta = createCtaButton("View Inventory", PRIMARY_BLUE, () ->
+            stage.setScene(InventoryList.createInventoryListScene(stage))
+        );
+        card.getChildren().addAll(title, alertStrip, detail, cta);
         return card;
     }
-    
-    private static void showAlert(String message) {
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-        alert.setTitle("Coming Soon");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+
+    private static VBox createActionCard(Stage stage) {
+        VBox card = createPanel(10);
+        card.setPrefWidth(420);
+        card.setMinHeight(140);
+
+        Label title = new Label("Quick Actions");
+        title.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #111827;");
+
+        HBox row1 = new HBox(8,
+            createActionButton("Dispense Sales", () -> stage.setScene(SalesTerminal.createSalesTerminalScene(stage))),
+            createActionButton("Run Reports", () -> stage.setScene(Reports.createReportsScene(stage)))
+        );
+        HBox row2 = new HBox(8,
+            createActionButton("Audit Trail", () -> stage.setScene(AuditLogs.createAuditLogsScene(stage))),
+            createActionButton("Manage Settings", () -> stage.setScene(Settings.createSettingsScene(stage)))
+        );
+
+        card.getChildren().addAll(title, row1, row2);
+        return card;
+    }
+
+    private static VBox createPanel(double spacing) {
+        VBox panel = new VBox(spacing);
+        panel.setPadding(new Insets(14));
+        panel.setStyle("-fx-background-color: " + PANEL_BG + "; -fx-background-radius: 14; "
+                + "-fx-border-color: #E5EAF2; -fx-border-radius: 14; "
+                + "-fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.08), 14, 0, 0, 3);");
+        return panel;
+    }
+
+    private static Region createSideSpacer(double height) {
+        Region spacer = new Region();
+        spacer.setMinHeight(height);
+        return spacer;
+    }
+
+    private static Button createNavButton(String title, boolean active, Runnable action) {
+        Button button = new Button(title);
+        button.setPrefWidth(210);
+        button.setAlignment(Pos.CENTER_LEFT);
+        String activeStyle = "-fx-background-color: white; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-font-weight: 700;";
+        String idleStyle = "-fx-background-color: rgba(255,255,255,0.08); -fx-text-fill: #E6EEFF; -fx-font-weight: 600;";
+        button.setStyle((active ? activeStyle : idleStyle) + " -fx-background-radius: 10; -fx-padding: 10 14;");
+        button.setOnAction(e -> action.run());
+        return button;
+    }
+
+    private static Button createCtaButton(String text, String color, Runnable action) {
+        Button button = new Button(text);
+        button.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white; -fx-font-weight: 700; "
+                + "-fx-background-radius: 9; -fx-padding: 8 12;");
+        button.setOnAction(e -> action.run());
+        return button;
+    }
+
+    private static Button createActionButton(String text, Runnable action) {
+        Button button = new Button(text);
+        button.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: #003F8A; -fx-font-weight: 700; "
+                + "-fx-background-radius: 8; -fx-padding: 8 10;");
+        button.setOnAction(e -> action.run());
+        button.setPrefWidth(190);
+        return button;
     }
 }
