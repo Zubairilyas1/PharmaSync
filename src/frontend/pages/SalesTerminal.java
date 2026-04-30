@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SalesTerminal {
+    private static final String APP_BG = "#F4F7FB";
+    private static final String PRIMARY_BLUE = "#0056B3";
     
     // Medicine model for cart
     public static class CartItem {
@@ -68,22 +70,23 @@ public class SalesTerminal {
     public static Scene createSalesTerminalScene(Stage stage) {
         VBox mainContainer = new VBox(15);
         mainContainer.setPadding(new Insets(20));
-        mainContainer.setStyle("-fx-background-color: #f5f5f5;");
+        mainContainer.setStyle("-fx-background-color: " + APP_BG + ";");
         
         // Header with back button
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
-        header.setStyle("-fx-background: linear-gradient(to right, #1e3c72, #2a5298); -fx-padding: 12; -fx-border-radius: 5;");
+        header.setPadding(new Insets(12, 16, 12, 16));
+        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
         
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
+        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
         });
         
         Label headerTitle = new Label("Sales Terminal");
-        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;");
+        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
         
         header.getChildren().addAll(backButton, headerTitle);
         HBox.setHgrow(headerTitle, Priority.ALWAYS);
@@ -91,14 +94,14 @@ public class SalesTerminal {
         
         // Content area
         HBox contentArea = new HBox(15);
-        contentArea.setStyle("-fx-background-color: #f5f5f5;");
+        contentArea.setStyle("-fx-background-color: " + APP_BG + ";");
         mainContainer.getChildren().add(contentArea);
         VBox.setVgrow(contentArea, Priority.ALWAYS);
         
         // ==================== LEFT SIDE ====================
         VBox leftPanel = new VBox(15);
         leftPanel.setPadding(new Insets(15));
-        leftPanel.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;");
+        leftPanel.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14;");
         leftPanel.setPrefWidth(400);
         
         // Title
@@ -185,7 +188,7 @@ public class SalesTerminal {
         // ==================== RIGHT SIDE ====================
         VBox rightPanel = new VBox(15);
         rightPanel.setPadding(new Insets(15));
-        rightPanel.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5;");
+        rightPanel.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14;");
         rightPanel.setPrefWidth(500);
         
         // Title
