@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Returns {
+    private static final String APP_BG = "#F4F7FB";
+    private static final String PANEL_BG = "#FFFFFF";
+    private static final String PRIMARY_BLUE = "#0056B3";
+    private static final String SOFT_TEXT = "#6B7280";
     
     // Combined return item data structure
     public static class ReturnLineItem {
@@ -86,25 +90,25 @@ public class Returns {
     
     private static Scene createReturnsSceneInternal(Stage stage) {
         VBox root = new VBox(20);
-        root.setPadding(new Insets(20));
-        root.setStyle("-fx-background-color: #eef2f7;");
+        root.setPadding(new Insets(22));
+        root.setStyle("-fx-background-color: " + APP_BG + ";");
         
         // Header with back button
         HBox header = createHeader(stage);
         root.getChildren().add(header);
         
         Label titleLabel = new Label("Sales Returns");
-        titleLabel.setStyle("-fx-font-size: 30; -fx-font-weight: bold; -fx-text-fill: #111827;");
+        titleLabel.setStyle("-fx-font-size: 28; -fx-font-weight: 800; -fx-text-fill: #111827;");
         
         Label subtitleLabel = new Label("Process Sales Return — Non-CRUD Logic Module (UC17)");
-        subtitleLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #475569;");
+        subtitleLabel.setStyle("-fx-font-size: 12; -fx-text-fill: " + SOFT_TEXT + ";");
         
         VBox titleBox = new VBox(4, titleLabel, subtitleLabel);
         root.getChildren().add(titleBox);
         
         // Main content area
         HBox mainContent = new HBox(20);
-        mainContent.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(one-pass-box, rgba(15,23,42,0.08), 14, 0, 0, 4);");
+        mainContent.setStyle("-fx-background-color: " + PANEL_BG + "; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-padding: 18; -fx-effect: dropshadow(three-pass-box, rgba(15,23,42,0.08), 14, 0, 0, 3);");
         
         // Left side: Customer lookup and purchase history
         VBox leftPanel = new VBox(15);
@@ -113,7 +117,7 @@ public class Returns {
         // ==================== CUSTOMER LOOKUP SECTION ====================
         VBox customerLookupBox = new VBox(10);
         customerLookupBox.setPadding(new Insets(14));
-        customerLookupBox.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #93c5fd; -fx-border-radius: 12; -fx-border-width: 1;");
+        customerLookupBox.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 12; -fx-border-color: #DBEAFE; -fx-border-radius: 12; -fx-border-width: 1;");
         
         Label customerLookupLabel = new Label("Scan Receipt or Enter Transaction ID");
         customerLookupLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
@@ -123,11 +127,11 @@ public class Returns {
         
         TextField customerNameField = new TextField();
         customerNameField.setPromptText("Enter customer name or Transaction ID (TS-XXXX-XXX)...");
-        customerNameField.setStyle("-fx-padding: 10; -fx-font-size: 13;");
+        customerNameField.setStyle("-fx-padding: 10; -fx-font-size: 12; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #D1D5DB;");
         customerNameField.setPrefWidth(400);
         
         Button lookupButton = new Button("Fetch Order");
-        lookupButton.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 10 18; -fx-font-size: 13; -fx-font-weight: bold; -fx-background-radius: 8;");
+        lookupButton.setStyle("-fx-background-color: " + PRIMARY_BLUE + "; -fx-text-fill: white; -fx-padding: 10 16; -fx-font-size: 12; -fx-font-weight: 700; -fx-background-radius: 10;");
         
         customerSearchBox.getChildren().addAll(customerNameField, lookupButton);
         customerLookupBox.getChildren().addAll(customerLookupLabel, customerSearchBox);
@@ -135,7 +139,7 @@ public class Returns {
         
         VBox transactionDetailsBox = new VBox(8);
         transactionDetailsBox.setPadding(new Insets(14));
-        transactionDetailsBox.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1; -fx-border-radius: 12; -fx-border-width: 1;");
+        transactionDetailsBox.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-border-width: 1;");
         
         Label transactionDetailsTitle = new Label("Original Transaction");
         transactionDetailsTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #111827;");
@@ -154,7 +158,7 @@ public class Returns {
         
         TableView<CustomerDatabase.Transaction> historyTable = new TableView<>();
         historyTable.setPrefHeight(250);
-        historyTable.setStyle("-fx-font-size: 11;");
+        historyTable.setStyle("-fx-font-size: 11; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5EAF2;");
         
         TableColumn<CustomerDatabase.Transaction, String> dateCol = new TableColumn<>("Date");
         dateCol.setPrefWidth(90);
@@ -198,7 +202,7 @@ public class Returns {
         
         TableView<ReturnLineItem> itemsTable = new TableView<>();
         itemsTable.setPrefHeight(430);
-        itemsTable.setStyle("-fx-font-size: 11;");
+        itemsTable.setStyle("-fx-font-size: 11; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5EAF2;");
         
         ObservableList<ReturnLineItem> itemsList = FXCollections.observableArrayList();
         itemsTable.setItems(itemsList);
@@ -271,10 +275,10 @@ public class Returns {
                     setGraphic(null);
                     setText(null);
                 } else {
-                    Spinner<Integer> spinner = new Spinner<>(0, 999, item != null ? item : 0, 1);
+                    ReturnLineItem lineItem = getTableView().getItems().get(getIndex());
+                    Spinner<Integer> spinner = new Spinner<>(0, lineItem.transaction.quantity, item != null ? item : 0, 1);
                     spinner.setPrefWidth(80);
                     spinner.setEditable(true);
-                    ReturnLineItem lineItem = getTableView().getItems().get(getIndex());
                     spinner.valueProperty().addListener((obs, oldVal, newVal) -> {
                         lineItem.returnData.returnQty.set(newVal);
                     });
@@ -323,7 +327,7 @@ public class Returns {
         VBox rightPanel = new VBox(15);
         rightPanel.setPrefWidth(320);
         rightPanel.setPadding(new Insets(22));
-        rightPanel.setStyle("-fx-background-color: #ffffff; -fx-border-color: #cbd5e1; -fx-border-radius: 14; -fx-border-width: 1; -fx-effect: dropshadow(one-pass-box, rgba(15,23,42,0.08), 16, 0, 0, 6);");
+        rightPanel.setStyle("-fx-background-color: " + PANEL_BG + "; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-border-width: 1; -fx-effect: dropshadow(three-pass-box, rgba(15,23,42,0.08), 14, 0, 0, 3);");
         
         Label refundTitleLabel = new Label("Refund Summary");
         refundTitleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #111827;");
@@ -379,29 +383,25 @@ public class Returns {
             updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel);
         });
         
+        // Reference to currently selected customer from lookup
+        final CustomerDatabase.Customer[] selectedCustomer = new CustomerDatabase.Customer[1];
+        
         // Process button
         Button processButton = new Button("Process Refund");
         processButton.setPrefWidth(Double.MAX_VALUE);
-        processButton.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 14; -fx-font-size: 13; -fx-font-weight: bold; -fx-background-radius: 10;");
+        processButton.setStyle("-fx-background-color: " + PRIMARY_BLUE + "; -fx-text-fill: white; -fx-padding: 12; -fx-font-size: 13; -fx-font-weight: 700; -fx-background-radius: 10;");
         processButton.setOnAction(e -> {
             if (itemsList.isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "No Items", "No items to return.");
                 return;
             }
             
-            // Get selected customer
-            CustomerDatabase.Customer selectedCustomer = null;
-            String searchText = customerNameField.getText().trim();
-            if (!searchText.isEmpty()) {
-                selectedCustomer = CustomerDatabase.getCustomerByName(searchText);
-            }
-            
-            if (selectedCustomer == null) {
+            if (selectedCustomer[0] == null) {
                 showAlert(Alert.AlertType.WARNING, "No Customer Selected", "Please search for a customer first.");
                 return;
             }
             
-            processReturn(itemsTable, selectedCustomer, stage);
+            processReturn(itemsTable, selectedCustomer[0], stage);
             updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel);
         });
         rightPanel.getChildren().add(processButton);
@@ -413,8 +413,6 @@ public class Returns {
         VBox.setVgrow(mainContent, Priority.ALWAYS);
         
         // Lookup button action
-        final CustomerDatabase.Customer[] selectedCustomer = new CustomerDatabase.Customer[1];
-        
         lookupButton.setOnAction(e -> {
             String searchText = customerNameField.getText().trim();
             if (searchText.isEmpty()) {
@@ -471,17 +469,18 @@ public class Returns {
     private static HBox createHeader(Stage stage) {
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
-        header.setStyle("-fx-background: linear-gradient(to right, #667eea, #764ba2); -fx-padding: 15; -fx-border-radius: 5;");
+        header.setPadding(new Insets(12, 16, 12, 16));
+        header.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
         
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
+        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
         });
         
         Label title = new Label("Sales Returns");
-        title.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;");
+        title.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
         
         header.getChildren().addAll(backButton, title);
         HBox.setHgrow(title, Priority.ALWAYS);
