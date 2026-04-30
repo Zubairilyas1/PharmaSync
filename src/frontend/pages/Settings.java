@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Settings {
+    private static final String APP_BG = "#F4F7FB";
+    private static final String PRIMARY_BLUE = "#0056B3";
 
     public static Scene createSettingsScene(Stage stage) {
         return createSettingsSceneInternal(stage);
@@ -20,7 +22,7 @@ public class Settings {
 
     private static Scene createSettingsSceneInternal(Stage stage) {
         VBox mainContainer = new VBox();
-        mainContainer.setStyle("-fx-background-color: #f5f5f5;");
+        mainContainer.setStyle("-fx-background-color: " + APP_BG + ";");
 
         // Header with back button
         HBox header = createHeader(stage);
@@ -32,7 +34,7 @@ public class Settings {
 
         VBox contentArea = new VBox(20);
         contentArea.setPadding(new Insets(20));
-        contentArea.setStyle("-fx-background-color: #f5f5f5;");
+        contentArea.setStyle("-fx-background-color: " + APP_BG + ";");
 
         // System Configuration Section
         VBox systemConfig = createSystemConfigurationSection();
@@ -72,19 +74,20 @@ public class Settings {
     private static HBox createHeader(Stage stage) {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
-        header.setStyle("-fx-background: linear-gradient(to right, #1e3c72, #2a5298); -fx-padding: 12; -fx-border-radius: 5;");
+        header.setPadding(new Insets(12, 16, 12, 16));
+        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
 
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
-        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: rgba(255,255,255,0.25); -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
-        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
+        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
+        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: #DCE9FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
+        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
         });
 
         Label headerTitle = new Label("⚙️ System Settings");
-        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;");
+        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
 
         header.getChildren().addAll(backButton, headerTitle);
         HBox.setHgrow(headerTitle, Priority.ALWAYS);
