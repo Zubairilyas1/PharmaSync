@@ -25,11 +25,11 @@ public class EditMedicinePage {
 
         VBox root = new VBox(15);
         root.setPadding(new Insets(20));
-        root.setStyle("-fx-background-color: #f5f5f5;");
+        root.setStyle("-fx-background-color: #F4F7FB;");
 
         // Title
         Label titleLabel = new Label("Edit Medicine Details");
-        titleLabel.setStyle("-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #333;");
+        titleLabel.setStyle("-fx-font-size: 20; -fx-font-weight: 800; -fx-text-fill: #111827;");
 
         // Medicine Name
         HBox nameBox = new HBox(10);
@@ -86,7 +86,7 @@ public class EditMedicinePage {
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
         Button updateButton = new Button("Update");
-        updateButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-padding: 10; -fx-font-size: 12;");
+        updateButton.setStyle("-fx-background-color: #0056B3; -fx-text-fill: white; -fx-padding: 10 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-background-radius: 10;");
         updateButton.setOnAction(e -> {
             if (nameField.getText().isEmpty() || batchField.getText().isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "Validation Error", "Please fill all required fields!");
@@ -113,7 +113,7 @@ public class EditMedicinePage {
         });
 
         Button cancelButton = new Button("Cancel");
-        cancelButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 10; -fx-font-size: 12;");
+        cancelButton.setStyle("-fx-background-color: #6B7280; -fx-text-fill: white; -fx-padding: 10 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-background-radius: 10;");
         cancelButton.setOnAction(e -> dialogStage.close());
 
         buttonBox.getChildren().addAll(updateButton, cancelButton);
