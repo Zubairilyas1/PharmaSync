@@ -22,6 +22,7 @@ public class ForgotPasswordPage {
         grid.setHgap(10);
         grid.setVgap(15);
         grid.setPadding(new Insets(25, 25, 25, 25));
+        grid.setStyle("-fx-background-color: #F4F7FB;");
 
         // Title
         Text sceneTitle = new Text("PharmaSync - Reset Password");
@@ -38,6 +39,7 @@ public class ForgotPasswordPage {
         // Reset button
         Button btnReset = new Button("Send Reset Link");
         btnReset.setMaxWidth(Double.MAX_VALUE);
+        btnReset.setStyle("-fx-background-color: #0056B3; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 10; -fx-padding: 10 14;");
         grid.add(btnReset, 1, 2);
 
         btnReset.setOnAction(e -> {
@@ -47,6 +49,7 @@ public class ForgotPasswordPage {
 
         // Back to Login Page
         Hyperlink loginLink = new Hyperlink("Back to Login");
+        loginLink.setStyle("-fx-text-fill: #0056B3; -fx-font-weight: 700;");
         loginLink.setOnAction(e -> {
             primaryStage.setScene(LoginPage.getScene(primaryStage));
         });
