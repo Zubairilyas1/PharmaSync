@@ -85,22 +85,26 @@ public class Returns {
     }
     
     private static Scene createReturnsSceneInternal(Stage stage) {
-        VBox root = new VBox(15);
+        VBox root = new VBox(20);
         root.setPadding(new Insets(20));
-        root.setStyle("-fx-background-color: #f5f5f5;");
+        root.setStyle("-fx-background-color: #eef2f7;");
         
         // Header with back button
         HBox header = createHeader(stage);
         root.getChildren().add(header);
         
-        // Title
-        Label titleLabel = new Label("Returns Management");
-        titleLabel.setStyle("-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #333;");
-        root.getChildren().add(titleLabel);
+        Label titleLabel = new Label("Sales Returns");
+        titleLabel.setStyle("-fx-font-size: 30; -fx-font-weight: bold; -fx-text-fill: #111827;");
+        
+        Label subtitleLabel = new Label("Process Sales Return — Non-CRUD Logic Module (UC17)");
+        subtitleLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #475569;");
+        
+        VBox titleBox = new VBox(4, titleLabel, subtitleLabel);
+        root.getChildren().add(titleBox);
         
         // Main content area
-        HBox mainContent = new HBox(15);
-        mainContent.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 15;");
+        HBox mainContent = new HBox(20);
+        mainContent.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 12; -fx-padding: 20; -fx-effect: dropshadow(one-pass-box, rgba(15,23,42,0.08), 14, 0, 0, 4);");
         
         // Left side: Customer lookup and purchase history
         VBox leftPanel = new VBox(15);
@@ -108,30 +112,44 @@ public class Returns {
         
         // ==================== CUSTOMER LOOKUP SECTION ====================
         VBox customerLookupBox = new VBox(10);
-        customerLookupBox.setPadding(new Insets(10));
-        customerLookupBox.setStyle("-fx-background-color: #e3f2fd; -fx-border-color: #2196F3; -fx-border-radius: 5;");
+        customerLookupBox.setPadding(new Insets(14));
+        customerLookupBox.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #93c5fd; -fx-border-radius: 12; -fx-border-width: 1;");
         
-        Label customerLookupLabel = new Label("👤 Find Customer by Name");
-        customerLookupLabel.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #1565c0;");
+        Label customerLookupLabel = new Label("Scan Receipt or Enter Transaction ID");
+        customerLookupLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
         
         HBox customerSearchBox = new HBox(10);
         customerSearchBox.setAlignment(Pos.CENTER_LEFT);
         
         TextField customerNameField = new TextField();
         customerNameField.setPromptText("Enter customer name or Transaction ID (TS-XXXX-XXX)...");
-        customerNameField.setStyle("-fx-padding: 8; -fx-font-size: 12;");
-        customerNameField.setPrefWidth(350);
+        customerNameField.setStyle("-fx-padding: 10; -fx-font-size: 13;");
+        customerNameField.setPrefWidth(400);
         
-        Button lookupButton = new Button("🔍 Lookup");
-        lookupButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 12; -fx-font-weight: bold;");
+        Button lookupButton = new Button("Fetch Order");
+        lookupButton.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 10 18; -fx-font-size: 13; -fx-font-weight: bold; -fx-background-radius: 8;");
         
         customerSearchBox.getChildren().addAll(customerNameField, lookupButton);
         customerLookupBox.getChildren().addAll(customerLookupLabel, customerSearchBox);
         leftPanel.getChildren().add(customerLookupBox);
         
+        VBox transactionDetailsBox = new VBox(8);
+        transactionDetailsBox.setPadding(new Insets(14));
+        transactionDetailsBox.setStyle("-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1; -fx-border-radius: 12; -fx-border-width: 1;");
+        
+        Label transactionDetailsTitle = new Label("Original Transaction");
+        transactionDetailsTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #111827;");
+        
+        Label customerInfoLabel = new Label("No transaction selected.");
+        customerInfoLabel.setWrapText(true);
+        customerInfoLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #475569;");
+        
+        transactionDetailsBox.getChildren().addAll(transactionDetailsTitle, customerInfoLabel);
+        leftPanel.getChildren().add(transactionDetailsBox);
+        
         // Purchase History Table
         Label historyLabel = new Label("📦 Purchase History");
-        historyLabel.setStyle("-fx-font-size: 13; -fx-font-weight: bold;");
+        historyLabel.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #111827;");
         leftPanel.getChildren().add(historyLabel);
         
         TableView<CustomerDatabase.Transaction> historyTable = new TableView<>();
@@ -174,8 +192,8 @@ public class Returns {
         VBox.setVgrow(historyTable, Priority.ALWAYS);
         
         // ==================== ITEMS TABLE FOR RETURN ====================
-        Label returnItemsLabel = new Label("📋 Select Items to Return");
-        returnItemsLabel.setStyle("-fx-font-size: 13; -fx-font-weight: bold;");
+        Label returnItemsLabel = new Label("Select Items for Return");
+        returnItemsLabel.setStyle("-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #111827;");
         leftPanel.getChildren().add(returnItemsLabel);
         
         TableView<ReturnLineItem> itemsTable = new TableView<>();
@@ -293,16 +311,16 @@ public class Returns {
         
         // Right side: Refund Summary
         VBox rightPanel = new VBox(15);
-        rightPanel.setPrefWidth(280);
-        rightPanel.setPadding(new Insets(15));
-        rightPanel.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #e0e0e0; -fx-border-radius: 5; -fx-border-width: 1;");
+        rightPanel.setPrefWidth(320);
+        rightPanel.setPadding(new Insets(22));
+        rightPanel.setStyle("-fx-background-color: #ffffff; -fx-border-color: #cbd5e1; -fx-border-radius: 14; -fx-border-width: 1; -fx-effect: dropshadow(one-pass-box, rgba(15,23,42,0.08), 16, 0, 0, 6);");
         
-        Label refundTitleLabel = new Label("💰 Refund Summary");
-        refundTitleLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #333;");
+        Label refundTitleLabel = new Label("Refund Summary");
+        refundTitleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #111827;");
         rightPanel.getChildren().add(refundTitleLabel);
         
         Label customerInfoLabel = new Label("");
-        customerInfoLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #666;");
+        customerInfoLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #475569;");
         customerInfoLabel.setWrapText(true);
         rightPanel.getChildren().add(customerInfoLabel);
         
@@ -310,11 +328,11 @@ public class Returns {
         rightPanel.getChildren().add(sep1);
         
         // Refund details
-        Label subtotalLabel = new Label("Subtotal: Rs. 0.00");
-        subtotalLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #666;");
+        Label subtotalLabel = new Label("Refund Subtotal: Rs. 0.00");
+        subtotalLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #334155;");
         
-        Label itemCountLabel = new Label("Items: 0");
-        itemCountLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #666;");
+        Label itemCountLabel = new Label("Selected Return Qty: 0");
+        itemCountLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #334155;");
         
         rightPanel.getChildren().addAll(subtotalLabel, itemCountLabel);
         
