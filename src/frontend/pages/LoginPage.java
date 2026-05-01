@@ -13,8 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -24,17 +22,18 @@ import backend.services.AuthenticationService;
 import backend.exceptions.AuthenticationException;
 import java.sql.Connection;
 import frontend.pages.Dashboard;
+import frontend.ui.UiTheme;
 
 public class LoginPage {
 
     public static Scene getScene(Stage primaryStage) {
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #F4F7FB;");
+        root.setStyle(UiTheme.appBackground());
 
         Label phaseBadge = new Label("●  Phase 1.0: Authentication & Dashboard Prototype");
         phaseBadge.setStyle(
-                "-fx-background-color: #d9f7e4;" +
-                "-fx-text-fill: #177245;" +
+                "-fx-background-color: #DCFCE7;" +
+                "-fx-text-fill: #166534;" +
                 "-fx-padding: 8 16;" +
                 "-fx-background-radius: 999;" +
                 "-fx-font-weight: 600;" +
@@ -48,30 +47,23 @@ public class LoginPage {
         HBox card = new HBox();
         card.setMaxWidth(980);
         card.setPrefHeight(520);
-        card.setStyle(
-                "-fx-background-color: white;" +
-                "-fx-background-radius: 18;" +
-                "-fx-border-color: #E5EAF2;" +
-                "-fx-border-width: 1;" +
-                "-fx-border-radius: 18;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.10), 16, 0, 0, 4);"
-        );
+        card.setStyle(UiTheme.card());
 
         VBox leftPanel = new VBox(14);
         leftPanel.setPadding(new Insets(28));
         leftPanel.setAlignment(Pos.CENTER_LEFT);
         leftPanel.setPrefWidth(520);
-        leftPanel.setStyle("-fx-background-color: linear-gradient(to bottom right, #e7f6ff, #cfefff); -fx-background-radius: 16 0 0 16;");
+        leftPanel.setStyle("-fx-background-color: linear-gradient(to bottom right, #E7F2FF, #D9E9FF); -fx-background-radius: 16 0 0 16;");
 
         Label brandTitle = new Label("PharmaSync");
-        brandTitle.setFont(Font.font("Arial", FontWeight.BOLD, 62));
+        brandTitle.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 54; -fx-font-weight: 800;");
         brandTitle.setTextFill(Color.web("#094c98"));
 
         Label brandSub = new Label("Intelligence in every dose.");
-        brandSub.setFont(Font.font("Arial", 36));
+        brandSub.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 28; -fx-font-weight: 500;");
         brandSub.setTextFill(Color.web("#2f4155"));
 
-        Label imageHint = new Label("Dummy image area\nReplace with your custom image");
+        Label imageHint = new Label("Brand visual placeholder\nReplace with approved product illustration");
         imageHint.setStyle(
                 "-fx-background-color: rgba(255, 255, 255, 0.68);" +
                 "-fx-border-color: rgba(9, 76, 152, 0.35);" +
@@ -91,22 +83,19 @@ public class LoginPage {
         rightPanel.setPrefWidth(460);
 
         Label loginTitle = new Label("Pharmacist Sign In");
-        loginTitle.setFont(Font.font("Arial", FontWeight.BOLD, 40));
-        loginTitle.setTextFill(Color.web("#0f3159"));
+        loginTitle.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 34; -fx-font-weight: 800; -fx-text-fill: #0F3159;");
 
         Label userName = new Label("Employee ID (e.g. BRA_24-XXXX)");
-        userName.setTextFill(Color.web("#4e6177"));
+        userName.setStyle(UiTheme.bodyText());
         TextField userTextField = new TextField();
         userTextField.setPromptText("BRA_24-3100");
-        userTextField.setPrefHeight(44);
-        userTextField.setStyle("-fx-font-size: 14; -fx-background-radius: 8; -fx-border-radius: 8;");
+        UiTheme.styleFormInput(userTextField);
 
         Label pw = new Label("Password (Masked)");
-        pw.setTextFill(Color.web("#4e6177"));
+        pw.setStyle(UiTheme.bodyText());
         PasswordField pwBox = new PasswordField();
         pwBox.setPromptText("[********]");
-        pwBox.setPrefHeight(44);
-        pwBox.setStyle("-fx-font-size: 14; -fx-background-radius: 8; -fx-border-radius: 8;");
+        UiTheme.styleFormInput(pwBox);
 
         Label messageLabel = new Label();
         messageLabel.setWrapText(true);
@@ -118,13 +107,8 @@ public class LoginPage {
         Button btnLogin = new Button("Sign In");
         btnLogin.setMaxWidth(Double.MAX_VALUE);
         btnLogin.setPrefHeight(46);
-        btnLogin.setStyle(
-                "-fx-background-color: #0b63c7;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 15;" +
-                "-fx-font-weight: 700;" +
-                "-fx-background-radius: 8;"
-        );
+        btnLogin.setStyle(UiTheme.primaryButton());
+        UiTheme.installPrimaryHover(btnLogin);
         
         btnLogin.setOnAction(e -> {
             String identifier = userTextField.getText();
@@ -137,47 +121,24 @@ public class LoginPage {
                 
                 authService.login(identifier, password);
                 
-                messageLabel.setTextFill(Color.web("#166534"));
-                messageLabel.setStyle(
-                        "-fx-background-color: #dcfce7;" +
-                        "-fx-border-color: #86efac;" +
-                        "-fx-border-radius: 8;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-padding: 10 12;" +
-                        "-fx-font-weight: 600;"
-                );
+                messageLabel.setTextFill(Color.web(UiTheme.COLOR_SUCCESS_TEXT));
+                messageLabel.setStyle(UiTheme.successMessage());
                 messageLabel.setText("Login Successful!");
                 messageLabel.setVisible(true);
                 
-                System.out.println("Login Successful for user: " + identifier);
                 // Transition to the main application dashboard
                 primaryStage.setScene(Dashboard.createDashboardScene(primaryStage));
                 
             } catch (AuthenticationException authException) {
-                messageLabel.setTextFill(Color.web("#991b1b"));
-                messageLabel.setStyle(
-                        "-fx-background-color: #fee2e2;" +
-                        "-fx-border-color: #fca5a5;" +
-                        "-fx-border-radius: 8;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-padding: 10 12;" +
-                        "-fx-font-weight: 600;"
-                );
+                messageLabel.setTextFill(Color.web(UiTheme.COLOR_DANGER_TEXT));
+                messageLabel.setStyle(UiTheme.errorMessage());
                 messageLabel.setText(authException.getMessage());
                 messageLabel.setVisible(true);
             } catch (Exception ex) {
-                messageLabel.setTextFill(Color.web("#991b1b"));
-                messageLabel.setStyle(
-                        "-fx-background-color: #fee2e2;" +
-                        "-fx-border-color: #fca5a5;" +
-                        "-fx-border-radius: 8;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-padding: 10 12;" +
-                        "-fx-font-weight: 600;"
-                );
+                messageLabel.setTextFill(Color.web(UiTheme.COLOR_DANGER_TEXT));
+                messageLabel.setStyle(UiTheme.errorMessage());
                 messageLabel.setText("Database Connection Error.");
                 messageLabel.setVisible(true);
-                ex.printStackTrace();
             }
         });
 
@@ -186,13 +147,13 @@ public class LoginPage {
         forgotPwLink.setOnAction(e -> {
             primaryStage.setScene(ForgotPasswordPage.getScene(primaryStage));
         });
-        forgotPwLink.setStyle("-fx-text-fill: #0a5eb7; -fx-font-weight: 600;");
+        forgotPwLink.setStyle("-fx-text-fill: " + UiTheme.COLOR_PRIMARY + "; -fx-font-weight: 600;");
 
         Hyperlink signUpLink = new Hyperlink("Create Account");
         signUpLink.setOnAction(e -> {
             primaryStage.setScene(SignUpPage.getScene(primaryStage));
         });
-        signUpLink.setStyle("-fx-text-fill: #0a5eb7; -fx-font-weight: 600;");
+        signUpLink.setStyle("-fx-text-fill: " + UiTheme.COLOR_PRIMARY + "; -fx-font-weight: 600;");
 
         HBox linkBox = new HBox(10);
         linkBox.setAlignment(Pos.CENTER_RIGHT);
