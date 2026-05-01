@@ -14,12 +14,13 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import frontend.ui.UiTheme;
+import frontend.ui.Animations;
 
 public class Dashboard {
 
     public static Scene createDashboardScene(Stage stage) {
         BorderPane mainLayout = new BorderPane();
-        mainLayout.setStyle(UiTheme.appBackground());
+        mainLayout.getStyleClass().add("app-background");
 
         VBox shell = new VBox(16);
         shell.setPadding(new Insets(22));
@@ -37,9 +38,14 @@ public class Dashboard {
         mainLayout.setCenter(scrollPane);
 
         Scene scene = new Scene(mainLayout, 1200, 800);
+        UiTheme.applyStyleSheet(scene);
+
         stage.setResizable(true);
         stage.setMinWidth(1000);
         stage.setMinHeight(700);
+
+        // Apply page transition
+        Animations.applyPageTransition(mainLayout);
 
         return scene;
     }
@@ -48,23 +54,24 @@ public class Dashboard {
         HBox header = new HBox(12);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(12, 18, 12, 18));
-        header.setStyle(UiTheme.topBar());
+        header.getStyleClass().add("top-bar");
 
         VBox titleWrap = new VBox(2);
         Label title = new Label("PharmaSync");
-        title.setStyle("-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #111827;");
+        title.getStyleClass().add("heading-l");
         Label subtitle = new Label("PharmaSync Executive Dashboard");
-        subtitle.setStyle(UiTheme.bodyText());
+        subtitle.getStyleClass().add("body-text");
         titleWrap.getChildren().addAll(title, subtitle);
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         Label welcome = new Label("Welcome back, Admin");
-        welcome.setStyle("-fx-font-size: 12; -fx-text-fill: #475467;");
+        welcome.getStyleClass().add("body-text");
 
         Button profileButton = new Button("Admin");
-        profileButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 7 14;");
+        profileButton.getStyleClass().addAll("button-base", "secondary-button");
+        Animations.bindPulseOnClick(profileButton);
 
         header.getChildren().addAll(titleWrap, spacer, welcome, profileButton);
         return header;
@@ -81,12 +88,12 @@ public class Dashboard {
         VBox side = new VBox(10);
         side.setPrefWidth(250);
         side.setPadding(new Insets(18));
-        side.setStyle("-fx-background-color: " + UiTheme.COLOR_PRIMARY + "; -fx-background-radius: 16;");
+        side.getStyleClass().add("sidebar");
 
         Label brand = new Label("PharmaSync");
         brand.setStyle("-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: 800;");
         Label moduleLabel = new Label("All Branch Modules");
-        moduleLabel.setStyle("-fx-text-fill: #C7DBFF; -fx-font-size: 11;");
+        moduleLabel.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 11;");
 
         side.getChildren().addAll(brand, moduleLabel, createSideSpacer(14));
         side.getChildren().addAll(
@@ -109,9 +116,9 @@ public class Dashboard {
 
         VBox hero = createPanel(16);
         Label heroTitle = new Label("PharmaSync: Executive Overview");
-        heroTitle.setStyle("-fx-font-size: 26; -fx-font-weight: 800; -fx-text-fill: #0F172A;");
+        heroTitle.getStyleClass().add("heading-l");
         Label heroSub = new Label("Unified Branch Dashboard");
-        heroSub.setStyle("-fx-font-size: 14; -fx-text-fill: #667085;");
+        heroSub.getStyleClass().add("body-text");
         hero.getChildren().addAll(heroTitle, heroSub);
 
         GridPane statsGrid = new GridPane();
@@ -119,9 +126,9 @@ public class Dashboard {
         statsGrid.setVgap(14);
         statsGrid.add(createMetricCard("Sales Performance Today", "$14,250.00", "Top Medicine: Panadol 500mg", UiTheme.COLOR_PRIMARY), 0, 0);
         statsGrid.add(createAlertCard(stage), 1, 0);
-        statsGrid.add(createMetricCard("Procurement & Vendor Health", "92%", "Supplier API Health", "#0B8A86"), 0, 1);
+        statsGrid.add(createMetricCard("Procurement & Vendor Health", "92%", "Supplier API Health", "#0D9488"), 0, 1);
         statsGrid.add(createMetricCard("Pending Validations", "7", "Prescriptions: 5 | Returns: 2", UiTheme.COLOR_PRIMARY), 1, 1);
-        statsGrid.add(createMetricCard("Security Audit Trail", "24h", "Critical security events", "#1D4ED8"), 0, 2);
+        statsGrid.add(createMetricCard("Security Audit Trail", "24h", "Critical security events", "#4F46E5"), 0, 2);
         statsGrid.add(createActionCard(stage), 1, 2);
 
         main.getChildren().addAll(hero, statsGrid);
@@ -134,13 +141,13 @@ public class Dashboard {
         card.setMinHeight(140);
 
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #111827;");
+        titleLabel.getStyleClass().add("heading-m");
 
         Label valueLabel = new Label(value);
         valueLabel.setStyle("-fx-font-size: 38; -fx-font-weight: 800; -fx-text-fill: " + accentColor + ";");
 
         Label sub = new Label(subtitle);
-        sub.setStyle(UiTheme.bodyText());
+        sub.getStyleClass().add("body-text");
 
         card.getChildren().addAll(titleLabel, valueLabel, sub);
         return card;
@@ -152,17 +159,16 @@ public class Dashboard {
         card.setMinHeight(140);
 
         Label title = new Label("Inventory at Risk (FEFO/Quarantine)");
-        title.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #111827;");
+        title.getStyleClass().add("heading-m");
 
         Label alertStrip = new Label("Red-Alert: 12 Items");
-        alertStrip.setStyle("-fx-font-size: 13; -fx-font-weight: 700; -fx-text-fill: #1F2937; "
-                + "-fx-background-color: " + UiTheme.COLOR_WARNING_BG + "; -fx-background-radius: 8; -fx-padding: 7 10;");
+        alertStrip.getStyleClass().add("alert-strip");
 
         Label detail = new Label("Warfarin 5mg (Quarantine)   •   Aspirin 81mg (Near-Expiry)");
         detail.setWrapText(true);
-        detail.setStyle(UiTheme.bodyText());
+        detail.getStyleClass().add("body-text");
 
-        Button cta = createCtaButton("View Inventory", UiTheme.COLOR_PRIMARY, () ->
+        Button cta = createCtaButton("View Inventory", () ->
             stage.setScene(InventoryList.createInventoryListScene(stage))
         );
         card.getChildren().addAll(title, alertStrip, detail, cta);
@@ -175,7 +181,7 @@ public class Dashboard {
         card.setMinHeight(140);
 
         Label title = new Label("Quick Actions");
-        title.setStyle("-fx-font-size: 15; -fx-font-weight: 700; -fx-text-fill: #111827;");
+        title.getStyleClass().add("heading-m");
 
         HBox row1 = new HBox(8,
             createActionButton("Dispense Sales", () -> stage.setScene(SalesTerminal.createSalesTerminalScene(stage))),
@@ -192,8 +198,7 @@ public class Dashboard {
 
     private static VBox createPanel(double spacing) {
         VBox panel = new VBox(spacing);
-        panel.setPadding(new Insets(14));
-        panel.setStyle(UiTheme.card());
+        panel.getStyleClass().add("card");
         return panel;
     }
 
@@ -206,27 +211,29 @@ public class Dashboard {
     private static Button createNavButton(String title, boolean active, Runnable action) {
         Button button = new Button(title);
         button.setPrefWidth(210);
-        button.setAlignment(Pos.CENTER_LEFT);
-        String activeStyle = "-fx-background-color: white; -fx-text-fill: " + UiTheme.COLOR_PRIMARY + "; -fx-font-weight: 700;";
-        String idleStyle = "-fx-background-color: rgba(255,255,255,0.08); -fx-text-fill: #E6EEFF; -fx-font-weight: 600;";
-        button.setStyle((active ? activeStyle : idleStyle) + " -fx-background-radius: 10; -fx-padding: 10 14;");
+        button.getStyleClass().add("nav-button");
+        if (active) {
+            button.getStyleClass().add("nav-button-active");
+        }
         button.setOnAction(e -> action.run());
+        Animations.bindPulseOnClick(button);
         return button;
     }
 
-    private static Button createCtaButton(String text, String color, Runnable action) {
+    private static Button createCtaButton(String text, Runnable action) {
         Button button = new Button(text);
-        button.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white; -fx-font-weight: 700; "
-                + "-fx-background-radius: 9; -fx-padding: 8 12;");
+        button.getStyleClass().addAll("button-base", "primary-button");
         button.setOnAction(e -> action.run());
+        Animations.bindPulseOnClick(button);
         return button;
     }
 
     private static Button createActionButton(String text, Runnable action) {
         Button button = new Button(text);
-        button.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 10;");
+        button.getStyleClass().addAll("button-base", "secondary-button");
         button.setOnAction(e -> action.run());
         button.setPrefWidth(190);
+        Animations.bindPulseOnClick(button);
         return button;
     }
 }
