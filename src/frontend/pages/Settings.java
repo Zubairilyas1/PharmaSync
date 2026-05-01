@@ -8,21 +8,19 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import frontend.ui.UiTheme;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Settings {
-    private static final String APP_BG = "#F4F7FB";
-    private static final String PRIMARY_BLUE = "#0056B3";
-
     public static Scene createSettingsScene(Stage stage) {
         return createSettingsSceneInternal(stage);
     }
 
     private static Scene createSettingsSceneInternal(Stage stage) {
         VBox mainContainer = new VBox();
-        mainContainer.setStyle("-fx-background-color: " + APP_BG + ";");
+        mainContainer.setStyle(UiTheme.appBackground());
 
         // Header with back button
         HBox header = createHeader(stage);
@@ -33,8 +31,8 @@ public class Settings {
         scrollPane.setFitToWidth(true);
 
         VBox contentArea = new VBox(20);
-        contentArea.setPadding(new Insets(20));
-        contentArea.setStyle("-fx-background-color: " + APP_BG + ";");
+        contentArea.setPadding(UiTheme.pagePadding());
+        contentArea.setStyle(UiTheme.appBackground());
 
         // System Configuration Section
         VBox systemConfig = createSystemConfigurationSection();
@@ -75,19 +73,17 @@ public class Settings {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
+        header.setStyle(UiTheme.topBar());
 
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
-        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: #DCE9FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
-        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
+        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
         });
 
-        Label headerTitle = new Label("⚙️ System Settings");
-        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
+        Label headerTitle = new Label("System Settings");
+        headerTitle.setStyle(UiTheme.headingM());
 
         header.getChildren().addAll(backButton, headerTitle);
         HBox.setHgrow(headerTitle, Priority.ALWAYS);
@@ -97,10 +93,10 @@ public class Settings {
 
     private static VBox createSystemConfigurationSection() {
         VBox section = new VBox(12);
-        section.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        section.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
-        Label sectionTitle = new Label("🖥️ System Configuration");
-        sectionTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        Label sectionTitle = new Label("System Configuration");
+        sectionTitle.setStyle(UiTheme.headingM());
 
         // Database Connection
         HBox dbBox = new HBox(15);
@@ -110,7 +106,7 @@ public class Settings {
         TextField dbField = new TextField("localhost:3306");
         dbField.setPrefWidth(300);
         Button dbTestButton = new Button("Test Connection");
-        dbTestButton.setStyle("-fx-padding: 6 12; -fx-font-size: 10;");
+        dbTestButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 6 12; -fx-font-size: 10;");
         dbTestButton.setOnAction(e -> showAlert("Database", "✓ Connection successful!\nDatabase: PharmaSync (MySQL)\nStatus: Active"));
         dbBox.getChildren().addAll(dbLabel, dbField, dbTestButton);
 
@@ -122,7 +118,7 @@ public class Settings {
         TextField backupField = new TextField("C:\\PharmaSync\\backups");
         backupField.setPrefWidth(300);
         Button browseButton = new Button("Browse...");
-        browseButton.setStyle("-fx-padding: 6 12; -fx-font-size: 10;");
+        browseButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 6 12; -fx-font-size: 10;");
         browseButton.setOnAction(e -> showAlert("Backup", "Select backup directory (feature not fully implemented)"));
         backupBox.getChildren().addAll(backupLabel, backupField, browseButton);
 
@@ -146,7 +142,7 @@ public class Settings {
         autoBackupCombo.setValue("Daily");
         autoBackupCombo.setPrefWidth(150);
         Label autoBackupNote = new Label("(Time: 02:00 AM)");
-        autoBackupNote.setStyle("-fx-text-fill: #999; -fx-font-size: 10;");
+        autoBackupNote.setStyle(UiTheme.bodyText() + " -fx-font-size: 10;");
         autoBackupBox.getChildren().addAll(autoBackupLabel, autoBackupCombo, autoBackupNote);
 
         section.getChildren().addAll(sectionTitle, new Separator(), dbBox, backupBox, apiBox, autoBackupBox);
@@ -156,10 +152,10 @@ public class Settings {
 
     private static VBox createUserPreferencesSection() {
         VBox section = new VBox(12);
-        section.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        section.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
-        Label sectionTitle = new Label("👤 User Preferences");
-        sectionTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        Label sectionTitle = new Label("User Preferences");
+        sectionTitle.setStyle(UiTheme.headingM());
 
         // Theme Selection
         HBox themeBox = new HBox(15);
@@ -191,7 +187,7 @@ public class Settings {
         Spinner<Integer> timeoutSpinner = new Spinner<>(5, 120, 30);
         timeoutSpinner.setPrefWidth(150);
         Label timeoutNote = new Label("(Auto-logout after inactivity)");
-        timeoutNote.setStyle("-fx-text-fill: #999; -fx-font-size: 10;");
+        timeoutNote.setStyle(UiTheme.bodyText() + " -fx-font-size: 10;");
         timeoutBox.getChildren().addAll(timeoutLabel, timeoutSpinner, timeoutNote);
 
         // Date Format
@@ -212,10 +208,10 @@ public class Settings {
 
     private static VBox createAccountManagementSection() {
         VBox section = new VBox(12);
-        section.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        section.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
-        Label sectionTitle = new Label("🔐 Account Management");
-        sectionTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        Label sectionTitle = new Label("Account Management");
+        sectionTitle.setStyle(UiTheme.headingM());
 
         // Current User
         HBox userBox = new HBox(15);
@@ -231,8 +227,8 @@ public class Settings {
         pwdBox.setAlignment(Pos.CENTER_LEFT);
         Label pwdLabel = new Label("Change Password:");
         pwdLabel.setPrefWidth(150);
-        Button pwdButton = new Button("🔑 Change Password");
-        pwdButton.setStyle("-fx-padding: 6 12; -fx-font-size: 10;");
+        Button pwdButton = new Button("Change Password");
+        pwdButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 6 12; -fx-font-size: 10;");
         pwdButton.setOnAction(e -> showPasswordChangeDialog());
         pwdBox.getChildren().addAll(pwdLabel, pwdButton);
 
@@ -241,8 +237,8 @@ public class Settings {
         pinBox.setAlignment(Pos.CENTER_LEFT);
         Label pinLabel = new Label("Security PIN:");
         pinLabel.setPrefWidth(150);
-        Button pinButton = new Button("🔐 Reset PIN");
-        pinButton.setStyle("-fx-padding: 6 12; -fx-font-size: 10;");
+        Button pinButton = new Button("Reset PIN");
+        pinButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 6 12; -fx-font-size: 10;");
         pinButton.setOnAction(e -> showAlert("Security PIN", "PIN reset code: 123456\nSend via email: admin@pharmasync.com"));
         pinBox.getChildren().addAll(pinLabel, pinButton);
 
@@ -254,7 +250,7 @@ public class Settings {
         CheckBox twoFACheck = new CheckBox("Enabled");
         twoFACheck.setSelected(true);
         Label twoFANote = new Label("(Status: Active)");
-        twoFANote.setStyle("-fx-text-fill: #4caf50; -fx-font-size: 10;");
+        twoFANote.setStyle("-fx-text-fill: " + UiTheme.COLOR_SUCCESS_TEXT + "; -fx-font-size: 10;");
         twoFABox.getChildren().addAll(twoFALabel, twoFACheck, twoFANote);
 
         section.getChildren().addAll(sectionTitle, new Separator(), userBox, pwdBox, pinBox, twoFABox);
@@ -264,10 +260,10 @@ public class Settings {
 
     private static VBox createNotificationSettingsSection() {
         VBox section = new VBox(12);
-        section.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        section.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
-        Label sectionTitle = new Label("🔔 Notification Settings");
-        sectionTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        Label sectionTitle = new Label("Notification Settings");
+        sectionTitle.setStyle(UiTheme.headingM());
 
         // Alert Preferences
         HBox alertBox = new HBox(15);
@@ -277,7 +273,7 @@ public class Settings {
         CheckBox alertCheck = new CheckBox("Enabled");
         alertCheck.setSelected(true);
         Label alertNote = new Label("(When stock < minimum threshold)");
-        alertNote.setStyle("-fx-text-fill: #999; -fx-font-size: 10;");
+        alertNote.setStyle(UiTheme.bodyText() + " -fx-font-size: 10;");
         alertBox.getChildren().addAll(alertLabel, alertCheck, alertNote);
 
         // Email Notifications
@@ -288,7 +284,7 @@ public class Settings {
         CheckBox emailCheck = new CheckBox("Enabled");
         emailCheck.setSelected(true);
         Label emailValue = new Label("admin@pharmasync.com");
-        emailValue.setStyle("-fx-text-fill: #666; -fx-font-size: 10;");
+        emailValue.setStyle(UiTheme.bodyText() + " -fx-font-size: 10;");
         emailBox.getChildren().addAll(emailLabel, emailCheck, emailValue);
 
         // Expiry Warnings
@@ -299,7 +295,7 @@ public class Settings {
         Spinner<Integer> expirySpinner = new Spinner<>(1, 90, 30);
         expirySpinner.setPrefWidth(100);
         Label expiryNote = new Label("(Notify when medicine expires in X days)");
-        expiryNote.setStyle("-fx-text-fill: #999; -fx-font-size: 10;");
+        expiryNote.setStyle(UiTheme.bodyText() + " -fx-font-size: 10;");
         expiryBox.getChildren().addAll(expiryLabel, expirySpinner, expiryNote);
 
         // Failed Login Alerts
@@ -310,7 +306,7 @@ public class Settings {
         CheckBox loginCheck = new CheckBox("Enabled");
         loginCheck.setSelected(true);
         Label loginNote = new Label("(Alert on suspicious login attempts)");
-        loginNote.setStyle("-fx-text-fill: #999; -fx-font-size: 10;");
+        loginNote.setStyle(UiTheme.bodyText() + " -fx-font-size: 10;");
         loginBox.getChildren().addAll(loginLabel, loginCheck, loginNote);
 
         section.getChildren().addAll(sectionTitle, new Separator(), alertBox, emailBox, expiryBox, loginBox);
@@ -320,10 +316,10 @@ public class Settings {
 
     private static VBox createAuditSettingsSection() {
         VBox section = new VBox(12);
-        section.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        section.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
-        Label sectionTitle = new Label("📊 Audit Settings");
-        sectionTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        Label sectionTitle = new Label("Audit Settings");
+        sectionTitle.setStyle(UiTheme.headingM());
 
         // Log Retention
         HBox logRetentionBox = new HBox(15);
@@ -341,8 +337,8 @@ public class Settings {
         exportBox.setAlignment(Pos.CENTER_LEFT);
         Label exportLabel = new Label("Export Audit Logs:");
         exportLabel.setPrefWidth(150);
-        Button exportButton = new Button("📥 Export to CSV");
-        exportButton.setStyle("-fx-padding: 6 12; -fx-font-size: 10;");
+        Button exportButton = new Button("Export to CSV");
+        exportButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 6 12; -fx-font-size: 10;");
         exportButton.setOnAction(e -> showAlert("Export", "Audit logs exported successfully!\nFile: audit_logs_2026-04-29.csv"));
         exportBox.getChildren().addAll(exportLabel, exportButton);
 
@@ -354,7 +350,7 @@ public class Settings {
         CheckBox detailedCheck = new CheckBox("Enabled");
         detailedCheck.setSelected(false);
         Label detailedNote = new Label("(Logs all user actions, may impact performance)");
-        detailedNote.setStyle("-fx-text-fill: #999; -fx-font-size: 10;");
+        detailedNote.setStyle(UiTheme.bodyText() + " -fx-font-size: 10;");
         detailedBox.getChildren().addAll(detailedLabel, detailedCheck, detailedNote);
 
         // Current Logs Size
@@ -365,7 +361,7 @@ public class Settings {
         Label sizeValue = new Label("245 MB");
         sizeValue.setStyle("-fx-font-weight: bold;");
         Button clearButton = new Button("Clear Logs");
-        clearButton.setStyle("-fx-padding: 6 12; -fx-font-size: 10;");
+        clearButton.setStyle(UiTheme.dangerButton() + " -fx-padding: 6 12; -fx-font-size: 10;");
         clearButton.setOnAction(e -> showAlert("Clear Logs", "Are you sure? This action cannot be undone."));
         sizeBox.getChildren().addAll(sizeLabel, sizeValue, clearButton);
 
@@ -376,10 +372,10 @@ public class Settings {
 
     private static VBox createAboutSection() {
         VBox section = new VBox(12);
-        section.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        section.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
-        Label sectionTitle = new Label("ℹ️ About PharmaSync");
-        sectionTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        Label sectionTitle = new Label("About PharmaSync");
+        sectionTitle.setStyle(UiTheme.headingM());
 
         // Application Name and Version
         HBox appBox = new HBox(15);
@@ -435,7 +431,7 @@ public class Settings {
         Label creditsLabel = new Label("Credits:");
         creditsLabel.setPrefWidth(150);
         Button creditsButton = new Button("View Credits");
-        creditsButton.setStyle("-fx-padding: 6 12; -fx-font-size: 10;");
+        creditsButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 6 12; -fx-font-size: 10;");
         creditsButton.setOnAction(e -> showAlert("Credits", "PharmaSync Development Team\n\nLead Developer: Alex Chen\nUI/UX Designer: Sarah Johnson\nDatabase Admin: Mike Rodriguez\nQA Manager: Emma Davis\n\nThank you for using PharmaSync!"));
         creditsBox.getChildren().addAll(creditsLabel, creditsButton);
 
@@ -449,22 +445,17 @@ public class Settings {
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         buttonBox.setPadding(new Insets(20, 0, 0, 0));
 
-        Button saveButton = new Button("💾 Save Settings");
-        saveButton.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
-        saveButton.setOnMouseEntered(e -> saveButton.setStyle("-fx-background-color: #45a049; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
-        saveButton.setOnMouseExited(e -> saveButton.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
+        Button saveButton = new Button("Save Settings");
+        saveButton.setStyle(UiTheme.primaryButton() + " -fx-padding: 10 20;");
+        UiTheme.installPrimaryHover(saveButton);
         saveButton.setOnAction(e -> showAlert("Settings Saved", "All settings have been saved successfully!\nChanges will take effect on next restart."));
 
-        Button resetButton = new Button("⟲ Reset to Defaults");
-        resetButton.setStyle("-fx-background-color: #2196f3; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
-        resetButton.setOnMouseEntered(e -> resetButton.setStyle("-fx-background-color: #1976d2; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
-        resetButton.setOnMouseExited(e -> resetButton.setStyle("-fx-background-color: #2196f3; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
+        Button resetButton = new Button("Reset to Defaults");
+        resetButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 10 20;");
         resetButton.setOnAction(e -> showAlert("Reset Settings", "Settings have been reset to factory defaults."));
 
-        Button closeButton = new Button("✕ Close");
-        closeButton.setStyle("-fx-background-color: #757575; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
-        closeButton.setOnMouseEntered(e -> closeButton.setStyle("-fx-background-color: #616161; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
-        closeButton.setOnMouseExited(e -> closeButton.setStyle("-fx-background-color: #757575; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
+        Button closeButton = new Button("Close");
+        closeButton.setStyle(UiTheme.dangerButton() + " -fx-padding: 10 20;");
         closeButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
