@@ -8,22 +8,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import frontend.ui.UiTheme;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class AuditLogs {
-    private static final String APP_BG = "#F4F7FB";
-    private static final String PRIMARY_BLUE = "#0056B3";
-
     public static Scene createAuditLogsScene(Stage stage) {
         return createAuditLogsSceneInternal(stage);
     }
 
     private static Scene createAuditLogsSceneInternal(Stage stage) {
         VBox mainContainer = new VBox();
-        mainContainer.setStyle("-fx-background-color: " + APP_BG + ";");
+        mainContainer.setStyle(UiTheme.appBackground());
 
         // Header with back button
         HBox header = createHeader(stage);
@@ -31,7 +29,7 @@ public class AuditLogs {
 
         // Main content area with side panel
         HBox contentArea = new HBox();
-        contentArea.setStyle("-fx-background-color: " + APP_BG + ";");
+        contentArea.setStyle(UiTheme.appBackground());
 
         // Left side - Audit logs
         VBox leftPanel = createAuditPanel();
@@ -52,19 +50,17 @@ public class AuditLogs {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
+        header.setStyle(UiTheme.topBar());
 
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
-        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: #DCE9FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
-        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
+        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
         });
 
-        Label headerTitle = new Label("🔐 Audit Logs & Security");
-        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
+        Label headerTitle = new Label("Audit Logs and Security");
+        headerTitle.setStyle(UiTheme.headingM());
 
         header.getChildren().addAll(backButton, headerTitle);
         HBox.setHgrow(headerTitle, Priority.ALWAYS);
@@ -75,7 +71,7 @@ public class AuditLogs {
     private static VBox createAuditPanel() {
         VBox auditPanel = new VBox(15);
         auditPanel.setPadding(new Insets(15));
-        auditPanel.setStyle("-fx-background-color: " + APP_BG + ";");
+        auditPanel.setStyle(UiTheme.appBackground());
 
         // Search and Filter Section
         HBox searchFilterBox = createSearchFilterBox();
@@ -92,39 +88,36 @@ public class AuditLogs {
     private static HBox createSearchFilterBox() {
         HBox searchBox = new HBox(12);
         searchBox.setPadding(new Insets(12));
-        searchBox.setStyle("-fx-background-color: #1a2332; -fx-border-color: #ff6b6b; -fx-border-width: 1; -fx-border-radius: 5;");
+        searchBox.setStyle(UiTheme.card());
         searchBox.setAlignment(Pos.CENTER_LEFT);
 
         // Search by Employee ID
-        Label searchLabel = new Label("🔍 Employee ID:");
-        searchLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #b0bec5; -fx-font-weight: bold;");
+        Label searchLabel = new Label("Employee ID:");
+        searchLabel.setStyle(UiTheme.bodyText() + " -fx-font-weight: bold;");
 
         TextField employeeSearchField = new TextField();
         employeeSearchField.setPromptText("Enter Employee ID...");
-        employeeSearchField.setStyle("-fx-control-inner-background: #0d1b2a; -fx-text-fill: #e0e0e0; -fx-prompt-text-fill: #666; -fx-border-color: #ff6b6b; -fx-border-width: 1; -fx-border-radius: 3; -fx-padding: 6;");
+        employeeSearchField.setStyle(UiTheme.input());
         employeeSearchField.setPrefWidth(150);
 
         // Filter by Criticality
-        Label filterLabel = new Label("🚨 Criticality:");
-        filterLabel.setStyle("-fx-font-size: 11; -fx-text-fill: #b0bec5; -fx-font-weight: bold;");
+        Label filterLabel = new Label("Criticality:");
+        filterLabel.setStyle(UiTheme.bodyText() + " -fx-font-weight: bold;");
 
         ComboBox<String> criticalityFilter = new ComboBox<>();
         criticalityFilter.getItems().addAll("All", "Low", "Medium", "High");
         criticalityFilter.setValue("All");
-        criticalityFilter.setStyle("-fx-control-inner-background: #0d1b2a; -fx-text-fill: #e0e0e0; -fx-border-color: #ff6b6b; -fx-border-width: 1; -fx-border-radius: 3;");
+        criticalityFilter.setStyle(UiTheme.input());
         criticalityFilter.setPrefWidth(120);
 
         // Search button
         Button searchButton = new Button("Search");
-        searchButton.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-padding: 6 16; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3;");
-        searchButton.setOnMouseEntered(e -> searchButton.setStyle("-fx-background-color: #ff5252; -fx-text-fill: white; -fx-padding: 6 16; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3;"));
-        searchButton.setOnMouseExited(e -> searchButton.setStyle("-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-padding: 6 16; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3;"));
+        searchButton.setStyle(UiTheme.primaryButton() + " -fx-padding: 6 16; -fx-font-size: 11;");
+        UiTheme.installPrimaryHover(searchButton);
 
         // Clear button
         Button clearButton = new Button("Clear");
-        clearButton.setStyle("-fx-background-color: #455a64; -fx-text-fill: white; -fx-padding: 6 16; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3;");
-        clearButton.setOnMouseEntered(e -> clearButton.setStyle("-fx-background-color: #546e7a; -fx-text-fill: white; -fx-padding: 6 16; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3;"));
-        clearButton.setOnMouseExited(e -> clearButton.setStyle("-fx-background-color: #455a64; -fx-text-fill: white; -fx-padding: 6 16; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3;"));
+        clearButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 6 16; -fx-font-size: 11;");
 
         searchBox.getChildren().addAll(searchLabel, employeeSearchField, filterLabel, criticalityFilter, 
                                        new Separator(javafx.geometry.Orientation.VERTICAL), searchButton, clearButton);
@@ -134,10 +127,10 @@ public class AuditLogs {
 
     private static TableView<AuditLogEntry> createAuditTable() {
         TableView<AuditLogEntry> table = new TableView<>();
-        table.setStyle("-fx-control-inner-background: #1a2332; -fx-table-cell-border-color: #2d3e50; -fx-text-fill: #e0e0e0; -fx-selection-bar: #ff6b6b;");
+        table.setStyle("-fx-font-size: 12;");
 
         // Timestamp Column
-        TableColumn<AuditLogEntry, String> timestampCol = new TableColumn<>("⏰ Timestamp");
+        TableColumn<AuditLogEntry, String> timestampCol = new TableColumn<>("Timestamp");
         timestampCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().timestamp));
         timestampCol.setPrefWidth(140);
         timestampCol.setCellFactory(col -> new TableCell<AuditLogEntry, String>() {
@@ -155,7 +148,7 @@ public class AuditLogs {
         });
 
         // User Column
-        TableColumn<AuditLogEntry, String> userCol = new TableColumn<>("👤 User");
+        TableColumn<AuditLogEntry, String> userCol = new TableColumn<>("User");
         userCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().user));
         userCol.setPrefWidth(100);
         userCol.setCellFactory(col -> new TableCell<AuditLogEntry, String>() {
@@ -173,7 +166,7 @@ public class AuditLogs {
         });
 
         // Action Column
-        TableColumn<AuditLogEntry, String> actionCol = new TableColumn<>("⚙️ Action");
+        TableColumn<AuditLogEntry, String> actionCol = new TableColumn<>("Action");
         actionCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().action));
         actionCol.setPrefWidth(160);
         actionCol.setCellFactory(col -> new TableCell<AuditLogEntry, String>() {
@@ -191,7 +184,7 @@ public class AuditLogs {
         });
 
         // IP Address Column
-        TableColumn<AuditLogEntry, String> ipCol = new TableColumn<>("🌐 IP Address");
+        TableColumn<AuditLogEntry, String> ipCol = new TableColumn<>("IP Address");
         ipCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().ipAddress));
         ipCol.setPrefWidth(130);
         ipCol.setCellFactory(col -> new TableCell<AuditLogEntry, String>() {
@@ -209,7 +202,7 @@ public class AuditLogs {
         });
 
         // Status Column
-        TableColumn<AuditLogEntry, String> statusCol = new TableColumn<>("📊 Status");
+        TableColumn<AuditLogEntry, String> statusCol = new TableColumn<>("Status");
         statusCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().status));
         statusCol.setPrefWidth(100);
         statusCol.setCellFactory(col -> new TableCell<AuditLogEntry, String>() {
@@ -273,17 +266,17 @@ public class AuditLogs {
     private static VBox createAccountManagementPanel() {
         VBox panel = new VBox(15);
         panel.setPadding(new Insets(15));
-        panel.setStyle("-fx-background-color: #1a2332; -fx-border-color: #ff6b6b; -fx-border-width: 2 0 0 2; -fx-border-radius: 0;");
+        panel.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
-        Label titleLabel = new Label("🔒 Account Control");
-        titleLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #ff6b6b;");
+        Label titleLabel = new Label("Account Control");
+        titleLabel.setStyle(UiTheme.headingM());
 
         Label lockedAccountsLabel = new Label("Locked Accounts:");
-        lockedAccountsLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #b0bec5; -fx-font-weight: bold;");
+        lockedAccountsLabel.setStyle(UiTheme.bodyText() + " -fx-font-weight: bold;");
 
         // Locked accounts list
         ListView<String> lockedAccountsList = new ListView<>();
-        lockedAccountsList.setStyle("-fx-control-inner-background: #0d1b2a; -fx-text-fill: #e0e0e0; -fx-border-color: #ff6b6b; -fx-border-width: 1; -fx-selection-bar: #ff6b6b;");
+        lockedAccountsList.setStyle("-fx-font-size: 12;");
         lockedAccountsList.setPrefHeight(150);
         lockedAccountsList.getItems().addAll(
                 "EMP002 (3 attempts)",
@@ -292,10 +285,9 @@ public class AuditLogs {
         );
 
         // Unlock button
-        Button unlockButton = new Button("🔓 Unlock User");
-        unlockButton.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3; -fx-pref-width: 240;");
-        unlockButton.setOnMouseEntered(e -> unlockButton.setStyle("-fx-background-color: #45a049; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3; -fx-pref-width: 240;"));
-        unlockButton.setOnMouseExited(e -> unlockButton.setStyle("-fx-background-color: #4caf50; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3; -fx-pref-width: 240;"));
+        Button unlockButton = new Button("Unlock User");
+        unlockButton.setStyle(UiTheme.primaryButton() + " -fx-padding: 8 12; -fx-font-size: 11; -fx-pref-width: 240;");
+        UiTheme.installPrimaryHover(unlockButton);
         unlockButton.setOnAction(e -> {
             String selected = lockedAccountsList.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -307,10 +299,8 @@ public class AuditLogs {
         });
 
         // Reset PIN button
-        Button resetPinButton = new Button("🔑 Reset PIN");
-        resetPinButton.setStyle("-fx-background-color: #2196f3; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3; -fx-pref-width: 240;");
-        resetPinButton.setOnMouseEntered(e -> resetPinButton.setStyle("-fx-background-color: #1976d2; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3; -fx-pref-width: 240;"));
-        resetPinButton.setOnMouseExited(e -> resetPinButton.setStyle("-fx-background-color: #2196f3; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3; -fx-pref-width: 240;"));
+        Button resetPinButton = new Button("Reset PIN");
+        resetPinButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 12; -fx-font-size: 11; -fx-pref-width: 240;");
         resetPinButton.setOnAction(e -> {
             String selected = lockedAccountsList.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -325,10 +315,10 @@ public class AuditLogs {
         separator1.setStyle("-fx-padding: 0; -fx-text-fill: #455a64;");
 
         Label activeSessionsLabel = new Label("Active Sessions:");
-        activeSessionsLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #b0bec5; -fx-font-weight: bold;");
+        activeSessionsLabel.setStyle(UiTheme.bodyText() + " -fx-font-weight: bold;");
 
         ListView<String> activeSessions = new ListView<>();
-        activeSessions.setStyle("-fx-control-inner-background: #0d1b2a; -fx-text-fill: #e0e0e0; -fx-border-color: #4caf50; -fx-border-width: 1;");
+        activeSessions.setStyle("-fx-font-size: 12;");
         activeSessions.setPrefHeight(120);
         activeSessions.getItems().addAll(
                 "EMP001 - 192.168.1.105",
@@ -337,10 +327,8 @@ public class AuditLogs {
         );
 
         // Terminate Session button
-        Button terminateButton = new Button("⛔ Terminate Session");
-        terminateButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3; -fx-pref-width: 240;");
-        terminateButton.setOnMouseEntered(e -> terminateButton.setStyle("-fx-background-color: #f57c00; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3; -fx-pref-width: 240;"));
-        terminateButton.setOnMouseExited(e -> terminateButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3; -fx-pref-width: 240;"));
+        Button terminateButton = new Button("Terminate Session");
+        terminateButton.setStyle(UiTheme.dangerButton() + " -fx-padding: 8 12; -fx-font-size: 11; -fx-pref-width: 240;");
         terminateButton.setOnAction(e -> {
             String selected = activeSessions.getSelectionModel().getSelectedItem();
             if (selected != null) {
