@@ -23,12 +23,13 @@ import backend.exceptions.AuthenticationException;
 import java.sql.Connection;
 import frontend.pages.Dashboard;
 import frontend.ui.UiTheme;
+import frontend.ui.Animations;
 
 public class LoginPage {
 
     public static Scene getScene(Stage primaryStage) {
         BorderPane root = new BorderPane();
-        root.setStyle(UiTheme.appBackground());
+        root.getStyleClass().add("app-background");
 
         Label phaseBadge = new Label("●  Phase 1.0: Authentication & Dashboard Prototype");
         phaseBadge.setStyle(
@@ -47,30 +48,30 @@ public class LoginPage {
         HBox card = new HBox();
         card.setMaxWidth(980);
         card.setPrefHeight(520);
-        card.setStyle(UiTheme.card());
+        card.getStyleClass().add("card");
 
         VBox leftPanel = new VBox(14);
         leftPanel.setPadding(new Insets(28));
         leftPanel.setAlignment(Pos.CENTER_LEFT);
         leftPanel.setPrefWidth(520);
-        leftPanel.setStyle("-fx-background-color: linear-gradient(to bottom right, #E7F2FF, #D9E9FF); -fx-background-radius: 16 0 0 16;");
+        leftPanel.setStyle("-fx-background-color: linear-gradient(to bottom right, #E7F2FF, #D9E9FF); -fx-background-radius: 12 0 0 12;");
 
         Label brandTitle = new Label("PharmaSync");
-        brandTitle.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 54; -fx-font-weight: 800;");
-        brandTitle.setTextFill(Color.web("#094c98"));
+        brandTitle.setStyle("-fx-font-family: 'Inter'; -fx-font-size: 54; -fx-font-weight: 800;");
+        brandTitle.setTextFill(Color.web("#6366F1"));
 
         Label brandSub = new Label("Intelligence in every dose.");
-        brandSub.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 28; -fx-font-weight: 500;");
-        brandSub.setTextFill(Color.web("#2f4155"));
+        brandSub.setStyle("-fx-font-family: 'Inter'; -fx-font-size: 28; -fx-font-weight: 500;");
+        brandSub.setTextFill(Color.web("#0B1120"));
 
         Label imageHint = new Label("Brand visual placeholder\nReplace with approved product illustration");
         imageHint.setStyle(
                 "-fx-background-color: rgba(255, 255, 255, 0.68);" +
-                "-fx-border-color: rgba(9, 76, 152, 0.35);" +
+                "-fx-border-color: rgba(99, 102, 241, 0.35);" +
                 "-fx-border-style: dashed;" +
                 "-fx-border-radius: 10;" +
                 "-fx-background-radius: 10;" +
-                "-fx-text-fill: #23507d;" +
+                "-fx-text-fill: #4F46E5;" +
                 "-fx-padding: 20 24;" +
                 "-fx-font-size: 14;"
         );
@@ -83,16 +84,16 @@ public class LoginPage {
         rightPanel.setPrefWidth(460);
 
         Label loginTitle = new Label("Pharmacist Sign In");
-        loginTitle.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 34; -fx-font-weight: 800; -fx-text-fill: #0F3159;");
+        loginTitle.getStyleClass().add("heading-l");
 
         Label userName = new Label("Employee ID (e.g. BRA_24-XXXX)");
-        userName.setStyle(UiTheme.bodyText());
+        userName.getStyleClass().add("body-text");
         TextField userTextField = new TextField();
         userTextField.setPromptText("BRA_24-3100");
         UiTheme.styleFormInput(userTextField);
 
         Label pw = new Label("Password (Masked)");
-        pw.setStyle(UiTheme.bodyText());
+        pw.getStyleClass().add("body-text");
         PasswordField pwBox = new PasswordField();
         pwBox.setPromptText("[********]");
         UiTheme.styleFormInput(pwBox);
@@ -107,8 +108,8 @@ public class LoginPage {
         Button btnLogin = new Button("Sign In");
         btnLogin.setMaxWidth(Double.MAX_VALUE);
         btnLogin.setPrefHeight(46);
-        btnLogin.setStyle(UiTheme.primaryButton());
-        UiTheme.installPrimaryHover(btnLogin);
+        btnLogin.getStyleClass().addAll("button-base", "primary-button");
+        Animations.bindPulseOnClick(btnLogin);
         
         btnLogin.setOnAction(e -> {
             String identifier = userTextField.getText();
@@ -122,7 +123,7 @@ public class LoginPage {
                 authService.login(identifier, password);
                 
                 messageLabel.setTextFill(Color.web(UiTheme.COLOR_SUCCESS_TEXT));
-                messageLabel.setStyle(UiTheme.successMessage());
+                messageLabel.getStyleClass().setAll("success-message");
                 messageLabel.setText("Login Successful!");
                 messageLabel.setVisible(true);
                 
@@ -131,12 +132,12 @@ public class LoginPage {
                 
             } catch (AuthenticationException authException) {
                 messageLabel.setTextFill(Color.web(UiTheme.COLOR_DANGER_TEXT));
-                messageLabel.setStyle(UiTheme.errorMessage());
+                messageLabel.getStyleClass().setAll("error-message");
                 messageLabel.setText(authException.getMessage());
                 messageLabel.setVisible(true);
             } catch (Exception ex) {
                 messageLabel.setTextFill(Color.web(UiTheme.COLOR_DANGER_TEXT));
-                messageLabel.setStyle(UiTheme.errorMessage());
+                messageLabel.getStyleClass().setAll("error-message");
                 messageLabel.setText("Database Connection Error.");
                 messageLabel.setVisible(true);
             }
@@ -179,6 +180,9 @@ public class LoginPage {
         center.setPadding(new Insets(10, 28, 26, 28));
         root.setCenter(center);
 
-        return new Scene(root, 1200, 760);
+        Scene scene = new Scene(root, 1200, 760);
+        UiTheme.applyStyleSheet(scene);
+        Animations.applyPageTransition(root);
+        return scene;
     }
 }
