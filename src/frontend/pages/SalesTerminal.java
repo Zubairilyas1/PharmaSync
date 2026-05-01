@@ -14,15 +14,13 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import frontend.ui.UiTheme;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SalesTerminal {
-    private static final String APP_BG = "#F4F7FB";
-    private static final String PRIMARY_BLUE = "#0056B3";
-    
     // Medicine model for cart
     public static class CartItem {
         private String medicineName;
@@ -69,24 +67,24 @@ public class SalesTerminal {
     
     public static Scene createSalesTerminalScene(Stage stage) {
         VBox mainContainer = new VBox(15);
-        mainContainer.setPadding(new Insets(20));
-        mainContainer.setStyle("-fx-background-color: " + APP_BG + ";");
+        mainContainer.setPadding(UiTheme.pagePadding());
+        mainContainer.setStyle(UiTheme.appBackground());
         
         // Header with back button
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
+        header.setStyle(UiTheme.topBar());
         
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
+        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
         });
         
         Label headerTitle = new Label("Sales Terminal");
-        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
+        headerTitle.setStyle(UiTheme.headingM());
         
         header.getChildren().addAll(backButton, headerTitle);
         HBox.setHgrow(headerTitle, Priority.ALWAYS);
@@ -94,36 +92,37 @@ public class SalesTerminal {
         
         // Content area
         HBox contentArea = new HBox(15);
-        contentArea.setStyle("-fx-background-color: " + APP_BG + ";");
+        contentArea.setStyle(UiTheme.appBackground());
         mainContainer.getChildren().add(contentArea);
         VBox.setVgrow(contentArea, Priority.ALWAYS);
         
         // ==================== LEFT SIDE ====================
         VBox leftPanel = new VBox(15);
         leftPanel.setPadding(new Insets(15));
-        leftPanel.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14;");
+        leftPanel.setStyle(UiTheme.card() + " -fx-padding: 15;");
         leftPanel.setPrefWidth(400);
         
         // Title
         Label leftTitle = new Label("Sales Terminal");
-        leftTitle.setStyle("-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #333;");
+        leftTitle.setStyle(UiTheme.headingM());
         
         // Search bar
         HBox searchBox = new HBox(10);
         searchBox.setAlignment(Pos.CENTER_LEFT);
         TextField searchField = new TextField();
         searchField.setPromptText("Search for medicine...");
-        searchField.setStyle("-fx-padding: 8; -fx-font-size: 12;");
+        searchField.setStyle(UiTheme.input());
         
-        Button searchButton = new Button("🔍 Search");
-        searchButton.setStyle("-fx-padding: 8; -fx-background-color: #2196F3; -fx-text-fill: white; -fx-cursor: hand;");
+        Button searchButton = new Button("Search");
+        searchButton.setStyle(UiTheme.primaryButton() + " -fx-padding: 8 12;");
+        UiTheme.installPrimaryHover(searchButton);
         
         searchBox.getChildren().addAll(searchField, searchButton);
         HBox.setHgrow(searchField, Priority.ALWAYS);
         
         // Search Results List
         Label searchResultsLabel = new Label("Search Results:");
-        searchResultsLabel.setStyle("-fx-font-size: 13; -fx-font-weight: bold;");
+        searchResultsLabel.setStyle(UiTheme.headingM());
         
         ListView<CartItem> searchResultsList = new ListView<>();
         searchResultsList.setPrefHeight(300);
@@ -152,10 +151,10 @@ public class SalesTerminal {
         // Dosage Converter Section
         VBox dosageBox = new VBox(10);
         dosageBox.setPadding(new Insets(10));
-        dosageBox.setStyle("-fx-background-color: #e8f5e9; -fx-border-color: #4CAF50; -fx-border-radius: 5;");
+        dosageBox.setStyle(UiTheme.card() + " -fx-padding: 10;");
         
-        Label dosageTitle = new Label("💊 Dosage Converter");
-        dosageTitle.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2e7d32;");
+        Label dosageTitle = new Label("Dosage Converter");
+        dosageTitle.setStyle(UiTheme.headingM());
         
         HBox dosageInputBox = new HBox(10);
         dosageInputBox.setAlignment(Pos.CENTER_LEFT);
@@ -188,12 +187,12 @@ public class SalesTerminal {
         // ==================== RIGHT SIDE ====================
         VBox rightPanel = new VBox(15);
         rightPanel.setPadding(new Insets(15));
-        rightPanel.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14;");
+        rightPanel.setStyle(UiTheme.card() + " -fx-padding: 15;");
         rightPanel.setPrefWidth(500);
         
         // Title
         Label rightTitle = new Label("Current Order");
-        rightTitle.setStyle("-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #333;");
+        rightTitle.setStyle(UiTheme.headingM());
         
         // Cart Table
         TableView<CartItem> cartTable = new TableView<>();
@@ -560,6 +559,6 @@ public class SalesTerminal {
     }
     
     private static void showNotification(String message) {
-        System.out.println(message);
+        // Placeholder for non-blocking toast notifications.
     }
 }
