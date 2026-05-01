@@ -21,6 +21,9 @@ import java.util.Map;
 
 public class Returns {
     
+    private static final String PANEL_BG = "#F8FAFC";
+    private static final String PRIMARY_BLUE = "#6366F1";
+    
     // Combined return item data structure
     public static class ReturnLineItem {
         public TransactionItem transaction;
