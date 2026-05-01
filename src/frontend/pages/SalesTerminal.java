@@ -52,6 +52,7 @@ public class SalesTerminal {
     private static ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
     private static ObservableList<CartItem> searchResults = FXCollections.observableArrayList();
     private static Label validationResult;
+    private static boolean clinicalValidated = false;
     
     // Sample medicines database
     private static final Map<String, CartItem> medicinesDatabase = new HashMap<>();
@@ -233,6 +234,7 @@ public class SalesTerminal {
                     validationResult.setText("✓ Clinical Check Passed");
                     validationResult.setStyle("-fx-text-fill: #059669; -fx-font-size: 11; -fx-font-weight: 700;");
                     validationResult.setVisible(true);
+                    clinicalValidated = true;
                     validateBtn.setDisable(false);
                 });
             }));
@@ -416,7 +418,11 @@ public class SalesTerminal {
         Button clearBtn = new Button("Clear Cart");
         clearBtn.getStyleClass().addAll("button-base", "secondary-button");
         clearBtn.setStyle("-fx-font-size: 12;");
-        clearBtn.setOnAction(e -> cartItems.clear());
+        clearBtn.setOnAction(e -> {
+            cartItems.clear();
+            clinicalValidated = false;
+            if (validationResult != null) validationResult.setVisible(false);
+        });
         Animations.bindPulseOnClick(clearBtn);
 
         Button checkoutBtn = new Button("Checkout & Dispense");
@@ -428,8 +434,12 @@ public class SalesTerminal {
                 showAlert(Alert.AlertType.WARNING, "Empty Cart", "Please add items before checkout!");
                 return;
             }
+            if (!clinicalValidated) {
+                showAlert(Alert.AlertType.ERROR, "Validation Required", "Please run the Clinical Safety Check before checkout!");
+                return;
+            }
             if (currentCustomer[0] == null) {
-                showAlert(Alert.AlertType.WARNING, "No Customer", "Please record customer name first!");
+                showAlert(Alert.AlertType.ERROR, "Customer Required", "Please enter and register a customer name before checkout!");
                 return;
             }
             if (cartItems.stream().anyMatch(CartItem::isInsufficientStock)) {
@@ -459,6 +469,7 @@ public class SalesTerminal {
 
             cartItems.clear();
             validationResult.setVisible(false);
+            clinicalValidated = false;
             customerNameField.clear();
             customerNameField.getStyleClass().removeAll("search-input");
             customerNameField.getStyleClass().add("search-input");
