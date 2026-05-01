@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
+import frontend.ui.UiTheme;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,10 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Returns {
-    private static final String APP_BG = "#F4F7FB";
-    private static final String PANEL_BG = "#FFFFFF";
-    private static final String PRIMARY_BLUE = "#0056B3";
-    private static final String SOFT_TEXT = "#6B7280";
     
     // Combined return item data structure
     public static class ReturnLineItem {
@@ -78,7 +75,6 @@ public class Returns {
             return createReturnsSceneInternal(stage);
         } catch (Exception e) {
             System.err.println("ERROR in Returns.createReturnsScene: " + e.getMessage());
-            e.printStackTrace();
             VBox errorBox = new VBox();
             errorBox.setPadding(new Insets(20));
             Label errorLabel = new Label("Error loading Returns page:\n" + e.getMessage());
@@ -91,24 +87,24 @@ public class Returns {
     private static Scene createReturnsSceneInternal(Stage stage) {
         VBox root = new VBox(20);
         root.setPadding(new Insets(22));
-        root.setStyle("-fx-background-color: " + APP_BG + ";");
+        root.setStyle(UiTheme.appBackground());
         
         // Header with back button
         HBox header = createHeader(stage);
         root.getChildren().add(header);
         
         Label titleLabel = new Label("Sales Returns");
-        titleLabel.setStyle("-fx-font-size: 28; -fx-font-weight: 800; -fx-text-fill: #111827;");
+        titleLabel.setStyle(UiTheme.headingL());
         
         Label subtitleLabel = new Label("Process Sales Return — Non-CRUD Logic Module (UC17)");
-        subtitleLabel.setStyle("-fx-font-size: 12; -fx-text-fill: " + SOFT_TEXT + ";");
+        subtitleLabel.setStyle(UiTheme.bodyText());
         
         VBox titleBox = new VBox(4, titleLabel, subtitleLabel);
         root.getChildren().add(titleBox);
         
         // Main content area
         HBox mainContent = new HBox(20);
-        mainContent.setStyle("-fx-background-color: " + PANEL_BG + "; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-padding: 18; -fx-effect: dropshadow(three-pass-box, rgba(15,23,42,0.08), 14, 0, 0, 3);");
+        mainContent.setStyle(UiTheme.card() + " -fx-padding: 18;");
         
         // Left side: Customer lookup and purchase history
         VBox leftPanel = new VBox(15);
@@ -127,11 +123,12 @@ public class Returns {
         
         TextField customerNameField = new TextField();
         customerNameField.setPromptText("Enter customer name or Transaction ID (TS-XXXX-XXX)...");
-        customerNameField.setStyle("-fx-padding: 10; -fx-font-size: 12; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #D1D5DB;");
+        customerNameField.setStyle(UiTheme.input() + " -fx-padding: 10;");
         customerNameField.setPrefWidth(400);
         
         Button lookupButton = new Button("Fetch Order");
-        lookupButton.setStyle("-fx-background-color: " + PRIMARY_BLUE + "; -fx-text-fill: white; -fx-padding: 10 16; -fx-font-size: 12; -fx-font-weight: 700; -fx-background-radius: 10;");
+        lookupButton.setStyle(UiTheme.primaryButton() + " -fx-padding: 10 16;");
+        UiTheme.installPrimaryHover(lookupButton);
         
         customerSearchBox.getChildren().addAll(customerNameField, lookupButton);
         customerLookupBox.getChildren().addAll(customerLookupLabel, customerSearchBox);
@@ -152,7 +149,7 @@ public class Returns {
         leftPanel.getChildren().add(transactionDetailsBox);
         
         // Purchase History Table
-        Label historyLabel = new Label("📦 Purchase History");
+        Label historyLabel = new Label("Purchase History");
         historyLabel.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #111827;");
         leftPanel.getChildren().add(historyLabel);
         
@@ -572,15 +569,11 @@ public class Returns {
     }
     
     private static void showNotification(String message) {
-        System.out.println("✓ " + message);
-        // In a real application, this could be a toast notification
+        // Placeholder for non-blocking toast notifications.
     }
     
     private static void showSuccessToast(String message) {
-        System.out.println("✓ SUCCESS: " + message);
-        // Create a temporary label to show success
-        Label toastLabel = new Label(message);
-        toastLabel.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 15; -fx-font-size: 12; -fx-border-radius: 5;");
+        showAlert(Alert.AlertType.INFORMATION, "Success", message);
     }
     
     // Helper class for return item data
