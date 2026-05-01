@@ -7,58 +7,73 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import frontend.ui.UiTheme;
 
 public class ForgotPasswordPage {
 
     public static Scene getScene(Stage primaryStage) {
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-        grid.setStyle("-fx-background-color: #F4F7FB;");
+        BorderPane root = new BorderPane();
+        root.setStyle(UiTheme.appBackground());
 
-        // Title
-        Text sceneTitle = new Text("PharmaSync - Reset Password");
-        sceneTitle.setFont(Font.font("Arial", FontWeight.BOLD, 22));
-        grid.add(sceneTitle, 0, 0, 2, 1);
+        VBox card = new VBox(12);
+        card.setAlignment(Pos.TOP_LEFT);
+        card.setPadding(new Insets(24));
+        card.setMaxWidth(560);
+        card.setStyle(UiTheme.card());
 
-        // Email
-        Label emailLabel = new Label("Email:");
-        grid.add(emailLabel, 0, 1);
+        Label sceneTitle = new Label("Reset Password");
+        sceneTitle.setStyle(UiTheme.headingL());
+
+        Label helpText = new Label("Enter your account email and we will send a reset link.");
+        helpText.setStyle(UiTheme.bodyText());
+
+        Label emailLabel = new Label("Email");
+        emailLabel.setStyle(UiTheme.bodyText());
         TextField emailTextField = new TextField();
         emailTextField.setPromptText("Enter your email address");
-        grid.add(emailTextField, 1, 1);
+        UiTheme.styleFormInput(emailTextField);
 
-        // Reset button
         Button btnReset = new Button("Send Reset Link");
         btnReset.setMaxWidth(Double.MAX_VALUE);
-        btnReset.setStyle("-fx-background-color: #0056B3; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 10; -fx-padding: 10 14;");
-        grid.add(btnReset, 1, 2);
+        btnReset.setStyle(UiTheme.primaryButton());
+        UiTheme.installPrimaryHover(btnReset);
 
         btnReset.setOnAction(e -> {
-            System.out.println("Password reset requested for:");
-            System.out.println("Email: " + emailTextField.getText());
+            // Placeholder flow until backend reset endpoint is connected.
+            showNotice("Reset link requested", "If this email exists, a reset link will be sent.");
         });
 
-        // Back to Login Page
         Hyperlink loginLink = new Hyperlink("Back to Login");
-        loginLink.setStyle("-fx-text-fill: #0056B3; -fx-font-weight: 700;");
+        loginLink.setStyle("-fx-text-fill: " + UiTheme.COLOR_PRIMARY + "; -fx-font-weight: 700;");
         loginLink.setOnAction(e -> {
             primaryStage.setScene(LoginPage.getScene(primaryStage));
         });
 
         HBox linkBox = new HBox(10);
         linkBox.setAlignment(Pos.CENTER_RIGHT);
-        linkBox.getChildren().addAll(loginLink);
-        grid.add(linkBox, 1, 3);
+        HBox.setHgrow(linkBox, Priority.ALWAYS);
+        linkBox.getChildren().add(loginLink);
 
-        return new Scene(grid, 800, 600);
+        card.getChildren().addAll(sceneTitle, helpText, emailLabel, emailTextField, btnReset, linkBox);
+
+        StackPane center = new StackPane(card);
+        center.setPadding(new Insets(30));
+        root.setCenter(center);
+
+        return new Scene(root, 800, 600);
+    }
+
+    private static void showNotice(String title, String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
