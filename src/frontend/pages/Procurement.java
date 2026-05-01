@@ -8,15 +8,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import frontend.ui.UiTheme;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Procurement {
-    private static final String APP_BG = "#F4F7FB";
-    private static final String PRIMARY_BLUE = "#0056B3";
-
     private static List<ProcurementItem> selectedItems = new ArrayList<>();
     private static int poCounter = 2024001;
 
@@ -26,7 +24,7 @@ public class Procurement {
 
     private static Scene createProcurementSceneInternal(Stage stage) {
         VBox mainContainer = new VBox();
-        mainContainer.setStyle("-fx-background-color: " + APP_BG + ";");
+        mainContainer.setStyle(UiTheme.appBackground());
 
         // Header with back button
         HBox header = createHeader(stage);
@@ -35,7 +33,7 @@ public class Procurement {
         // Main content area with side panel
         HBox contentArea = new HBox(15);
         contentArea.setPadding(new Insets(15));
-        contentArea.setStyle("-fx-background-color: " + APP_BG + ";");
+        contentArea.setStyle(UiTheme.appBackground());
 
         // Left side - Procurement items
         VBox leftPanel = createProcurementPanel();
@@ -56,19 +54,17 @@ public class Procurement {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
+        header.setStyle(UiTheme.topBar());
 
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
-        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: #DCE9FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
-        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
+        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
         });
 
-        Label headerTitle = new Label("📦 Procurement Management");
-        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
+        Label headerTitle = new Label("Procurement Management");
+        headerTitle.setStyle(UiTheme.headingM());
 
         header.getChildren().addAll(backButton, headerTitle);
         HBox.setHgrow(headerTitle, Priority.ALWAYS);
@@ -78,15 +74,15 @@ public class Procurement {
 
     private static VBox createProcurementPanel() {
         VBox panel = new VBox(15);
-        panel.setStyle("-fx-background-color: " + APP_BG + ";");
+        panel.setStyle(UiTheme.appBackground());
 
         // Red Alert Dashboard Section
         VBox alertDashboard = createRedAlertDashboard();
         panel.getChildren().add(alertDashboard);
 
         // Suggested Orders Section
-        Label ordersTitle = new Label("📋 Suggested Orders - Low Stock Items");
-        ordersTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        Label ordersTitle = new Label("Suggested Orders - Low Stock Items");
+        ordersTitle.setStyle(UiTheme.headingM());
 
         TableView<ProcurementItem> ordersTable = createSuggestedOrdersTable();
         VBox.setVgrow(ordersTable, Priority.ALWAYS);
@@ -98,10 +94,10 @@ public class Procurement {
 
     private static VBox createRedAlertDashboard() {
         VBox alertSection = new VBox(10);
-        alertSection.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        alertSection.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
-        Label alertTitle = new Label("🚨 Critically Low Stock - Immediate Action Required");
-        alertTitle.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #c62828;");
+        Label alertTitle = new Label("Critically Low Stock - Immediate Action Required");
+        alertTitle.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: " + UiTheme.COLOR_DANGER_TEXT + ";");
 
         HBox alertCards = new HBox(12);
 
@@ -130,7 +126,7 @@ public class Procurement {
         Label stockLabel = new Label("Current: " + currentStock + " | Min: " + minThreshold);
         stockLabel.setStyle("-fx-font-size: 10; -fx-text-fill: #d32f2f;");
 
-        Label urgencyLabel = new Label("⚠️ ORDER ASAP");
+        Label urgencyLabel = new Label("ORDER ASAP");
         urgencyLabel.setStyle("-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #c62828;");
 
         card.getChildren().addAll(nameLabel, stockLabel, urgencyLabel);
@@ -143,7 +139,7 @@ public class Procurement {
         table.setStyle("-fx-control-inner-background: white; -fx-table-cell-border-color: #e0e0e0;");
 
         // Checkbox column for selection
-        TableColumn<ProcurementItem, Boolean> selectCol = new TableColumn<>("✓ Select");
+        TableColumn<ProcurementItem, Boolean> selectCol = new TableColumn<>("Select");
         selectCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleBooleanProperty(cellData.getValue().selected));
         selectCol.setCellFactory(col -> new TableCell<ProcurementItem, Boolean>() {
             @Override
@@ -166,12 +162,12 @@ public class Procurement {
         selectCol.setPrefWidth(60);
 
         // Medicine Name Column
-        TableColumn<ProcurementItem, String> medicineCol = new TableColumn<>("💊 Medicine Name");
+        TableColumn<ProcurementItem, String> medicineCol = new TableColumn<>("Medicine Name");
         medicineCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().medicineName));
         medicineCol.setPrefWidth(150);
 
         // Current Stock Column
-        TableColumn<ProcurementItem, Integer> stockCol = new TableColumn<>("📊 Current Stock");
+        TableColumn<ProcurementItem, Integer> stockCol = new TableColumn<>("Current Stock");
         stockCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().currentStock));
         stockCol.setPrefWidth(130);
         stockCol.setCellFactory(col -> new TableCell<ProcurementItem, Integer>() {
@@ -189,12 +185,12 @@ public class Procurement {
         });
 
         // Min Threshold Column
-        TableColumn<ProcurementItem, Integer> minCol = new TableColumn<>("🎯 Min Threshold");
+        TableColumn<ProcurementItem, Integer> minCol = new TableColumn<>("Min Threshold");
         minCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().minThreshold));
         minCol.setPrefWidth(130);
 
         // Suggested Order Qty Column (Editable)
-        TableColumn<ProcurementItem, Integer> suggestedCol = new TableColumn<>("📦 Suggested Qty (Editable)");
+        TableColumn<ProcurementItem, Integer> suggestedCol = new TableColumn<>("Suggested Qty (Editable)");
         suggestedCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().suggestedQty));
         suggestedCol.setPrefWidth(150);
         suggestedCol.setCellFactory(col -> new TableCell<ProcurementItem, Integer>() {
@@ -224,7 +220,7 @@ public class Procurement {
         });
 
         // Unit Price Column
-        TableColumn<ProcurementItem, Double> priceCol = new TableColumn<>("💰 Unit Price");
+        TableColumn<ProcurementItem, Double> priceCol = new TableColumn<>("Unit Price");
         priceCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().unitPrice));
         priceCol.setPrefWidth(120);
         priceCol.setCellFactory(col -> new TableCell<ProcurementItem, Double>() {
@@ -241,7 +237,7 @@ public class Procurement {
         });
 
         // Vendor/Supplier Column (Dropdown)
-        TableColumn<ProcurementItem, String> vendorCol = new TableColumn<>("🏢 Vendor");
+        TableColumn<ProcurementItem, String> vendorCol = new TableColumn<>("Vendor");
         vendorCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().vendor));
         vendorCol.setPrefWidth(140);
         vendorCol.setCellFactory(col -> new TableCell<ProcurementItem, String>() {
@@ -284,10 +280,10 @@ public class Procurement {
     private static VBox createPOGeneratorPanel() {
         VBox panel = new VBox(12);
         panel.setPadding(new Insets(15));
-        panel.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 3); -fx-border-color: #2c3e50; -fx-border-width: 2;");
+        panel.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
-        Label panelTitle = new Label("📄 Draft Purchase Order");
-        panelTitle.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
+        Label panelTitle = new Label("Draft Purchase Order");
+        panelTitle.setStyle(UiTheme.headingM());
 
         // PO Number (auto-generated)
         Label poNumberLabel = new Label("PO #: " + String.format("PO-%d", poCounter));
@@ -329,11 +325,10 @@ public class Procurement {
         Separator sep3 = new Separator();
 
         // Generate PO Button
-        Button generatePOButton = new Button("✓ Generate & Send PO");
-        generatePOButton.setStyle("-fx-background-color: #2c3e50; -fx-text-fill: white; -fx-padding: 10 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3;");
+        Button generatePOButton = new Button("Generate and Send PO");
+        generatePOButton.setStyle(UiTheme.primaryButton() + " -fx-padding: 10 12; -fx-font-size: 11;");
         generatePOButton.setPrefWidth(290);
-        generatePOButton.setOnMouseEntered(e -> generatePOButton.setStyle("-fx-background-color: #1a252f; -fx-text-fill: white; -fx-padding: 10 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3;"));
-        generatePOButton.setOnMouseExited(e -> generatePOButton.setStyle("-fx-background-color: #2c3e50; -fx-text-fill: white; -fx-padding: 10 12; -fx-font-size: 11; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 3;"));
+        UiTheme.installPrimaryHover(generatePOButton);
         generatePOButton.setOnAction(e -> {
             if (selectedItems.isEmpty()) {
                 showPOAlert("Warning", "Please select at least one item to generate PO.");
