@@ -1,0 +1,381 @@
+/* 
+    Premium Executive Theme
+    Primary: Deep Navy (#0B1120)
+    Accents: Electric Indigo (#6366F1), Teal (#14B8A6)
+    Surface: Off-White (#F8FAFC), Pure White (#FFFFFF)
+*/
+
+.root {
+    -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
+    /* Define some variables for easier reuse if needed, though standard JavaFX CSS doesn't fully support CSS variables, we use standard properties */
+}
+
+/* Backgrounds */
+.app-background {
+    -fx-background-color: #F8FAFC;
+}
+
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.04), 20, 0, 0, 4);
+    -fx-padding: 20;
+}
+
+.top-bar {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.05), 15, 0, 0, 2);
+}
+
+/* Typography */
+.heading-l {
+    -fx-font-size: 28;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0B1120;
+}
+
+.heading-m {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0B1120;
+}
+
+.body-text {
+    -fx-font-size: 14;
+    -fx-font-weight: normal;
+    -fx-text-fill: #64748B;
+}
+
+/* Inputs - Minimalist with bottom border */
+.form-input {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #E2E8F0 transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-padding: 8 4 8 4;
+    -fx-text-fill: #0B1120;
+    -fx-font-size: 14;
+}
+
+.form-input:focused {
+    -fx-border-color: transparent transparent #6366F1 transparent;
+}
+
+/* Buttons */
+.button-base {
+    -fx-font-family: "Inter", "Segoe UI", "Arial";
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+}
+
+.primary-button {
+    -fx-background-color: #6366F1;
+    -fx-text-fill: white;
+}
+
+.primary-button:hover {
+    -fx-background-color: #4F46E5;
+    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.4), 12, 0, 0, 4);
+    -fx-translate-y: -2;
+}
+
+.primary-button:pressed {
+    -fx-translate-y: 0;
+    -fx-effect: none;
+}
+
+.secondary-button {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #0B1120;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.08), 8, 0, 0, 2);
+    -fx-translate-y: -2;
+}
+
+.secondary-button:pressed {
+    -fx-translate-y: 0;
+    -fx-effect: none;
+}
+
+.danger-button {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: white;
+}
+
+.danger-button:hover {
+    -fx-background-color: #DC2626;
+    -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.4), 12, 0, 0, 4);
+    -fx-translate-y: -2;
+}
+
+/* Sidebar */
+.sidebar {
+    -fx-background-color: #0B1120;
+    -fx-background-radius: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.15), 20, 0, 4, 0);
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+    -fx-padding: 12 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-border-width: 0 0 0 4;
+    -fx-border-color: transparent;
+}
+
+.nav-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-text-fill: #F8FAFC;
+}
+
+.nav-button-active {
+    -fx-background-color: rgba(99, 102, 241, 0.1);
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: transparent transparent transparent #6366F1;
+    /* Glow effect on the left border isn't directly supported via dropshadow on a single border, 
+       but the background color tint and border color achieves the clean aesthetic. */
+}
+
+/* Messages */
+.success-message {
+    -fx-background-color: #F0FDFA;
+    -fx-border-color: #14B8A6;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+    -fx-text-fill: #0D9488;
+    -fx-font-weight: bold;
+}
+
+.error-message {
+    -fx-background-color: #FEF2F2;
+    -fx-border-color: #EF4444;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+    -fx-text-fill: #B91C1C;
+    -fx-font-weight: bold;
+}
+
+/* Utility tags */
+.alert-strip {
+    -fx-background-color: #FFFBEB;
+    -fx-text-fill: #B45309;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 6 10;
+}
+
+/* ============================================
+   Sales Terminal — Modern POS Aesthetic
+   ============================================ */
+
+/* Catalog medicine card in the left panel */
+.medicine-catalog-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+}
+
+.medicine-catalog-card:hover {
+    -fx-border-color: #6366F1;
+    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.12), 12, 0, 0, 3);
+}
+
+/* Stock badge — pill-shaped status indicator */
+.stock-badge {
+    -fx-background-color: #ECFDF5;
+    -fx-text-fill: #059669;
+    -fx-background-radius: 999;
+    -fx-padding: 3 10;
+    -fx-font-size: 10;
+    -fx-font-weight: 700;
+}
+
+.stock-badge-low {
+    -fx-background-color: #FEF2F2;
+    -fx-text-fill: #DC2626;
+    -fx-background-radius: 999;
+    -fx-padding: 3 10;
+    -fx-font-size: 10;
+    -fx-font-weight: 700;
+}
+
+/* Dosage chip */
+.dosage-chip {
+    -fx-background-color: #EEF2FF;
+    -fx-text-fill: #4338CA;
+    -fx-background-radius: 999;
+    -fx-padding: 3 10;
+    -fx-font-size: 10;
+    -fx-font-weight: 600;
+}
+
+/* Add-to-cart button (compact, indigo) */
+.add-cart-button {
+    -fx-background-color: #6366F1;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 6 14;
+    -fx-font-size: 11;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+}
+
+.add-cart-button:hover {
+    -fx-background-color: #4F46E5;
+    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.35), 8, 0, 0, 2);
+}
+
+/* Order summary panel on the right */
+.order-panel {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.06), 24, 0, 0, 6);
+    -fx-padding: 22;
+}
+
+/* Total strip at the bottom of order panel */
+.order-total-strip {
+    -fx-background-color: linear-gradient(to right, #6366F1, #818CF8);
+    -fx-background-radius: 12;
+    -fx-padding: 16 20;
+}
+
+/* Customer info section */
+.customer-section {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 12;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+}
+
+/* Clinical validation section */
+.clinical-section {
+    -fx-background-color: #FAFAFF;
+    -fx-background-radius: 12;
+    -fx-border-color: #E0E7FF;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+}
+
+.validate-button {
+    -fx-background-color: #7C3AED;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 8 18;
+    -fx-font-size: 12;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+}
+
+.validate-button:hover {
+    -fx-background-color: #6D28D9;
+    -fx-effect: dropshadow(three-pass-box, rgba(124, 58, 237, 0.35), 8, 0, 0, 2);
+}
+
+/* Checkout success button */
+.checkout-button {
+    -fx-background-color: #14B8A6;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-padding: 12 28;
+    -fx-font-size: 14;
+    -fx-font-weight: 800;
+    -fx-cursor: hand;
+}
+
+.checkout-button:hover {
+    -fx-background-color: #0D9488;
+    -fx-effect: dropshadow(three-pass-box, rgba(20, 184, 166, 0.4), 12, 0, 0, 4);
+    -fx-translate-y: -2;
+}
+
+.checkout-button:pressed {
+    -fx-translate-y: 0;
+    -fx-effect: none;
+}
+
+/* Remove button in cart */
+.remove-cart-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #EF4444;
+    -fx-background-radius: 6;
+    -fx-border-color: #FCA5A5;
+    -fx-border-radius: 6;
+    -fx-border-width: 1;
+    -fx-padding: 4 10;
+    -fx-font-size: 10;
+    -fx-font-weight: 700;
+    -fx-cursor: hand;
+}
+
+.remove-cart-button:hover {
+    -fx-background-color: #FEF2F2;
+    -fx-border-color: #EF4444;
+}
+
+/* Section label — small caps style */
+.section-label {
+    -fx-font-size: 11;
+    -fx-font-weight: 800;
+    -fx-text-fill: #94A3B8;
+    -fx-padding: 0 0 6 2;
+}
+
+/* Search input with rounded corners */
+.search-input {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 10;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 10 14;
+    -fx-font-size: 13;
+    -fx-text-fill: #0B1120;
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+.search-input:focused {
+    -fx-border-color: #6366F1;
+    -fx-background-color: #FFFFFF;
+    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.15), 8, 0, 0, 0);
+}
+
+/* Summary row label */
+.summary-label {
+    -fx-font-size: 13;
+    -fx-text-fill: #64748B;
+}
+
+.summary-value {
+    -fx-font-size: 13;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0B1120;
+}
