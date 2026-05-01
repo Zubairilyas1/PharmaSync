@@ -12,21 +12,19 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import frontend.ui.UiTheme;
 
 import java.time.LocalDate;
 import java.util.*;
 
 public class Reports {
-    private static final String APP_BG = "#F4F7FB";
-    private static final String PRIMARY_BLUE = "#0056B3";
-
     public static Scene createReportsScene(Stage stage) {
         return createReportsSceneInternal(stage);
     }
 
     private static Scene createReportsSceneInternal(Stage stage) {
         VBox mainContainer = new VBox();
-        mainContainer.setStyle("-fx-background-color: " + APP_BG + ";");
+        mainContainer.setStyle(UiTheme.appBackground());
 
         // Header with back button
         HBox header = createHeader(stage);
@@ -37,8 +35,8 @@ public class Reports {
         scrollPane.setFitToWidth(true);
 
         VBox contentArea = new VBox(20);
-        contentArea.setPadding(new Insets(20));
-        contentArea.setStyle("-fx-background-color: " + APP_BG + ";");
+        contentArea.setPadding(UiTheme.pagePadding());
+        contentArea.setStyle(UiTheme.appBackground());
 
         // Summary Cards Section
         HBox summaryCards = createSummaryCards();
@@ -67,12 +65,10 @@ public class Reports {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
+        header.setStyle(UiTheme.topBar());
 
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
-        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: #DCE9FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
-        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;"));
+        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
@@ -92,19 +88,19 @@ public class Reports {
         cardsContainer.setStyle("-fx-padding: 10;");
 
         // Total Sales (Monthly)
-        VBox totalSalesCard = createSummaryCard("Total Sales (Monthly)", "$45,230.50", "#4CAF50", "📊");
+        VBox totalSalesCard = createSummaryCard("Total Sales (Monthly)", "$45,230.50", "#4CAF50", "Sales");
         cardsContainer.getChildren().add(totalSalesCard);
 
         // Profit Margin
-        VBox profitMarginCard = createSummaryCard("Profit Margin", "32.5%", "#2196F3", "💰");
+        VBox profitMarginCard = createSummaryCard("Profit Margin", "32.5%", "#2196F3", "Margin");
         cardsContainer.getChildren().add(profitMarginCard);
 
         // Items Expired
-        VBox itemsExpiredCard = createSummaryCard("Items Expired", "12", "#FF9800", "⚠️");
+        VBox itemsExpiredCard = createSummaryCard("Items Expired", "12", "#FF9800", "Expiry");
         cardsContainer.getChildren().add(itemsExpiredCard);
 
         // Active Prescriptions
-        VBox activePrescriptionsCard = createSummaryCard("Active Prescriptions", "487", "#9C27B0", "💊");
+        VBox activePrescriptionsCard = createSummaryCard("Active Prescriptions", "487", "#9C27B0", "Scripts");
         cardsContainer.getChildren().add(activePrescriptionsCard);
 
         // Make all cards equal size
@@ -115,7 +111,7 @@ public class Reports {
 
     private static VBox createSummaryCard(String title, String value, String color, String icon) {
         VBox card = new VBox(10);
-        card.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        card.setStyle(UiTheme.card() + " -fx-padding: 20;");
         card.setAlignment(Pos.TOP_LEFT);
 
         HBox iconBox = new HBox();
@@ -124,7 +120,7 @@ public class Reports {
         iconBox.getChildren().add(iconLabel);
 
         Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #666; -fx-font-weight: normal;");
+        titleLabel.setStyle(UiTheme.bodyText());
 
         Label valueLabel = new Label(value);
         valueLabel.setStyle("-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
@@ -136,10 +132,10 @@ public class Reports {
 
     private static VBox createChartsSection() {
         VBox chartsSection = new VBox(15);
-        chartsSection.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        chartsSection.setStyle(UiTheme.card() + " -fx-padding: 20;");
 
         Label chartsTitle = new Label("Monthly Sales Trend");
-        chartsTitle.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #333;");
+        chartsTitle.setStyle(UiTheme.headingM());
 
         // Create Bar Chart
         CategoryAxis xAxis = new CategoryAxis();
@@ -175,10 +171,10 @@ public class Reports {
 
     private static VBox createExpirySection() {
         VBox expirySection = new VBox(15);
-        expirySection.setStyle("-fx-background-color: white; -fx-border-radius: 8; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        expirySection.setStyle(UiTheme.card() + " -fx-padding: 20;");
 
         Label expiryTitle = new Label("Upcoming Expirations");
-        expiryTitle.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #333;");
+        expiryTitle.setStyle(UiTheme.headingM());
 
         // Create TableView for expiry items
         TableView<ExpiryItem> expiryTable = new TableView<>();
@@ -212,9 +208,9 @@ public class Reports {
                 } else {
                     setText(item);
                     if (item.equals("Expired")) {
-                        setStyle("-fx-text-fill: #FF5252; -fx-font-weight: bold;");
+                        setStyle("-fx-text-fill: " + UiTheme.COLOR_DANGER_TEXT + "; -fx-font-weight: bold;");
                     } else if (item.equals("Expiring Soon")) {
-                        setStyle("-fx-text-fill: #FF9800; -fx-font-weight: bold;");
+                        setStyle("-fx-text-fill: " + UiTheme.COLOR_WARNING_TEXT + "; -fx-font-weight: bold;");
                     } else {
                         setStyle("-fx-text-fill: #4CAF50;");
                     }
@@ -245,18 +241,15 @@ public class Reports {
         exportSection.setAlignment(Pos.CENTER_LEFT);
         exportSection.setStyle("-fx-padding: 10;");
 
-        Button pdfButton = new Button("📥 Download PDF Report");
-        pdfButton.setStyle("-fx-background-color: #FF5722; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
+        Button pdfButton = new Button("Download PDF Report");
+        pdfButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 10 20;");
         pdfButton.setPrefWidth(180);
-        pdfButton.setOnMouseEntered(e -> pdfButton.setStyle("-fx-background-color: #E64A19; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
-        pdfButton.setOnMouseExited(e -> pdfButton.setStyle("-fx-background-color: #FF5722; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
         pdfButton.setOnAction(e -> showExportDialog(stage, "PDF"));
 
-        Button excelButton = new Button("📊 Export to Excel");
-        excelButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;");
+        Button excelButton = new Button("Export to Excel");
+        excelButton.setStyle(UiTheme.primaryButton() + " -fx-padding: 10 20;");
+        UiTheme.installPrimaryHover(excelButton);
         excelButton.setPrefWidth(180);
-        excelButton.setOnMouseEntered(e -> excelButton.setStyle("-fx-background-color: #45a049; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
-        excelButton.setOnMouseExited(e -> excelButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10 20; -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-radius: 5;"));
         excelButton.setOnAction(e -> showExportDialog(stage, "Excel"));
 
         exportSection.getChildren().addAll(pdfButton, excelButton);
