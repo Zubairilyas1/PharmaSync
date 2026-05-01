@@ -69,7 +69,6 @@ public class CustomerDatabase {
         String customerId = "CUST-" + (customerIdCounter++);
         Customer newCustomer = new Customer(customerId, customerName);
         customers.put(customerId, newCustomer);
-        System.out.println("✓ New customer registered: " + customerName + " (" + customerId + ")");
         return newCustomer;
     }
     
@@ -104,9 +103,6 @@ public class CustomerDatabase {
         Transaction transaction = new Transaction(transactionId, LocalDate.now(), medicineName, 
                                                  batchId, quantity, pricePerUnit, "SALE");
         customer.transactionHistory.add(transaction);
-        
-        System.out.println("✓ Sale recorded for " + customer.customerName + ": " + medicineName + 
-                          " x" + quantity + " (" + transactionId + ")");
         return transactionId;
     }
     
@@ -123,9 +119,6 @@ public class CustomerDatabase {
                                                  batchId, quantity, pricePerUnit, "RETURN");
         transaction.returnCondition = returnCondition;
         customer.transactionHistory.add(transaction);
-        
-        System.out.println("✓ Return recorded for " + customer.customerName + ": " + medicineName + 
-                          " x" + quantity + " (" + returnCondition + ")");
         return transactionId;
     }
     
