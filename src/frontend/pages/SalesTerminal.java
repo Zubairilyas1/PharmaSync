@@ -69,9 +69,9 @@ public class SalesTerminal {
         root.getStyleClass().add("app-background");
 
         // ─── TOP HEADER BAR ───
-        HBox header = new HBox(14);
+        HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(14, 22, 14, 22));
+        header.setPadding(new Insets(10, 16, 10, 16));
         header.getStyleClass().add("top-bar");
 
         Button backButton = new Button("← Dashboard");
@@ -97,23 +97,23 @@ public class SalesTerminal {
 
         header.getChildren().addAll(backButton, titleWrap, hspacer, liveBadge);
         root.setTop(header);
-        BorderPane.setMargin(header, new Insets(16, 22, 0, 22));
+        header.setMargin(header, new Insets(12, 16, 0, 16));
 
         // ─── MAIN CONTENT: LEFT (Catalog) + RIGHT (Order) ───
-        HBox content = new HBox(18);
-        content.setPadding(new Insets(16, 22, 22, 22));
+        HBox content = new HBox(12);
+        content.setPadding(new Insets(12, 16, 16, 16));
 
         VBox leftPanel = buildCatalogPanel();
         VBox rightPanel = buildOrderPanel(stage);
 
         HBox.setHgrow(leftPanel, Priority.ALWAYS);
-        rightPanel.setPrefWidth(480);
-        rightPanel.setMinWidth(440);
+        rightPanel.setPrefWidth(380);
+        rightPanel.setMinWidth(360);
 
         content.getChildren().addAll(leftPanel, rightPanel);
         root.setCenter(content);
 
-        Scene scene = new Scene(root, 1280, 820);
+        Scene scene = new Scene(root, 1100, 700);
         UiTheme.applyStyleSheet(scene);
         Animations.applyPageTransition(root);
         return scene;
@@ -123,15 +123,15 @@ public class SalesTerminal {
     //  LEFT PANEL — Medicine Catalog
     // ════════════════════════════════════════
     private static VBox buildCatalogPanel() {
-        VBox panel = new VBox(14);
+        VBox panel = new VBox(10);
         panel.getStyleClass().add("card");
 
         // Section header
         Label sectionLabel = new Label("MEDICINE CATALOG");
-        sectionLabel.getStyleClass().add("section-label");
+        sectionLabel.setStyle("-fx-font-size: 11; -fx-font-weight: 700; -fx-text-fill: #64748B;");
 
         // Search bar
-        HBox searchRow = new HBox(10);
+        HBox searchRow = new HBox(8);
         searchRow.setAlignment(Pos.CENTER_LEFT);
 
         TextField searchField = new TextField();
@@ -148,8 +148,9 @@ public class SalesTerminal {
 
         // Results list
         ListView<CartItem> resultsList = new ListView<>();
-        resultsList.setPrefHeight(380);
+        resultsList.setPrefHeight(240);
         resultsList.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0; -fx-border-width: 0;");
+        resultsList.setFixedCellSize(68);
         resultsList.setCellFactory(param -> new SearchResultCell(cartItems));
 
         // Search logic
@@ -174,20 +175,20 @@ public class SalesTerminal {
         resultsList.setItems(searchResults);
 
         // ─── Dosage Converter (compact) ───
-        VBox dosageBox = new VBox(8);
-        dosageBox.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 10; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-border-width: 1; -fx-padding: 12;");
+        VBox dosageBox = new VBox(4);
+        dosageBox.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 8; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1; -fx-padding: 8;");
 
         Label dosageTitle = new Label("DOSAGE CONVERTER");
-        dosageTitle.getStyleClass().add("section-label");
+        dosageTitle.setStyle("-fx-font-size: 10; -fx-font-weight: 700; -fx-text-fill: #64748B;");
 
-        HBox dosageRow = new HBox(10);
+        HBox dosageRow = new HBox(8);
         dosageRow.setAlignment(Pos.CENTER_LEFT);
         Label tabLabel = new Label("Tablets:");
-        tabLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #64748B;");
+        tabLabel.setStyle("-fx-font-size: 10; -fx-text-fill: #64748B;");
         Spinner<Integer> tabSpinner = new Spinner<>(1, 100, 1);
-        tabSpinner.setPrefWidth(80);
+        tabSpinner.setPrefWidth(60);
         Label resultLabel = new Label("= 500 mg");
-        resultLabel.setStyle("-fx-font-size: 13; -fx-font-weight: 800; -fx-text-fill: #6366F1;");
+        resultLabel.setStyle("-fx-font-size: 11; -fx-font-weight: 800; -fx-text-fill: #6366F1;");
 
         tabSpinner.valueProperty().addListener((obs, o, n) -> resultLabel.setText("= " + (n * 500) + " mg"));
         dosageRow.getChildren().addAll(tabLabel, tabSpinner, resultLabel);
@@ -221,9 +222,10 @@ public class SalesTerminal {
         cartLabel.getStyleClass().add("section-label");
 
         TableView<CartItem> cartTable = new TableView<>();
-        cartTable.setStyle("-fx-font-size: 12; -fx-background-color: transparent; -fx-border-width: 0;");
-        cartTable.setPrefHeight(280);
-        cartTable.setMinHeight(250);
+        cartTable.setStyle("-fx-font-size: 11; -fx-background-color: transparent; -fx-border-width: 0;");
+        cartTable.setPrefHeight(220);
+        cartTable.setMinHeight(180);
+        cartTable.setFixedCellSize(28);
         cartTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<CartItem, String> nameCol = new TableColumn<>("Medicine");
@@ -481,7 +483,7 @@ public class SalesTerminal {
         
         public SearchResultCell(ObservableList<CartItem> cart) {
             this.cart = cart;
-            setStyle("-fx-background-color: transparent; -fx-padding: 3 0;");
+            setStyle("-fx-background-color: transparent; -fx-padding: 2 0;");
         }
         
         @Override
@@ -491,39 +493,33 @@ public class SalesTerminal {
                 setGraphic(null);
                 setStyle("-fx-background-color: transparent;");
             } else {
-                VBox card = new VBox(8);
-                card.getStyleClass().add("medicine-catalog-card");
+                VBox card = new VBox(3);
+                card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1; -fx-padding: 8 10;");
 
-                // Top row: name + price
-                HBox topRow = new HBox(8);
+                // Row 1: name + badges + price
+                HBox topRow = new HBox(6);
                 topRow.setAlignment(Pos.CENTER_LEFT);
                 Label nameLabel = new Label(item.getMedicineName());
-                nameLabel.setStyle("-fx-font-size: 14; -fx-font-weight: 800; -fx-text-fill: #0B1120;");
+                nameLabel.setStyle("-fx-font-size: 12; -fx-font-weight: 800; -fx-text-fill: #0B1120;");
+                Label stockBadge = new Label(item.getAvailableStock() + " in stock");
+                stockBadge.getStyleClass().add(item.getAvailableStock() < 20 ? "stock-badge-low" : "stock-badge");
+                Label dosageBadge = new Label(item.getDosageMg() + "mg");
+                dosageBadge.getStyleClass().add("dosage-chip");
                 Region s1 = new Region();
                 HBox.setHgrow(s1, Priority.ALWAYS);
                 Label priceLabel = new Label("Rs. " + String.format("%.2f", item.getPrice()));
-                priceLabel.setStyle("-fx-font-size: 14; -fx-font-weight: 800; -fx-text-fill: #6366F1;");
-                topRow.getChildren().addAll(nameLabel, s1, priceLabel);
+                priceLabel.setStyle("-fx-font-size: 12; -fx-font-weight: 800; -fx-text-fill: #6366F1;");
+                topRow.getChildren().addAll(nameLabel, stockBadge, dosageBadge, s1, priceLabel);
 
-                // Badges row: stock + dosage + batch
-                HBox badges = new HBox(6);
-                badges.setAlignment(Pos.CENTER_LEFT);
-                Label stockBadge = new Label("Stock: " + item.getAvailableStock());
-                stockBadge.getStyleClass().add(item.getAvailableStock() < 20 ? "stock-badge-low" : "stock-badge");
-                Label dosageBadge = new Label(item.getDosageMg() + " mg");
-                dosageBadge.getStyleClass().add("dosage-chip");
-                Label batchBadge = new Label(item.getBatchId());
-                batchBadge.setStyle("-fx-font-size: 10; -fx-text-fill: #94A3B8;");
-                badges.getChildren().addAll(stockBadge, dosageBadge, batchBadge);
-
-                // Action row: spinner + add button
-                HBox actionRow = new HBox(8);
+                // Row 2: spinner + add button
+                HBox actionRow = new HBox(6);
                 actionRow.setAlignment(Pos.CENTER_LEFT);
                 Spinner<Integer> qtySpinner = new Spinner<>(1, Math.max(1, item.getAvailableStock()), 1);
-                qtySpinner.setPrefWidth(75);
-                qtySpinner.setStyle("-fx-font-size: 11;");
-
-                Button addBtn = new Button("+ Add to Cart");
+                qtySpinner.setPrefWidth(60);
+                qtySpinner.setPrefHeight(24);
+                qtySpinner.setStyle("-fx-font-size: 10;");
+                Button addBtn = new Button("+ Add");
+                addBtn.setStyle("-fx-font-size: 10; -fx-padding: 3 10;");
                 addBtn.getStyleClass().add("add-cart-button");
                 addBtn.setOnAction(e -> {
                     CartItem existing = cart.stream()
@@ -537,10 +533,9 @@ public class SalesTerminal {
                     }
                     showAlert(Alert.AlertType.INFORMATION, "Added", qty + "x " + item.getMedicineName() + " added to cart");
                 });
-
                 actionRow.getChildren().addAll(qtySpinner, addBtn);
 
-                card.getChildren().addAll(topRow, badges, actionRow);
+                card.getChildren().addAll(topRow, actionRow);
                 setGraphic(card);
                 setStyle("-fx-background-color: transparent;");
             }
