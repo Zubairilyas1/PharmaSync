@@ -51,6 +51,7 @@ public class SalesTerminal {
     
     private static ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
     private static ObservableList<CartItem> searchResults = FXCollections.observableArrayList();
+    private static Label validationResult;
     
     // Sample medicines database
     private static final Map<String, CartItem> medicinesDatabase = new HashMap<>();
@@ -148,7 +149,8 @@ public class SalesTerminal {
 
         // Results list
         ListView<CartItem> resultsList = new ListView<>();
-        resultsList.setPrefHeight(240);
+        resultsList.setPrefHeight(408);
+        resultsList.setMaxHeight(408);
         resultsList.setStyle("-fx-background-color: transparent; -fx-background-insets: 0; -fx-padding: 0; -fx-border-width: 0;");
         resultsList.setFixedCellSize(68);
         resultsList.setCellFactory(param -> new SearchResultCell(cartItems));
@@ -194,7 +196,53 @@ public class SalesTerminal {
         dosageRow.getChildren().addAll(tabLabel, tabSpinner, resultLabel);
         dosageBox.getChildren().addAll(dosageTitle, dosageRow);
 
-        panel.getChildren().addAll(sectionLabel, searchRow, resultsList, dosageBox);
+        // ─── Clinical Validation Section ───
+        VBox clinicalBox = new VBox(6);
+        clinicalBox.getStyleClass().add("clinical-section");
+
+        Label clinTitle = new Label("SAFETY VALIDATION");
+        clinTitle.getStyleClass().add("section-label");
+
+        HBox clinRow = new HBox(10);
+        clinRow.setAlignment(Pos.CENTER_LEFT);
+
+        Button validateBtn = new Button("Run Clinical Check");
+        validateBtn.getStyleClass().add("validate-button");
+        Animations.bindPulseOnClick(validateBtn);
+
+        ProgressIndicator spinner = new ProgressIndicator();
+        spinner.setPrefSize(20, 20);
+        spinner.setVisible(false);
+
+        validationResult = new Label();
+        validationResult.setStyle("-fx-font-size: 11; -fx-font-weight: 700;");
+        validationResult.setVisible(false);
+
+        validateBtn.setOnAction(e -> {
+            if (cartItems.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "Empty Cart", "Add items to cart before validation!");
+                return;
+            }
+            validateBtn.setDisable(true);
+            spinner.setVisible(true);
+            validationResult.setVisible(false);
+
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
+                Platform.runLater(() -> {
+                    spinner.setVisible(false);
+                    validationResult.setText("✓ Clinical Check Passed");
+                    validationResult.setStyle("-fx-text-fill: #059669; -fx-font-size: 11; -fx-font-weight: 700;");
+                    validationResult.setVisible(true);
+                    validateBtn.setDisable(false);
+                });
+            }));
+            timeline.play();
+        });
+
+        clinRow.getChildren().addAll(validateBtn, spinner, validationResult);
+        clinicalBox.getChildren().addAll(clinTitle, clinRow);
+
+        panel.getChildren().addAll(sectionLabel, searchRow, resultsList, dosageBox, clinicalBox);
         VBox.setVgrow(resultsList, Priority.ALWAYS);
         return panel;
     }
@@ -359,51 +407,7 @@ public class SalesTerminal {
             cartTable.refresh();
         });
 
-        // ─── Clinical Validation Section ───
-        VBox clinicalBox = new VBox(10);
-        clinicalBox.getStyleClass().add("clinical-section");
 
-        Label clinTitle = new Label("SAFETY VALIDATION");
-        clinTitle.getStyleClass().add("section-label");
-
-        HBox clinRow = new HBox(10);
-        clinRow.setAlignment(Pos.CENTER_LEFT);
-
-        Button validateBtn = new Button("Run Clinical Check");
-        validateBtn.getStyleClass().add("validate-button");
-        Animations.bindPulseOnClick(validateBtn);
-
-        ProgressIndicator spinner = new ProgressIndicator();
-        spinner.setPrefSize(24, 24);
-        spinner.setVisible(false);
-
-        Label validationResult = new Label();
-        validationResult.setStyle("-fx-font-size: 12; -fx-font-weight: 700;");
-        validationResult.setVisible(false);
-
-        validateBtn.setOnAction(e -> {
-            if (cartItems.isEmpty()) {
-                showAlert(Alert.AlertType.WARNING, "Empty Cart", "Please add items to cart before validation!");
-                return;
-            }
-            validateBtn.setDisable(true);
-            spinner.setVisible(true);
-            validationResult.setVisible(false);
-
-            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), event -> {
-                Platform.runLater(() -> {
-                    spinner.setVisible(false);
-                    validationResult.setText("✓ Clinical Check Passed — No Interactions");
-                    validationResult.setStyle("-fx-text-fill: #059669; -fx-font-size: 12; -fx-font-weight: 700;");
-                    validationResult.setVisible(true);
-                    validateBtn.setDisable(false);
-                });
-            }));
-            timeline.play();
-        });
-
-        clinRow.getChildren().addAll(validateBtn, spinner, validationResult);
-        clinicalBox.getChildren().addAll(clinTitle, clinRow);
 
         // ─── Action Buttons ───
         HBox actionRow = new HBox(10);
@@ -469,7 +473,7 @@ public class SalesTerminal {
         panel.getChildren().addAll(
             titleRow, cartLabel, cartTable, stockWarning,
             customerBox, summaryBox, totalStrip,
-            clinicalBox, actionRow
+            actionRow
         );
         VBox.setVgrow(cartTable, Priority.ALWAYS);
         return panel;
