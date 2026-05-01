@@ -14,8 +14,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import backend.database.DatabaseManager;
@@ -23,17 +21,18 @@ import backend.repositories.MySQLUserRepository;
 import backend.services.AuthenticationService;
 import backend.exceptions.AuthenticationException;
 import java.sql.Connection;
+import frontend.ui.UiTheme;
 
 // SignUpPage class for user registration, allowing new users to create an account. It includes form fields for username, email, and password, along with validation and error handling. The page also provides a link to the LoginPage for existing users.
 public class SignUpPage {
     public static Scene getScene(Stage primaryStage) {
         BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #F4F7FB;");
+        root.setStyle(UiTheme.appBackground());
 
         Label phaseBadge = new Label("●  Phase 1.0: Authentication & Dashboard Prototype");
         phaseBadge.setStyle(
-                "-fx-background-color: #d9f7e4;" +
-                "-fx-text-fill: #177245;" +
+                "-fx-background-color: #DCFCE7;" +
+                "-fx-text-fill: #166534;" +
                 "-fx-padding: 8 16;" +
                 "-fx-background-radius: 999;" +
                 "-fx-font-weight: 600;" +
@@ -47,30 +46,23 @@ public class SignUpPage {
         HBox card = new HBox();
         card.setMaxWidth(980);
         card.setPrefHeight(560);
-        card.setStyle(
-                "-fx-background-color: white;" +
-                "-fx-background-radius: 18;" +
-                "-fx-border-color: #E5EAF2;" +
-                "-fx-border-width: 1;" +
-                "-fx-border-radius: 18;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.10), 16, 0, 0, 4);"
-        );
+        card.setStyle(UiTheme.card());
 
         VBox leftPanel = new VBox(14);
         leftPanel.setPadding(new Insets(28));
         leftPanel.setAlignment(Pos.CENTER_LEFT);
         leftPanel.setPrefWidth(520);
-        leftPanel.setStyle("-fx-background-color: linear-gradient(to bottom right, #e7f6ff, #cfefff); -fx-background-radius: 16 0 0 16;");
+        leftPanel.setStyle("-fx-background-color: linear-gradient(to bottom right, #E7F2FF, #D9E9FF); -fx-background-radius: 16 0 0 16;");
 
         Label brandTitle = new Label("PharmaSync");
-        brandTitle.setFont(Font.font("Arial", FontWeight.BOLD, 62));
+        brandTitle.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 54; -fx-font-weight: 800;");
         brandTitle.setTextFill(Color.web("#094c98"));
 
         Label brandSub = new Label("Create your staff account.");
-        brandSub.setFont(Font.font("Arial", 30));
+        brandSub.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 28; -fx-font-weight: 500;");
         brandSub.setTextFill(Color.web("#2f4155"));
 
-        Label imageHint = new Label("Dummy image area\nReplace with your custom image");
+        Label imageHint = new Label("Brand visual placeholder\nReplace with approved product illustration");
         imageHint.setStyle(
                 "-fx-background-color: rgba(255, 255, 255, 0.68);" +
                 "-fx-border-color: rgba(9, 76, 152, 0.35);" +
@@ -89,29 +81,25 @@ public class SignUpPage {
         rightPanel.setPrefWidth(460);
 
         Label pageTitle = new Label("Pharmacist Sign Up");
-        pageTitle.setFont(Font.font("Arial", FontWeight.BOLD, 38));
-        pageTitle.setTextFill(Color.web("#0f3159"));
+        pageTitle.setStyle("-fx-font-family: 'Arial'; -fx-font-size: 34; -fx-font-weight: 800; -fx-text-fill: #0F3159;");
 
         Label userName = new Label("Username");
-        userName.setTextFill(Color.web("#4e6177"));
+        userName.setStyle(UiTheme.bodyText());
         TextField userTextField = new TextField();
         userTextField.setPromptText("Enter username");
-        userTextField.setPrefHeight(44);
-        userTextField.setStyle("-fx-font-size: 14; -fx-background-radius: 8; -fx-border-radius: 8;");
+        UiTheme.styleFormInput(userTextField);
 
         Label emailLabel = new Label("Email");
-        emailLabel.setTextFill(Color.web("#4e6177"));
+        emailLabel.setStyle(UiTheme.bodyText());
         TextField emailTextField = new TextField();
         emailTextField.setPromptText("Enter email");
-        emailTextField.setPrefHeight(44);
-        emailTextField.setStyle("-fx-font-size: 14; -fx-background-radius: 8; -fx-border-radius: 8;");
+        UiTheme.styleFormInput(emailTextField);
 
         Label pw = new Label("Password");
-        pw.setTextFill(Color.web("#4e6177"));
+        pw.setStyle(UiTheme.bodyText());
         PasswordField pwBox = new PasswordField();
         pwBox.setPromptText("Enter password");
-        pwBox.setPrefHeight(44);
-        pwBox.setStyle("-fx-font-size: 14; -fx-background-radius: 8; -fx-border-radius: 8;");
+        UiTheme.styleFormInput(pwBox);
 
         Label messageLabel = new Label();
         messageLabel.setWrapText(true);
@@ -124,13 +112,8 @@ public class SignUpPage {
         Button btnSignUp = new Button("Create Account");
         btnSignUp.setMaxWidth(Double.MAX_VALUE); // To make it stretch
         btnSignUp.setPrefHeight(46);
-        btnSignUp.setStyle(
-                "-fx-background-color: #0b63c7;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 15;" +
-                "-fx-font-weight: 700;" +
-                "-fx-background-radius: 8;"
-        );
+        btnSignUp.setStyle(UiTheme.primaryButton());
+        UiTheme.installPrimaryHover(btnSignUp);
         
         // Action event for the button using MySQL backend
         btnSignUp.setOnAction(e -> {
@@ -145,15 +128,8 @@ public class SignUpPage {
                 
                 authService.signup(username, email, password);
                 
-                messageLabel.setTextFill(Color.web("#166534"));
-                messageLabel.setStyle(
-                        "-fx-background-color: #dcfce7;" +
-                        "-fx-border-color: #86efac;" +
-                        "-fx-border-radius: 8;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-padding: 10 12;" +
-                        "-fx-font-weight: 600;"
-                );
+                messageLabel.setTextFill(Color.web(UiTheme.COLOR_SUCCESS_TEXT));
+                messageLabel.setStyle(UiTheme.successMessage());
                 messageLabel.setText("Sign Up Successful! Redirecting...");
                 messageLabel.setVisible(true);
                 
@@ -161,30 +137,15 @@ public class SignUpPage {
                 primaryStage.setScene(LoginPage.getScene(primaryStage));
                 
             } catch (AuthenticationException authException) {
-                messageLabel.setTextFill(Color.web("#991b1b"));
-                messageLabel.setStyle(
-                        "-fx-background-color: #fee2e2;" +
-                        "-fx-border-color: #fca5a5;" +
-                        "-fx-border-radius: 8;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-padding: 10 12;" +
-                        "-fx-font-weight: 600;"
-                );
+                messageLabel.setTextFill(Color.web(UiTheme.COLOR_DANGER_TEXT));
+                messageLabel.setStyle(UiTheme.errorMessage());
                 messageLabel.setText(authException.getMessage());
                 messageLabel.setVisible(true);
             } catch (Exception ex) {
-                messageLabel.setTextFill(Color.web("#991b1b"));
-                messageLabel.setStyle(
-                        "-fx-background-color: #fee2e2;" +
-                        "-fx-border-color: #fca5a5;" +
-                        "-fx-border-radius: 8;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-padding: 10 12;" +
-                        "-fx-font-weight: 600;"
-                );
+                messageLabel.setTextFill(Color.web(UiTheme.COLOR_DANGER_TEXT));
+                messageLabel.setStyle(UiTheme.errorMessage());
                 messageLabel.setText("Database Connection Error.");
                 messageLabel.setVisible(true);
-                ex.printStackTrace();
             }
         });
 
@@ -193,7 +154,7 @@ public class SignUpPage {
         loginLink.setOnAction(e -> {
             primaryStage.setScene(LoginPage.getScene(primaryStage));
         });
-        loginLink.setStyle("-fx-text-fill: #0a5eb7; -fx-font-weight: 600;");
+        loginLink.setStyle("-fx-text-fill: " + UiTheme.COLOR_PRIMARY + "; -fx-font-weight: 600;");
         HBox linkBox = new HBox(10);
         linkBox.setAlignment(Pos.CENTER_RIGHT);
         linkBox.getChildren().addAll(loginLink);
