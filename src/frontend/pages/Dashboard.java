@@ -13,16 +13,13 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import frontend.ui.UiTheme;
 
 public class Dashboard {
 
-    private static final String PRIMARY_BLUE = "#0056B3";
-    private static final String PANEL_BG = "#FFFFFF";
-    private static final String APP_BG = "#F4F7FB";
-
     public static Scene createDashboardScene(Stage stage) {
         BorderPane mainLayout = new BorderPane();
-        mainLayout.setStyle("-fx-background-color: " + APP_BG + ";");
+        mainLayout.setStyle(UiTheme.appBackground());
 
         VBox shell = new VBox(16);
         shell.setPadding(new Insets(22));
@@ -51,14 +48,13 @@ public class Dashboard {
         HBox header = new HBox(12);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(12, 18, 12, 18));
-        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; "
-                + "-fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
+        header.setStyle(UiTheme.topBar());
 
         VBox titleWrap = new VBox(2);
         Label title = new Label("PharmaSync");
         title.setStyle("-fx-font-size: 24; -fx-font-weight: 800; -fx-text-fill: #111827;");
         Label subtitle = new Label("PharmaSync Executive Dashboard");
-        subtitle.setStyle("-fx-font-size: 12; -fx-text-fill: #6B7280;");
+        subtitle.setStyle(UiTheme.bodyText());
         titleWrap.getChildren().addAll(title, subtitle);
 
         Region spacer = new Region();
@@ -68,8 +64,7 @@ public class Dashboard {
         welcome.setStyle("-fx-font-size: 12; -fx-text-fill: #475467;");
 
         Button profileButton = new Button("Admin");
-        profileButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; "
-                + "-fx-font-weight: 700; -fx-background-radius: 12; -fx-padding: 7 14;");
+        profileButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 7 14;");
 
         header.getChildren().addAll(titleWrap, spacer, welcome, profileButton);
         return header;
@@ -86,7 +81,7 @@ public class Dashboard {
         VBox side = new VBox(10);
         side.setPrefWidth(250);
         side.setPadding(new Insets(18));
-        side.setStyle("-fx-background-color: " + PRIMARY_BLUE + "; -fx-background-radius: 16;");
+        side.setStyle("-fx-background-color: " + UiTheme.COLOR_PRIMARY + "; -fx-background-radius: 16;");
 
         Label brand = new Label("PharmaSync");
         brand.setStyle("-fx-text-fill: white; -fx-font-size: 20; -fx-font-weight: 800;");
@@ -122,10 +117,10 @@ public class Dashboard {
         GridPane statsGrid = new GridPane();
         statsGrid.setHgap(14);
         statsGrid.setVgap(14);
-        statsGrid.add(createMetricCard("Sales Performance Today", "$14,250.00", "Top Medicine: Panadol 500mg", "#0056B3"), 0, 0);
+        statsGrid.add(createMetricCard("Sales Performance Today", "$14,250.00", "Top Medicine: Panadol 500mg", UiTheme.COLOR_PRIMARY), 0, 0);
         statsGrid.add(createAlertCard(stage), 1, 0);
         statsGrid.add(createMetricCard("Procurement & Vendor Health", "92%", "Supplier API Health", "#0B8A86"), 0, 1);
-        statsGrid.add(createMetricCard("Pending Validations", "7", "Prescriptions: 5 | Returns: 2", "#0056B3"), 1, 1);
+        statsGrid.add(createMetricCard("Pending Validations", "7", "Prescriptions: 5 | Returns: 2", UiTheme.COLOR_PRIMARY), 1, 1);
         statsGrid.add(createMetricCard("Security Audit Trail", "24h", "Critical security events", "#1D4ED8"), 0, 2);
         statsGrid.add(createActionCard(stage), 1, 2);
 
@@ -145,7 +140,7 @@ public class Dashboard {
         valueLabel.setStyle("-fx-font-size: 38; -fx-font-weight: 800; -fx-text-fill: " + accentColor + ";");
 
         Label sub = new Label(subtitle);
-        sub.setStyle("-fx-font-size: 12; -fx-text-fill: #6B7280;");
+        sub.setStyle(UiTheme.bodyText());
 
         card.getChildren().addAll(titleLabel, valueLabel, sub);
         return card;
@@ -161,13 +156,13 @@ public class Dashboard {
 
         Label alertStrip = new Label("Red-Alert: 12 Items");
         alertStrip.setStyle("-fx-font-size: 13; -fx-font-weight: 700; -fx-text-fill: #1F2937; "
-                + "-fx-background-color: #FACC15; -fx-background-radius: 8; -fx-padding: 7 10;");
+                + "-fx-background-color: " + UiTheme.COLOR_WARNING_BG + "; -fx-background-radius: 8; -fx-padding: 7 10;");
 
         Label detail = new Label("Warfarin 5mg (Quarantine)   •   Aspirin 81mg (Near-Expiry)");
         detail.setWrapText(true);
-        detail.setStyle("-fx-font-size: 12; -fx-text-fill: #475467;");
+        detail.setStyle(UiTheme.bodyText());
 
-        Button cta = createCtaButton("View Inventory", PRIMARY_BLUE, () ->
+        Button cta = createCtaButton("View Inventory", UiTheme.COLOR_PRIMARY, () ->
             stage.setScene(InventoryList.createInventoryListScene(stage))
         );
         card.getChildren().addAll(title, alertStrip, detail, cta);
@@ -198,9 +193,7 @@ public class Dashboard {
     private static VBox createPanel(double spacing) {
         VBox panel = new VBox(spacing);
         panel.setPadding(new Insets(14));
-        panel.setStyle("-fx-background-color: " + PANEL_BG + "; -fx-background-radius: 14; "
-                + "-fx-border-color: #E5EAF2; -fx-border-radius: 14; "
-                + "-fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.08), 14, 0, 0, 3);");
+        panel.setStyle(UiTheme.card());
         return panel;
     }
 
@@ -214,7 +207,7 @@ public class Dashboard {
         Button button = new Button(title);
         button.setPrefWidth(210);
         button.setAlignment(Pos.CENTER_LEFT);
-        String activeStyle = "-fx-background-color: white; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-font-weight: 700;";
+        String activeStyle = "-fx-background-color: white; -fx-text-fill: " + UiTheme.COLOR_PRIMARY + "; -fx-font-weight: 700;";
         String idleStyle = "-fx-background-color: rgba(255,255,255,0.08); -fx-text-fill: #E6EEFF; -fx-font-weight: 600;";
         button.setStyle((active ? activeStyle : idleStyle) + " -fx-background-radius: 10; -fx-padding: 10 14;");
         button.setOnAction(e -> action.run());
@@ -231,8 +224,7 @@ public class Dashboard {
 
     private static Button createActionButton(String text, Runnable action) {
         Button button = new Button(text);
-        button.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: #003F8A; -fx-font-weight: 700; "
-                + "-fx-background-radius: 8; -fx-padding: 8 10;");
+        button.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 10;");
         button.setOnAction(e -> action.run());
         button.setPrefWidth(190);
         return button;
