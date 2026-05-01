@@ -16,14 +16,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import frontend.ui.UiTheme;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 public class InventoryList {
-    private static final String APP_BG = "#F4F7FB";
-    private static final String PRIMARY_BLUE = "#0056B3";
-    
     public static Scene createInventoryListScene(Stage stage) {
         InventoryService inventoryService = null;
         try {
@@ -31,7 +29,6 @@ public class InventoryList {
             MySQLMedicineRepository repo = new MySQLMedicineRepository(conn);
             inventoryService = new InventoryService(repo);
         } catch (Exception e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Unable to connect to the database.");
             return new Scene(new VBox(new Label("Database Connection Error")), 720, 720);
         }
@@ -39,24 +36,24 @@ public class InventoryList {
         final InventoryService finalInventoryService = inventoryService;
 
         VBox root = new VBox(15);
-        root.setPadding(new Insets(20));
-        root.setStyle("-fx-background-color: " + APP_BG + ";");
+        root.setPadding(UiTheme.pagePadding());
+        root.setStyle(UiTheme.appBackground());
         
         // Header with back button
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle("-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
+        header.setStyle(UiTheme.topBar());
         
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
+        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
         });
         
         Label headerTitle = new Label("Inventory Management");
-        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
+        headerTitle.setStyle(UiTheme.headingM());
         
         header.getChildren().addAll(backButton, headerTitle);
         HBox.setHgrow(headerTitle, Priority.ALWAYS);
@@ -64,20 +61,20 @@ public class InventoryList {
         
         // Title
         Label titleLabel = new Label("Inventory Management");
-        titleLabel.setStyle("-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #333;");
+        titleLabel.setStyle(UiTheme.headingL());
         
         // Search bar container
         HBox searchContainer = new HBox(10);
         searchContainer.setAlignment(Pos.CENTER_LEFT);
         searchContainer.setPadding(new Insets(10));
-        searchContainer.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #E5EAF2; -fx-border-radius: 12;");
+        searchContainer.setStyle(UiTheme.card());
         
         Label searchLabel = new Label("Search by Medicine Name:");
-        searchLabel.setStyle("-fx-font-size: 12;");
+        searchLabel.setStyle(UiTheme.bodyText());
         
         TextField searchField = new TextField();
         searchField.setPromptText("Enter medicine name...");
-        searchField.setStyle("-fx-padding: 8; -fx-font-size: 12;");
+        searchField.setStyle(UiTheme.input());
         searchField.setPrefWidth(300);
         
         searchContainer.getChildren().addAll(searchLabel, searchField);
@@ -176,16 +173,16 @@ public class InventoryList {
         HBox summaryBox = new HBox(20);
         summaryBox.setAlignment(Pos.CENTER_LEFT);
         summaryBox.setPadding(new Insets(10));
-        summaryBox.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #E5EAF2; -fx-border-radius: 12;");
+        summaryBox.setStyle(UiTheme.card());
         
         Label totalLabel = new Label();
-        totalLabel.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+        totalLabel.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: " + UiTheme.COLOR_TEXT_PRIMARY + ";");
         
         Label lowStockLabel = new Label();
-        lowStockLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #d32f2f;");
+        lowStockLabel.setStyle("-fx-font-size: 12; -fx-text-fill: " + UiTheme.COLOR_DANGER_TEXT + ";");
         
         Label expiringLabel = new Label();
-        expiringLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #f57c00;");
+        expiringLabel.setStyle("-fx-font-size: 12; -fx-text-fill: " + UiTheme.COLOR_WARNING_TEXT + ";");
         
         summaryBox.getChildren().addAll(totalLabel, lowStockLabel, expiringLabel);
         
@@ -197,8 +194,9 @@ public class InventoryList {
         buttonContainer.setAlignment(Pos.CENTER_RIGHT);
         buttonContainer.setPadding(new Insets(10));
         
-        Button addButton = new Button("+ Add Medicine");
-        addButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10; -fx-font-size: 12; -fx-cursor: hand;");
+        Button addButton = new Button("Add Medicine");
+        addButton.setStyle(UiTheme.primaryButton() + " -fx-padding: 10 12;");
+        UiTheme.installPrimaryHover(addButton);
         addButton.setOnAction(e -> {
             AddMedicinePage.showAddMedicineDialog(stage, finalInventoryService, medicine -> {
                 medicines.add(medicine);
@@ -207,8 +205,8 @@ public class InventoryList {
             });
         });
         
-        Button editButton = new Button("✏️ Edit");
-        editButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-padding: 8; -fx-font-size: 12; -fx-cursor: hand;");
+        Button editButton = new Button("Edit");
+        editButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 12;");
         editButton.setOnAction(e -> {
             backend.models.Medicine selectedMedicine = table.getSelectionModel().getSelectedItem();
             if (selectedMedicine == null) {
@@ -227,8 +225,8 @@ public class InventoryList {
             });
         });
         
-        Button deleteButton = new Button("🗑️ Delete");
-        deleteButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-padding: 8; -fx-font-size: 12; -fx-cursor: hand;");
+        Button deleteButton = new Button("Delete");
+        deleteButton.setStyle(UiTheme.dangerButton() + " -fx-padding: 8 12;");
         deleteButton.setOnAction(e -> {
             backend.models.Medicine selectedMedicine = table.getSelectionModel().getSelectedItem();
             if (selectedMedicine == null) {
