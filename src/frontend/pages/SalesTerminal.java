@@ -121,7 +121,7 @@ public class SalesTerminal {
         content.getChildren().addAll(leftPanel, rightPanel);
         root.setCenter(content);
 
-        Scene scene = new Scene(root, 1100, 700);
+        Scene scene = new Scene(root, 1280, 800);
         UiTheme.applyStyleSheet(scene);
         Animations.applyPageTransition(root);
         return scene;
