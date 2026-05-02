@@ -66,7 +66,7 @@ public class ForgotPasswordPage {
         center.setPadding(new Insets(30));
         root.setCenter(center);
 
-        return new Scene(root, 800, 600);
+        return new Scene(root, 1920, 1080);
     }
 
     private static void showNotice(String title, String message) {
