@@ -30,7 +30,7 @@ public class InventoryList {
             inventoryService = new InventoryService(repo);
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Unable to connect to the database.");
-            return new Scene(new VBox(new Label("Database Connection Error")), 720, 720);
+            return new Scene(new VBox(new Label("Database Connection Error")), 1920, 1080);
         }
         
         final InventoryService finalInventoryService = inventoryService;
