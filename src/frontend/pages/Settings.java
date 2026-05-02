@@ -66,7 +66,7 @@ public class Settings {
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
         mainContainer.getChildren().add(scrollPane);
 
-        return new Scene(mainContainer, 1000, 900);
+        return new Scene(mainContainer, 1920, 1080);
     }
 
     private static HBox createHeader(Stage stage) {
