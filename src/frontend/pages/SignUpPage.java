@@ -180,6 +180,6 @@ public class SignUpPage {
         center.setPadding(new Insets(10, 28, 26, 28));
         root.setCenter(center);
 
-        return new Scene(root, 1200, 760);
+        return new Scene(root, 1280, 800);
     }
 }
