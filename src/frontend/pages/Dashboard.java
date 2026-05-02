@@ -37,7 +37,7 @@ public class Dashboard {
 
         mainLayout.setCenter(scrollPane);
 
-        Scene scene = new Scene(mainLayout, 1200, 800);
+        Scene scene = new Scene(mainLayout, 1280, 1000);
         UiTheme.applyStyleSheet(scene);
 
         stage.setResizable(true);
