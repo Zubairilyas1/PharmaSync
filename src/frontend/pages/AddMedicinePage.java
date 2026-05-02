@@ -61,6 +61,16 @@ public class AddMedicinePage {
         expiryDatePicker.setPrefWidth(300);
         expiryBox.getChildren().addAll(expiryLabel, expiryDatePicker);
 
+        // Price
+        HBox priceBox = new HBox(10);
+        priceBox.setAlignment(Pos.CENTER_LEFT);
+        Label priceLabel = new Label("Price (Rs):");
+        priceLabel.setPrefWidth(120);
+        TextField priceField = new TextField();
+        priceField.setPromptText("e.g., 150.00");
+        priceField.setPrefWidth(300);
+        priceBox.getChildren().addAll(priceLabel, priceField);
+        
         // Quantity
         HBox quantityBox = new HBox(10);
         quantityBox.setAlignment(Pos.CENTER_LEFT);
@@ -80,7 +90,7 @@ public class AddMedicinePage {
         statusCombo.setValue("Active");
         statusCombo.setPrefWidth(300);
         statusBox.getChildren().addAll(statusLabel, statusCombo);
-
+        
         // Buttons
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
@@ -88,8 +98,16 @@ public class AddMedicinePage {
         Button saveButton = new Button("Save");
         saveButton.setStyle("-fx-background-color: #0056B3; -fx-text-fill: white; -fx-padding: 10 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-background-radius: 10;");
         saveButton.setOnAction(e -> {
-            if (nameField.getText().isEmpty() || batchField.getText().isEmpty()) {
+            if (nameField.getText().isEmpty() || batchField.getText().isEmpty() || priceField.getText().isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "Validation Error", "Please fill all required fields!");
+                return;
+            }
+            
+            double price;
+            try {
+                price = Double.parseDouble(priceField.getText());
+            } catch (NumberFormatException ex) {
+                showAlert(Alert.AlertType.WARNING, "Validation Error", "Price must be a valid number!");
                 return;
             }
 
@@ -97,7 +115,7 @@ public class AddMedicinePage {
                 backend.models.Medicine medicine = new backend.models.Medicine(0,
                     nameField.getText(),
                     nameField.getText(), // placeholder for description
-                    0.0, // placeholder for price
+                    price, 
                     quantitySpinner.getValue(),
                     batchField.getText(),
                     expiryDatePicker.getValue(),
@@ -129,6 +147,7 @@ public class AddMedicinePage {
             nameBox,
             batchBox,
             expiryBox,
+            priceBox,
             quantityBox,
             statusBox,
             new Separator(),
