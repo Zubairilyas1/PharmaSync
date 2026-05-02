@@ -19,6 +19,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import backend.database.DatabaseManager;
+import backend.models.Customer;
+import backend.models.Sale;
+import backend.models.Medicine; // If needed for getting medicine details by ID
+import backend.repositories.MySQLCustomerRepository;
+import backend.repositories.MySQLSaleRepository;
+import backend.repositories.MySQLMedicineRepository;
+import backend.repositories.MySQLAuditLogRepository;
+import backend.services.CustomerService;
+import backend.services.SalesService;
+import backend.services.InventoryService;
+import backend.services.AuditService;
+
 public class Returns {
     
     private static final String PANEL_BG = "#F8FAFC";
@@ -26,51 +39,23 @@ public class Returns {
     
     // Combined return item data structure
     public static class ReturnLineItem {
-        public TransactionItem transaction;
+        public Sale transaction;
         public ReturnItemData returnData;
         
-        public ReturnLineItem(TransactionItem transaction) {
+        public ReturnLineItem(Sale transaction) {
             this.transaction = transaction;
             this.returnData = new ReturnItemData();
         }
     }
     
-    // Mock transaction data structure
-    private static class TransactionItem {
-        public String itemId;
-        public String medicineName;
-        public double price;
-        public int quantity;
-        public String batchId;
-        
-        public TransactionItem(String itemId, String medicineName, double price, int quantity, String batchId) {
-            this.itemId = itemId;
-            this.medicineName = medicineName;
-            this.price = price;
-            this.quantity = quantity;
-            this.batchId = batchId;
-        }
-    }
-    
-    // Mock transaction database
-    private static Map<String, List<TransactionItem>> mockTransactions = new HashMap<>();
-    
-    static {
-        List<TransactionItem> transaction1 = new ArrayList<>();
-        transaction1.add(new TransactionItem("1", "Paracetamol 500mg", 5.99, 10, "BATCH-001"));
-        transaction1.add(new TransactionItem("2", "Ibuprofen 200mg", 7.50, 5, "BATCH-002"));
-        transaction1.add(new TransactionItem("3", "Aspirin 100mg", 4.50, 15, "BATCH-003"));
-        mockTransactions.put("TS-2024-001", transaction1);
-        
-        List<TransactionItem> transaction2 = new ArrayList<>();
-        transaction2.add(new TransactionItem("4", "Amoxicillin 250mg", 12.99, 3, "BATCH-004"));
-        transaction2.add(new TransactionItem("5", "Cough Syrup 100ml", 8.75, 2, "BATCH-005"));
-        mockTransactions.put("TS-2024-002", transaction2);
-        
-        List<TransactionItem> transaction3 = new ArrayList<>();
-        transaction3.add(new TransactionItem("6", "Vitamin C 1000mg", 6.50, 20, "BATCH-006"));
-        transaction3.add(new TransactionItem("7", "Multivitamin Tablet", 15.99, 1, "BATCH-007"));
-        mockTransactions.put("TS-2024-003", transaction3);
+    private InventoryService inventoryService;
+    private AuditService auditService;
+    private SalesService salesService;     
+
+    public Returns(InventoryService inventoryService, AuditService auditService, SalesService salesService) {
+        this.inventoryService = inventoryService;
+        this.auditService = auditService;
+        this.salesService = salesService;
     }
     
     public static Scene createReturnsScene(Stage stage) {
@@ -83,7 +68,7 @@ public class Returns {
             Label errorLabel = new Label("Error loading Returns page:\n" + e.getMessage());
             errorLabel.setWrapText(true);
             errorBox.getChildren().add(errorLabel);
-            return new Scene(errorBox, 800, 600);
+            return new Scene(errorBox, 1920, 1080);
         }
     }
     
@@ -152,38 +137,30 @@ public class Returns {
         leftPanel.getChildren().add(transactionDetailsBox);
         
         // Purchase History Table
-        Label historyLabel = new Label("Purchase History");
+        Label historyLabel = new Label("Purchase History (Sales)");
         historyLabel.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #111827;");
         leftPanel.getChildren().add(historyLabel);
         
-        TableView<CustomerDatabase.Transaction> historyTable = new TableView<>();
+        TableView<Sale> historyTable = new TableView<>();
         historyTable.setPrefHeight(250);
         historyTable.setStyle("-fx-font-size: 11; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5EAF2;");
         
-        TableColumn<CustomerDatabase.Transaction, String> dateCol = new TableColumn<>("Date");
-        dateCol.setPrefWidth(90);
-        dateCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().date.toString()));
+        TableColumn<Sale, String> dateCol = new TableColumn<>("Date");
+        dateCol.setPrefWidth(120);
+        dateCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getTimestamp().toString()));
         
-        TableColumn<CustomerDatabase.Transaction, String> medicineCol = new TableColumn<>("Medicine");
-        medicineCol.setPrefWidth(120);
-        medicineCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().medicineName));
+        TableColumn<Sale, Integer> medicineIdCol = new TableColumn<>("Med ID");
+        medicineIdCol.setPrefWidth(60);
+        medicineIdCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getMedicineId()));
         
-        TableColumn<CustomerDatabase.Transaction, String> batchCol = new TableColumn<>("Batch");
-        batchCol.setPrefWidth(80);
-        batchCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().batchId));
-        
-        TableColumn<CustomerDatabase.Transaction, Integer> qtyCol = new TableColumn<>("Qty");
+        TableColumn<Sale, Integer> qtyCol = new TableColumn<>("Qty");
         qtyCol.setPrefWidth(50);
-        qtyCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().quantity));
+        qtyCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getQuantity()));
         
-        TableColumn<CustomerDatabase.Transaction, String> typeCol = new TableColumn<>("Type");
-        typeCol.setPrefWidth(70);
-        typeCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().type));
-        
-        TableColumn<CustomerDatabase.Transaction, Double> amountCol = new TableColumn<>("Amount");
+        TableColumn<Sale, Double> amountCol = new TableColumn<>("Amount");
         amountCol.setPrefWidth(80);
-        amountCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().totalAmount));
-        amountCol.setCellFactory(column -> new TableCell<CustomerDatabase.Transaction, Double>() {
+        amountCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getTotalPrice()));
+        amountCol.setCellFactory(column -> new TableCell<Sale, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -191,7 +168,7 @@ public class Returns {
             }
         });
         
-        historyTable.getColumns().addAll(dateCol, medicineCol, batchCol, qtyCol, typeCol, amountCol);
+        historyTable.getColumns().addAll(dateCol, medicineIdCol, qtyCol, amountCol);
         leftPanel.getChildren().add(historyTable);
         VBox.setVgrow(historyTable, Priority.ALWAYS);
         
@@ -232,29 +209,24 @@ public class Returns {
         });
         
         // Medicine name column
-        TableColumn<ReturnLineItem, String> medicineColumn = new TableColumn<>("Medicine");
-        medicineColumn.setPrefWidth(120);
-        medicineColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().transaction.medicineName));
+        TableColumn<ReturnLineItem, Integer> medicineColumn = new TableColumn<>("Med ID");
+        medicineColumn.setPrefWidth(80);
+        medicineColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().transaction.getMedicineId()));
         
         // Batch column
-        TableColumn<ReturnLineItem, String> batchColumn = new TableColumn<>("Batch ID");
-        batchColumn.setPrefWidth(100);
-        batchColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().transaction.batchId));
-        
-        // Expiry column
-        TableColumn<ReturnLineItem, String> expiryColumn = new TableColumn<>("Expiry Date");
-        expiryColumn.setPrefWidth(100);
-        expiryColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty("N/A"));
+        TableColumn<ReturnLineItem, String> batchColumn = new TableColumn<>("Timestamp");
+        batchColumn.setPrefWidth(120);
+        batchColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().transaction.getTimestamp().toString()));
         
         // Quantity column
         TableColumn<ReturnLineItem, Integer> quantityColumn = new TableColumn<>("Original Qty");
         quantityColumn.setPrefWidth(80);
-        quantityColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().transaction.quantity));
+        quantityColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().transaction.getQuantity()));
         
         // Price column
-        TableColumn<ReturnLineItem, Double> priceColumn = new TableColumn<>("Unit Price");
+        TableColumn<ReturnLineItem, Double> priceColumn = new TableColumn<>("Total Price");
         priceColumn.setPrefWidth(80);
-        priceColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().transaction.price));
+        priceColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().transaction.getTotalPrice()));
         priceColumn.setCellFactory(column -> new TableCell<ReturnLineItem, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
@@ -276,7 +248,7 @@ public class Returns {
                     setText(null);
                 } else {
                     ReturnLineItem lineItem = getTableView().getItems().get(getIndex());
-                    Spinner<Integer> spinner = new Spinner<>(0, lineItem.transaction.quantity, item != null ? item : 0, 1);
+                    Spinner<Integer> spinner = new Spinner<>(0, lineItem.transaction.getQuantity(), item != null ? item : 0, 1);
                     spinner.setPrefWidth(80);
                     spinner.setEditable(true);
                     spinner.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -319,7 +291,7 @@ public class Returns {
             }
         });
         
-        itemsTable.getColumns().addAll(selectColumn, medicineColumn, batchColumn, expiryColumn, quantityColumn, priceColumn, returnQtyColumn, conditionColumn);
+        itemsTable.getColumns().addAll(selectColumn, medicineColumn, batchColumn, quantityColumn, priceColumn, returnQtyColumn, conditionColumn);
         leftPanel.getChildren().add(itemsTable);
         VBox.setVgrow(itemsTable, Priority.ALWAYS);
         
@@ -384,7 +356,7 @@ public class Returns {
         });
         
         // Reference to currently selected customer from lookup
-        final CustomerDatabase.Customer[] selectedCustomer = new CustomerDatabase.Customer[1];
+        final Customer[] selectedCustomer = new Customer[1];
         
         // Process button
         Button processButton = new Button("Process Refund");
@@ -416,39 +388,56 @@ public class Returns {
         lookupButton.setOnAction(e -> {
             String searchText = customerNameField.getText().trim();
             if (searchText.isEmpty()) {
-                showAlert(Alert.AlertType.WARNING, "Empty Input", "Please enter customer name to search.");
+                showAlert(Alert.AlertType.WARNING, "Empty Input", "Please enter customer email or ID to search.");
                 itemsList.clear();
                 historyTable.setItems(FXCollections.observableArrayList());
                 customerInfoLabel.setText("");
                 return;
             }
             
-            // Search by name
-            CustomerDatabase.Customer customer = CustomerDatabase.getCustomerByName(searchText);
-            
-            if (customer == null) {
-                showAlert(Alert.AlertType.WARNING, "Not Found", "Customer '" + searchText + "' not found.");
+            try {
+                CustomerService customerService = new CustomerService(new MySQLCustomerRepository(DatabaseManager.getConnection()));
+                SalesService salesService = new SalesService(new MySQLSaleRepository(DatabaseManager.getConnection()));
+                
+                Customer customer = null;
+                try {
+                    int id = Integer.parseInt(searchText);
+                    customer = customerService.getCustomerById(id);
+                } catch (NumberFormatException ignored) {
+                }
+                
+                if (customer == null) {
+                    for (Customer c : customerService.getAllCustomers()) {
+                        if (c.getEmail().equalsIgnoreCase(searchText) || c.getName().equalsIgnoreCase(searchText)) {
+                            customer = c;
+                            break;
+                        }
+                    }
+                }
+                
+                if (customer == null) {
+                    showAlert(Alert.AlertType.WARNING, "Not Found", "Customer not found.");
+                    itemsList.clear();
+                    historyTable.setItems(FXCollections.observableArrayList());
+                    customerInfoLabel.setText("");
+                    return;
+                }
+                
+                selectedCustomer[0] = customer;
+                customerInfoLabel.setText("Customer: " + customer.getName() + "\nID: " + customer.getId() + 
+                                         "\nEmail: " + customer.getEmail());
+                
+                // Show transaction history (we assume we can get all sales, then filter by some logic if needed, 
+                // but the current SalesService returns all sales. We don't have a getSalesByCustomer, so we'll show all or recent.)
+                java.util.List<Sale> allSales = salesService.getAllSales();
+                
+                ObservableList<Sale> historyItems = FXCollections.observableArrayList(allSales); // in reality, filter by customerId if that existed in Sale model
+                historyTable.setItems(historyItems);
+                
+                // Populate return items
                 itemsList.clear();
-                historyTable.setItems(FXCollections.observableArrayList());
-                customerInfoLabel.setText("");
-                return;
-            }
-            
-            selectedCustomer[0] = customer;
-            customerInfoLabel.setText("Customer: " + customer.customerName + "\nID: " + customer.customerId + 
-                                     "\nRegistered: " + customer.registrationDate);
-            
-            // Show transaction history
-            ObservableList<CustomerDatabase.Transaction> historyItems = FXCollections.observableArrayList(customer.transactionHistory);
-            historyTable.setItems(historyItems);
-            
-            // Populate return items with only sales (not returns)
-            itemsList.clear();
-            for (CustomerDatabase.Transaction txn : customer.transactionHistory) {
-                if ("SALE".equals(txn.type)) {
-                    ReturnLineItem lineItem = new ReturnLineItem(
-                        new Returns.TransactionItem(txn.transactionId, txn.medicineName, txn.pricePerUnit, txn.quantity, txn.batchId)
-                    );
+                for (Sale txn : historyItems) {
+                    ReturnLineItem lineItem = new ReturnLineItem(txn);
                     lineItem.returnData.selectedProperty().addListener((obs, oldVal, newVal) -> {
                         updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel);
                     });
@@ -457,10 +446,12 @@ public class Returns {
                     });
                     itemsList.add(lineItem);
                 }
+                
+                showNotification("✓ Customer found: " + customer.getName());
+
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Backend Error", "Failed to fetch customer data: " + ex.getMessage());
             }
-            
-            showNotification("✓ Customer found: " + customer.customerName + " with " + 
-                           customer.transactionHistory.size() + " transactions");
         });
         
         return new Scene(root, 1300, 850);
@@ -497,7 +488,8 @@ public class Returns {
             if (lineItem.returnData.selected.get()) {
                 int returnQty = lineItem.returnData.returnQty.get();
                 if (returnQty > 0) {
-                    totalRefund += returnQty * lineItem.transaction.price;
+                    double unitPrice = lineItem.transaction.getTotalPrice() / lineItem.transaction.getQuantity();
+                    totalRefund += returnQty * unitPrice;
                     itemCount += returnQty;
                 }
             }
@@ -508,59 +500,67 @@ public class Returns {
         totalRefundLabel.setText(String.format("Calculated Refund (Incl. Tax): Rs. %.2f", totalRefund));
     }
     
-    private static void processReturn(TableView<ReturnLineItem> table, CustomerDatabase.Customer customer, Stage stage) {
+    private static void processReturn(TableView<ReturnLineItem> table, Customer customer, Stage stage) {
         StringBuilder returnDetails = new StringBuilder();
         double totalRefund = 0;
         int processedItems = 0;
         
-        for (ReturnLineItem lineItem : table.getItems()) {
-            if (lineItem.returnData.selected.get() && lineItem.returnData.returnQty.get() > 0) {
-                TransactionItem item = lineItem.transaction;
-                String condition = lineItem.returnData.condition.get();
-                int returnQty = lineItem.returnData.returnQty.get();
-                double refundAmount = returnQty * item.price;
-                
-                // Record return in customer database
-                CustomerDatabase.addReturnTransaction(
-                    customer.customerId,
-                    item.medicineName,
-                    item.batchId,
-                    returnQty,
-                    item.price,
-                    condition
-                );
-                
-                // Determine stock action
-                String stockAction = "Wrong Item (Restock)".equals(condition) ? "✓ RESTOCKED" : "⚠ QUARANTINED";
-                
-                returnDetails.append(String.format("• %s (%dx %s) - %s\n  Refund: Rs. %.2f\n  Action: %s\n\n",
-                    item.medicineName,
-                    returnQty,
-                    item.batchId,
-                    item.medicineName,
-                    refundAmount,
-                    stockAction));
-                
-                totalRefund += refundAmount;
-                processedItems++;
+        try {
+            InventoryService invService = new InventoryService(new MySQLMedicineRepository(DatabaseManager.getConnection()));
+            SalesService salesService = new SalesService(new MySQLSaleRepository(DatabaseManager.getConnection()));
+            AuditService auditService = new AuditService(new MySQLAuditLogRepository(DatabaseManager.getConnection()));
+        
+            for (ReturnLineItem lineItem : table.getItems()) {
+                if (lineItem.returnData.selected.get() && lineItem.returnData.returnQty.get() > 0) {
+                    Sale item = lineItem.transaction;
+                    String condition = lineItem.returnData.condition.get();
+                    int returnQty = lineItem.returnData.returnQty.get();
+                    double unitPrice = item.getTotalPrice() / item.getQuantity();
+                    double refundAmount = returnQty * unitPrice;
+                    
+                    String stockAction = "";
+                    if ("Wrong Item (Restock)".equals(condition)) {
+                        Medicine med = invService.getMedicineById(item.getMedicineId());
+                        if (med != null) {
+                            med.setStockQuantity(med.getStockQuantity() + returnQty);
+                            invService.updateMedicine(med);
+                            stockAction = "Restocked to Inventory";
+                        }
+                    } else {
+                        stockAction = "Quarantined";
+                    }
+                    
+                    returnDetails.append(String.format("• %dx MedID %d - Rs. %.2f\n  Action: %s\n\n",
+                        returnQty,
+                        item.getMedicineId(),
+                        refundAmount,
+                        stockAction));
+                    
+                    totalRefund += refundAmount;
+                    processedItems++;
+                }
             }
+            
+            if (processedItems == 0) {
+                showAlert(Alert.AlertType.WARNING, "No Items Selected", "Please select at least one item with a return quantity greater than 0.");
+                return;
+            }
+            
+            salesService.recordSale(new Sale(0, 0, 1, -totalRefund, java.time.LocalDateTime.now(), "Return: " + processedItems + " items"));
+            auditService.logAction("Anonymous", "Return", "Processed return for Rs. " + totalRefund + " (Customer: " + customer.getName() + ")");
+            
+            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+            successAlert.setTitle("Return Processed Successfully");
+            successAlert.setHeaderText("✓ Refund Updated");
+            successAlert.setContentText(String.format("Customer: %s\nTotal Items Returned: %d\nTotal Refund: Rs. %.2f\n\n%s", 
+                customer.getName(), processedItems, totalRefund, returnDetails.toString()));
+            successAlert.showAndWait();
+            
+            showSuccessToast(String.format("Return processed: Rs. %.2f refund for %s (%d items)", totalRefund, customer.getName(), processedItems));
+        } catch (Exception ex) {
+            System.err.println("Error processing return to backend: " + ex.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Backend Error", "Failed to process return to backend: " + ex.getMessage());
         }
-        
-        if (processedItems == 0) {
-            showAlert(Alert.AlertType.WARNING, "No Items Selected", "Please select at least one item with a return quantity greater than 0.");
-            return;
-        }
-        
-        // Show success dialog
-        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-        successAlert.setTitle("Return Processed Successfully");
-        successAlert.setHeaderText("✓ Refund & History Updated");
-        successAlert.setContentText(String.format("Customer: %s\nTotal Items Returned: %d\nTotal Refund: Rs. %.2f\n\n%s", 
-            customer.customerName, processedItems, totalRefund, returnDetails.toString()));
-        successAlert.showAndWait();
-        
-        // Show toast notification
-        showSuccessToast(String.format("Return processed: Rs. %.2f refund for %s (%d items)", totalRefund, customer.customerName, processedItems));
     }
     
     private static void showAlert(Alert.AlertType type, String title, String content) {
