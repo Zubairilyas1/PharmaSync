@@ -39,7 +39,7 @@ public class Reports {
         contentArea.setStyle(UiTheme.appBackground());
 
         // Summary Cards Section
-        HBox summaryCards = createSummaryCards();
+        javafx.scene.layout.FlowPane summaryCards = createSummaryCards();
         contentArea.getChildren().add(summaryCards);
 
         // Charts Section
@@ -68,7 +68,7 @@ public class Reports {
         header.setStyle(UiTheme.topBar());
 
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
+        backButton.getStyleClass().addAll("glass-button", "button-base");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
@@ -83,35 +83,36 @@ public class Reports {
         return header;
     }
 
-    private static HBox createSummaryCards() {
-        HBox cardsContainer = new HBox(15);
+    private static javafx.scene.layout.FlowPane createSummaryCards() {
+        javafx.scene.layout.FlowPane cardsContainer = new javafx.scene.layout.FlowPane(15, 15);
         cardsContainer.setStyle("-fx-padding: 10;");
+        cardsContainer.setAlignment(Pos.CENTER_LEFT);
 
         // Total Sales (Monthly)
-        VBox totalSalesCard = createSummaryCard("Total Sales (Monthly)", "$45,230.50", "#4CAF50", "Sales");
-        cardsContainer.getChildren().add(totalSalesCard);
-
+        VBox totalSalesCard = createSummaryCard("Total Sales (Monthly)", 45230.50, "metric-card-sales", "Sales", true, false);
         // Profit Margin
-        VBox profitMarginCard = createSummaryCard("Profit Margin", "32.5%", "#2196F3", "Margin");
-        cardsContainer.getChildren().add(profitMarginCard);
-
+        VBox profitMarginCard = createSummaryCard("Profit Margin", 32.5, "metric-card-margin", "Margin", false, true);
         // Items Expired
-        VBox itemsExpiredCard = createSummaryCard("Items Expired", "12", "#FF9800", "Expiry");
-        cardsContainer.getChildren().add(itemsExpiredCard);
-
+        VBox itemsExpiredCard = createSummaryCard("Items Expired", 12.0, "metric-card-expiry", "Expiry", false, false);
         // Active Prescriptions
-        VBox activePrescriptionsCard = createSummaryCard("Active Prescriptions", "487", "#9C27B0", "Scripts");
-        cardsContainer.getChildren().add(activePrescriptionsCard);
+        VBox activePrescriptionsCard = createSummaryCard("Active Prescriptions", 487.0, "metric-card-scripts", "Scripts", false, false);
 
-        // Make all cards equal size
-        cardsContainer.getChildren().forEach(card -> HBox.setHgrow(card, Priority.ALWAYS));
+        // Make all cards roughly equal width
+        totalSalesCard.setPrefWidth(250);
+        profitMarginCard.setPrefWidth(250);
+        itemsExpiredCard.setPrefWidth(250);
+        activePrescriptionsCard.setPrefWidth(250);
+
+        cardsContainer.getChildren().addAll(totalSalesCard, profitMarginCard, itemsExpiredCard, activePrescriptionsCard);
+        
+        frontend.ui.Animations.applyStaggeredEntry(cardsContainer.getChildren());
 
         return cardsContainer;
     }
 
-    private static VBox createSummaryCard(String title, String value, String color, String icon) {
+    private static VBox createSummaryCard(String title, double value, String cssClass, String icon, boolean isCurrency, boolean isPercentage) {
         VBox card = new VBox(10);
-        card.setStyle(UiTheme.card() + " -fx-padding: 20;");
+        card.getStyleClass().addAll("metric-card", cssClass);
         card.setAlignment(Pos.TOP_LEFT);
 
         HBox iconBox = new HBox();
@@ -120,10 +121,12 @@ public class Reports {
         iconBox.getChildren().add(iconLabel);
 
         Label titleLabel = new Label(title);
-        titleLabel.setStyle(UiTheme.bodyText());
+        titleLabel.getStyleClass().add("text-title");
 
-        Label valueLabel = new Label(value);
-        valueLabel.setStyle("-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: " + color + ";");
+        Label valueLabel = new Label("0");
+        valueLabel.getStyleClass().add("text-big-number");
+        
+        frontend.ui.Animations.animateNumber(valueLabel, value, 1000, isCurrency, isPercentage);
 
         card.getChildren().addAll(iconBox, titleLabel, valueLabel);
 
@@ -282,7 +285,7 @@ public class Reports {
         exportSection.setStyle("-fx-padding: 10;");
 
         Button pdfButton = new Button("Download PDF Report");
-        pdfButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 10 20;");
+        pdfButton.getStyleClass().addAll("glass-button", "button-base");
         pdfButton.setPrefWidth(180);
         pdfButton.setOnAction(e -> showExportDialog(stage, "PDF"));
 
