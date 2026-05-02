@@ -379,3 +379,219 @@
     -fx-font-weight: 700;
     -fx-text-fill: #0B1120;
 }
+
+.return-items-table {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-table-header-border-color: transparent;
+}
+
+.return-items-table .column-header-background {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: transparent;
+}
+
+.return-items-table .column-header, .return-items-table .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.return-items-table .table-row-cell {
+    -fx-border-color: transparent;
+}
+
+.return-items-table .table-cell {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.condition-dropdown {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 10;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 0.333em 0.75em;
+    -fx-font-size: 13;
+    -fx-text-fill: #0B1120;
+}
+
+.condition-dropdown:focused {
+    -fx-border-color: #14B8A6;
+}
+
+.search-button {
+    -fx-background-color: #0B1120;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-font-weight: bold;
+}
+
+.confirm-button {
+    -fx-background-color: linear-gradient(to right, #14B8A6, #0D9488);
+    -fx-text-fill: white;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-font-weight: bold;
+}
+
+.confirm-button:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(20, 184, 166, 0.3), 14, 0, 0, 4);
+    -fx-translate-y: -2;
+}
+
+.confirm-button:pressed {
+    -fx-translate-y: 0;
+    -fx-effect: none;
+}
+
+.button-base {
+    -fx-font-family: "Inter", "Segoe UI", "Arial";
+    -fx-font-size: 14;
+    -fx-font-weight: 800;
+    -fx-cursor: hand;
+}
+
+/* Metric Cards */
+.metric-card {
+    -fx-background-color: linear-gradient(to bottom right, #FFFFFF, #F8FAFC);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.04), 20, 0, 0, 4);
+    -fx-padding: 20;
+}
+
+.metric-card-sales {
+    -fx-border-color: #6366F1 transparent transparent transparent;
+    -fx-border-width: 2 0 0 0;
+}
+
+.metric-card-margin {
+    -fx-border-color: #14B8A6 transparent transparent transparent;
+    -fx-border-width: 2 0 0 0;
+}
+
+.metric-card-expiry {
+    -fx-border-color: #EF4444 transparent transparent transparent;
+    -fx-border-width: 2 0 0 0;
+}
+
+.metric-card-scripts {
+    -fx-border-color: #9C27B0 transparent transparent transparent;
+    -fx-border-width: 2 0 0 0;
+}
+
+/* Typography Hierarchy */
+.text-title {
+    -fx-font-size: 12pt;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+}
+
+.text-big-number {
+    -fx-font-size: 24pt;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0B1120;
+}
+
+.text-description {
+    -fx-font-size: 9pt;
+    -fx-text-fill: #94A3B8;
+}
+
+/* Glass effect secondary button */
+.glass-button {
+    -fx-background-color: rgba(255, 255, 255, 0.7);
+    -fx-border-color: rgba(226, 232, 240, 0.8);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-text-fill: #0B1120;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+}
+
+.glass-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.08), 8, 0, 0, 2);
+}
+
+/* Charts Minimalist Styling */
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines, .chart-horizontal-grid-lines {
+    -fx-stroke: transparent;
+}
+
+.chart-bottom-axis .axis-label, .chart-left-axis .axis-label {
+    -fx-text-fill: #94A3B8;
+}
+
+.chart-bottom-axis .axis-tick-mark, .chart-left-axis .axis-tick-mark {
+    -fx-stroke: transparent;
+}
+
+.chart-bottom-axis, .chart-left-axis {
+    -fx-border-color: transparent transparent transparent transparent;
+}
+
+.axis {
+    -fx-tick-label-fill: #94A3B8;
+}
+
+.axis:bottom {
+    -fx-border-color: #E2E8F0 transparent transparent transparent;
+}
+
+.axis:left {
+    -fx-border-color: transparent #E2E8F0 transparent transparent;
+}
+
+.default-color0.chart-bar { -fx-bar-fill: #6366F1; }
+.default-color1.chart-bar { -fx-bar-fill: #14B8A6; }
+.default-color0.chart-series-line { -fx-stroke: #6366F1; }
+.default-color1.chart-series-line { -fx-stroke: #14B8A6; }
+
+/* Alert List Cell */
+.alert-list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.alert-list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+}
+
+.alert-list-view .list-cell:filled:selected, .alert-list-view .list-cell:filled:hover {
+    -fx-background-color: transparent;
+}
+
+.alert-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 2);
+}
+
+.alert-card:hover {
+    -fx-border-color: #EF4444;
+}
+
+.low-stock-badge {
+    -fx-background-color: #FEF2F2;
+    -fx-text-fill: #EF4444;
+    -fx-background-radius: 4;
+    -fx-padding: 4 8;
+    -fx-font-size: 10pt;
+    -fx-font-weight: bold;
+}
