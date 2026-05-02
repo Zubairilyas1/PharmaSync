@@ -47,7 +47,7 @@ public class Procurement {
         VBox.setVgrow(contentArea, Priority.ALWAYS);
         mainContainer.getChildren().add(contentArea);
 
-        return new Scene(mainContainer, 1920, 1080);
+        return new Scene(mainContainer, 1280, 800);
     }
 
     private static HBox createHeader(Stage stage) {
