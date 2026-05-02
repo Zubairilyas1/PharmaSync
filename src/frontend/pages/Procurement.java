@@ -30,20 +30,34 @@ public class Procurement {
         HBox header = createHeader(stage);
         mainContainer.getChildren().add(header);
 
-        // Main content area with side panel
-        HBox contentArea = new HBox(15);
+        // Main content area with SplitPane
+        SplitPane contentArea = new SplitPane();
+        contentArea.setOrientation(javafx.geometry.Orientation.VERTICAL);
+        contentArea.setDividerPositions(0.35);
         contentArea.setPadding(new Insets(15));
         contentArea.setStyle(UiTheme.appBackground());
 
-        // Left side - Procurement items
-        VBox leftPanel = createProcurementPanel();
-        HBox.setHgrow(leftPanel, Priority.ALWAYS);
+        // Top side - Red Alert Dashboard
+        VBox topPanel = createRedAlertDashboard();
 
-        // Right side - PO Generator
+        // Bottom side - HBox with Suggested Orders and PO Generator
+        HBox bottomPanel = new HBox(15);
+        bottomPanel.setStyle(UiTheme.appBackground());
+        
+        VBox ordersPanel = new VBox(15);
+        Label ordersTitle = new Label("Suggested Orders - Low Stock Items");
+        ordersTitle.getStyleClass().add("text-title");
+        TableView<ProcurementItem> ordersTable = createSuggestedOrdersTable();
+        VBox.setVgrow(ordersTable, Priority.ALWAYS);
+        ordersPanel.getChildren().addAll(ordersTitle, ordersTable);
+        HBox.setHgrow(ordersPanel, Priority.ALWAYS);
+
         VBox rightPanel = createPOGeneratorPanel();
-        rightPanel.setPrefWidth(320);
+        rightPanel.setPrefWidth(350);
 
-        contentArea.getChildren().addAll(leftPanel, rightPanel);
+        bottomPanel.getChildren().addAll(ordersPanel, rightPanel);
+
+        contentArea.getItems().addAll(topPanel, bottomPanel);
         VBox.setVgrow(contentArea, Priority.ALWAYS);
         mainContainer.getChildren().add(contentArea);
 
@@ -57,7 +71,7 @@ public class Procurement {
         header.setStyle(UiTheme.topBar());
 
         Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
+        backButton.getStyleClass().addAll("glass-button", "button-base");
         backButton.setOnAction(e -> {
             Scene dashboardScene = Dashboard.createDashboardScene(stage);
             stage.setScene(dashboardScene);
@@ -72,66 +86,73 @@ public class Procurement {
         return header;
     }
 
-    private static VBox createProcurementPanel() {
-        VBox panel = new VBox(15);
-        panel.setStyle(UiTheme.appBackground());
-
-        // Red Alert Dashboard Section
-        VBox alertDashboard = createRedAlertDashboard();
-        panel.getChildren().add(alertDashboard);
-
-        // Suggested Orders Section
-        Label ordersTitle = new Label("Suggested Orders - Low Stock Items");
-        ordersTitle.setStyle(UiTheme.headingM());
-
-        TableView<ProcurementItem> ordersTable = createSuggestedOrdersTable();
-        VBox.setVgrow(ordersTable, Priority.ALWAYS);
-
-        panel.getChildren().addAll(ordersTitle, ordersTable);
-
-        return panel;
-    }
-
     private static VBox createRedAlertDashboard() {
         VBox alertSection = new VBox(10);
         alertSection.setStyle(UiTheme.card() + " -fx-padding: 15;");
 
         Label alertTitle = new Label("Critically Low Stock - Immediate Action Required");
-        alertTitle.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: " + UiTheme.COLOR_DANGER_TEXT + ";");
+        alertTitle.setStyle("-fx-font-size: 13pt; -fx-font-weight: bold; -fx-text-fill: " + UiTheme.COLOR_DANGER_TEXT + ";");
 
-        HBox alertCards = new HBox(12);
+        ListView<ProcurementItem> alertList = new ListView<>();
+        alertList.getStyleClass().add("alert-list-view");
+        alertList.setOrientation(javafx.geometry.Orientation.HORIZONTAL);
+        alertList.setPrefHeight(150);
 
-        // Sample critically low items
-        alertCards.getChildren().addAll(
-                createAlertCard("Aspirin", 8, 10),
-                createAlertCard("Ibuprofen", 5, 20),
-                createAlertCard("Amoxicillin", 3, 15),
-                createAlertCard("Metformin", 7, 25)
+        alertList.getItems().addAll(
+                new ProcurementItem("Aspirin", 8, 10, 100, 0.50, "Medco Supplies", false),
+                new ProcurementItem("Ibuprofen", 5, 20, 150, 0.75, "PharmaBulk", false),
+                new ProcurementItem("Amoxicillin", 3, 15, 120, 1.25, "HealthCare Distributors", false),
+                new ProcurementItem("Metformin", 7, 25, 200, 0.60, "MediPro Ventures", false)
         );
-        alertCards.getChildren().forEach(card -> HBox.setHgrow(card, Priority.ALWAYS));
 
-        alertSection.getChildren().addAll(alertTitle, alertCards);
+        alertList.setCellFactory(lv -> new ListCell<ProcurementItem>() {
+            @Override
+            protected void updateItem(ProcurementItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    VBox card = new VBox(10);
+                    card.getStyleClass().add("alert-card");
+                    card.setPrefWidth(220);
+
+                    HBox header = new HBox();
+                    header.setAlignment(Pos.CENTER_LEFT);
+                    Label nameLabel = new Label(item.medicineName);
+                    nameLabel.setStyle("-fx-font-size: 12pt; -fx-font-weight: bold; -fx-text-fill: #0B1120;");
+                    
+                    Label badge = new Label("Low Stock");
+                    badge.getStyleClass().add("low-stock-badge");
+                    
+                    javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
+                    HBox.setHgrow(spacer, Priority.ALWAYS);
+                    
+                    header.getChildren().addAll(nameLabel, spacer, badge);
+
+                    Label stockLabel = new Label("Current: " + item.currentStock + " | Min: " + item.minThreshold);
+                    stockLabel.getStyleClass().add("text-description");
+
+                    Button reorderBtn = new Button("Quick Reorder");
+                    reorderBtn.getStyleClass().add("button-base");
+                    reorderBtn.setStyle(UiTheme.primaryButton() + " -fx-padding: 6 12; -fx-font-size: 10pt;");
+                    reorderBtn.setMaxWidth(Double.MAX_VALUE);
+                    reorderBtn.setOnAction(e -> {
+                        item.selected = true;
+                        if (ordersTableRef != null) {
+                            ordersTableRef.refresh();
+                            updatePOSummary();
+                        }
+                    });
+
+                    card.getChildren().addAll(header, stockLabel, reorderBtn);
+                    setGraphic(card);
+                }
+            }
+        });
+
+        alertSection.getChildren().addAll(alertTitle, alertList);
 
         return alertSection;
-    }
-
-    private static VBox createAlertCard(String medicineName, int currentStock, int minThreshold) {
-        VBox card = new VBox(8);
-        card.setStyle("-fx-background-color: #ffebee; -fx-border-color: #c62828; -fx-border-width: 2; -fx-border-radius: 5; -fx-padding: 10;");
-        card.setAlignment(Pos.TOP_LEFT);
-
-        Label nameLabel = new Label(medicineName);
-        nameLabel.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #c62828;");
-
-        Label stockLabel = new Label("Current: " + currentStock + " | Min: " + minThreshold);
-        stockLabel.setStyle("-fx-font-size: 10; -fx-text-fill: #d32f2f;");
-
-        Label urgencyLabel = new Label("ORDER ASAP");
-        urgencyLabel.setStyle("-fx-font-size: 10; -fx-font-weight: bold; -fx-text-fill: #c62828;");
-
-        card.getChildren().addAll(nameLabel, stockLabel, urgencyLabel);
-
-        return card;
     }
 
     private static TableView<ProcurementItem> ordersTableRef;
