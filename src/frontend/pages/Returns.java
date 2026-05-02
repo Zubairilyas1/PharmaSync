@@ -63,12 +63,20 @@ public class Returns {
             return createReturnsSceneInternal(stage);
         } catch (Exception e) {
             System.err.println("ERROR in Returns.createReturnsScene: " + e.getMessage());
-            VBox errorBox = new VBox();
+            VBox errorBox = new VBox(15);
+            errorBox.setAlignment(Pos.CENTER);
             errorBox.setPadding(new Insets(20));
             Label errorLabel = new Label("Error loading Returns page:\n" + e.getMessage());
+            errorLabel.setStyle("-fx-font-size: 20; -fx-text-fill: red;");
             errorLabel.setWrapText(true);
-            errorBox.getChildren().add(errorLabel);
-            return new Scene(errorBox, 1920, 1080);
+            Button errorBackButton = new Button("← Back to Dashboard");
+            errorBackButton.setStyle("-fx-font-size: 14; -fx-padding: 10 20;");
+            errorBackButton.setOnAction(evt -> {
+                Scene dashboardScene = Dashboard.createDashboardScene(stage);
+                stage.setScene(dashboardScene);
+            });
+            errorBox.getChildren().addAll(errorLabel, errorBackButton);
+            return new Scene(errorBox, 1280, 800);
         }
     }
     
@@ -454,7 +462,7 @@ public class Returns {
             }
         });
         
-        return new Scene(root, 1300, 850);
+        return new Scene(root, 1280, 800);
     }
     
     private static HBox createHeader(Stage stage) {
