@@ -6,8 +6,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import javafx.stage.Stage;
@@ -81,127 +83,98 @@ public class Returns {
     }
     
     private static Scene createReturnsSceneInternal(Stage stage) {
-        VBox root = new VBox(20);
-        root.setPadding(new Insets(22));
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(24));
         root.setStyle(UiTheme.appBackground());
+        root.getStyleClass().add("app-background");
         
-        // Header with back button
         HBox header = createHeader(stage);
-        root.getChildren().add(header);
+        BorderPane.setMargin(header, new Insets(0, 0, 20, 0));
+        root.setTop(header);
         
-        Label titleLabel = new Label("Sales Returns");
-        titleLabel.setStyle(UiTheme.headingL());
+        VBox leftCard = new VBox(18);
+        leftCard.setPadding(new Insets(22));
+        leftCard.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 18; -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.08), 24, 0, 0, 10);");
+        leftCard.setMaxWidth(Double.MAX_VALUE);
         
-        Label subtitleLabel = new Label("Process Sales Return — Non-CRUD Logic Module (UC17)");
-        subtitleLabel.setStyle(UiTheme.bodyText());
+        Label sectionTitle = new Label("Transaction Search");
+        sectionTitle.setStyle("-fx-font-size: 20; -fx-font-weight: 800; -fx-text-fill: #0B1120;");
         
-        VBox titleBox = new VBox(4, titleLabel, subtitleLabel);
-        root.getChildren().add(titleBox);
+        Label sectionSubtitle = new Label("Find a transaction and choose the items to process for refund.");
+        sectionSubtitle.setStyle("-fx-font-size: 13; -fx-text-fill: #64748B;");
+        sectionSubtitle.setWrapText(true);
         
-        // Main content area
-        HBox mainContent = new HBox(20);
-        mainContent.setStyle(UiTheme.card() + " -fx-padding: 18;");
+        HBox searchFieldRow = new HBox(16);
+        searchFieldRow.setAlignment(Pos.CENTER_LEFT);
         
-        // Left side: Customer lookup and purchase history
-        VBox leftPanel = new VBox(15);
-        leftPanel.setPrefWidth(780);
+        TextField transactionIdField = new TextField();
+        transactionIdField.setPromptText("Transaction ID or receipt code");
+        transactionIdField.getStyleClass().add("form-input");
+        transactionIdField.setPrefWidth(460);
+        transactionIdField.setPrefHeight(46);
         
-        // ==================== CUSTOMER LOOKUP SECTION ====================
-        VBox customerLookupBox = new VBox(10);
-        customerLookupBox.setPadding(new Insets(14));
-        customerLookupBox.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 12; -fx-border-color: #DBEAFE; -fx-border-radius: 12; -fx-border-width: 1;");
+        Button searchButton = new Button("Search");
+        searchButton.getStyleClass().addAll("button-base", "search-button");
+        searchButton.setPrefWidth(140);
+        searchButton.setPrefHeight(46);
         
-        Label customerLookupLabel = new Label("Scan Receipt or Enter Transaction ID");
-        customerLookupLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
+        searchFieldRow.getChildren().addAll(transactionIdField, searchButton);
         
-        HBox customerSearchBox = new HBox(10);
-        customerSearchBox.setAlignment(Pos.CENTER_LEFT);
-        
-        TextField customerNameField = new TextField();
-        customerNameField.setPromptText("Enter customer name or Transaction ID (TS-XXXX-XXX)...");
-        customerNameField.setStyle(UiTheme.input() + " -fx-padding: 10;");
-        customerNameField.setPrefWidth(400);
-        
-        Button lookupButton = new Button("Fetch Order");
-        lookupButton.setStyle(UiTheme.primaryButton() + " -fx-padding: 10 16;");
-        UiTheme.installPrimaryHover(lookupButton);
-        
-        customerSearchBox.getChildren().addAll(customerNameField, lookupButton);
-        customerLookupBox.getChildren().addAll(customerLookupLabel, customerSearchBox);
-        leftPanel.getChildren().add(customerLookupBox);
-        
-        VBox transactionDetailsBox = new VBox(8);
-        transactionDetailsBox.setPadding(new Insets(14));
-        transactionDetailsBox.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-border-width: 1;");
+        VBox transactionDetailsBox = new VBox(10);
+        transactionDetailsBox.setPadding(new Insets(18));
+        transactionDetailsBox.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 14; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 14;");
         
         Label transactionDetailsTitle = new Label("Original Transaction");
-        transactionDetailsTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #111827;");
+        transactionDetailsTitle.setStyle("-fx-font-size: 14; -fx-font-weight: 700; -fx-text-fill: #0F172A;");
         
-        Label customerInfoLabel = new Label("No transaction selected.");
+        Label customerInfoLabel = new Label("Search a transaction to review return details.");
         customerInfoLabel.setWrapText(true);
-        customerInfoLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #475569;");
+        customerInfoLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #475569;");
         
         transactionDetailsBox.getChildren().addAll(transactionDetailsTitle, customerInfoLabel);
-        leftPanel.getChildren().add(transactionDetailsBox);
         
-        // Purchase History Table
-        Label historyLabel = new Label("Purchase History (Sales)");
-        historyLabel.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #111827;");
-        leftPanel.getChildren().add(historyLabel);
-        
-        TableView<Sale> historyTable = new TableView<>();
-        historyTable.setPrefHeight(250);
-        historyTable.setStyle("-fx-font-size: 11; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5EAF2;");
-        
-        TableColumn<Sale, String> dateCol = new TableColumn<>("Date");
-        dateCol.setPrefWidth(120);
-        dateCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getTimestamp().toString()));
-        
-        TableColumn<Sale, Integer> medicineIdCol = new TableColumn<>("Med ID");
-        medicineIdCol.setPrefWidth(60);
-        medicineIdCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getMedicineId()));
-        
-        TableColumn<Sale, Integer> qtyCol = new TableColumn<>("Qty");
-        qtyCol.setPrefWidth(50);
-        qtyCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getQuantity()));
-        
-        TableColumn<Sale, Double> amountCol = new TableColumn<>("Amount");
-        amountCol.setPrefWidth(80);
-        amountCol.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().getTotalPrice()));
-        amountCol.setCellFactory(column -> new TableCell<Sale, Double>() {
-            @Override
-            protected void updateItem(Double item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty ? null : String.format("Rs. %.2f", item));
-            }
-        });
-        
-        historyTable.getColumns().addAll(dateCol, medicineIdCol, qtyCol, amountCol);
-        leftPanel.getChildren().add(historyTable);
-        VBox.setVgrow(historyTable, Priority.ALWAYS);
-        
-        // ==================== ITEMS TABLE FOR RETURN ====================
         Label returnItemsLabel = new Label("Select Items for Return");
-        returnItemsLabel.setStyle("-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #111827;");
-        leftPanel.getChildren().add(returnItemsLabel);
+        returnItemsLabel.setStyle("-fx-font-size: 16; -fx-font-weight: 800; -fx-text-fill: #0B1120;");
+        
+        StackPane tableStack = new StackPane();
+        tableStack.setPrefHeight(500);
+        tableStack.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.08), 24, 0, 0, 10); -fx-padding: 20;");
+        
+        VBox placeholderBox = new VBox(14);
+        placeholderBox.setAlignment(Pos.CENTER);
+        placeholderBox.setStyle("-fx-background-color: transparent;");
+        placeholderBox.setPrefHeight(460);
+        
+        Label illustrationIcon = new Label("📄");
+        illustrationIcon.setStyle("-fx-font-size: 42;");
+        
+        Label emptyTitle = new Label("Enter a Transaction ID to get started");
+        emptyTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 700; -fx-text-fill: #0F172A;");
+        
+        Label emptySubtitle = new Label("Once you search, order items will appear here for refund selection.");
+        emptySubtitle.setStyle("-fx-font-size: 13; -fx-text-fill: #64748B;");
+        emptySubtitle.setWrapText(true);
+        emptySubtitle.setMaxWidth(420);
+        
+        placeholderBox.getChildren().addAll(illustrationIcon, emptyTitle, emptySubtitle);
         
         TableView<ReturnLineItem> itemsTable = new TableView<>();
-        itemsTable.setPrefHeight(430);
-        itemsTable.setStyle("-fx-font-size: 11; -fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E5EAF2;");
+        itemsTable.setPrefHeight(460);
+        itemsTable.getStyleClass().add("return-items-table");
+        itemsTable.setVisible(false);
+        itemsTable.setOpacity(0);
         
         ObservableList<ReturnLineItem> itemsList = FXCollections.observableArrayList();
         itemsTable.setItems(itemsList);
         
-        // Checkbox column
         TableColumn<ReturnLineItem, Boolean> selectColumn = new TableColumn<>("Select");
-        selectColumn.setPrefWidth(60);
+        selectColumn.setPrefWidth(70);
         selectColumn.setCellValueFactory(cellData -> cellData.getValue().returnData.selectedProperty());
         selectColumn.setCellFactory(column -> new TableCell<ReturnLineItem, Boolean>() {
-            private CheckBox checkBox = new CheckBox();
+            private final CheckBox checkBox = new CheckBox();
             {
                 checkBox.setOnAction(e -> getTableView().refresh());
             }
-            
             @Override
             protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
@@ -216,24 +189,20 @@ public class Returns {
             }
         });
         
-        // Medicine name column
         TableColumn<ReturnLineItem, Integer> medicineColumn = new TableColumn<>("Med ID");
         medicineColumn.setPrefWidth(80);
         medicineColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().transaction.getMedicineId()));
         
-        // Batch column
         TableColumn<ReturnLineItem, String> batchColumn = new TableColumn<>("Timestamp");
-        batchColumn.setPrefWidth(120);
+        batchColumn.setPrefWidth(140);
         batchColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().transaction.getTimestamp().toString()));
         
-        // Quantity column
         TableColumn<ReturnLineItem, Integer> quantityColumn = new TableColumn<>("Original Qty");
-        quantityColumn.setPrefWidth(80);
+        quantityColumn.setPrefWidth(90);
         quantityColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().transaction.getQuantity()));
         
-        // Price column
         TableColumn<ReturnLineItem, Double> priceColumn = new TableColumn<>("Total Price");
-        priceColumn.setPrefWidth(80);
+        priceColumn.setPrefWidth(100);
         priceColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().transaction.getTotalPrice()));
         priceColumn.setCellFactory(column -> new TableCell<ReturnLineItem, Double>() {
             @Override
@@ -243,9 +212,8 @@ public class Returns {
             }
         });
         
-        // Return Quantity column
         TableColumn<ReturnLineItem, Integer> returnQtyColumn = new TableColumn<>("Return Qty");
-        returnQtyColumn.setPrefWidth(100);
+        returnQtyColumn.setPrefWidth(110);
         returnQtyColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().returnData.returnQty.get()));
         returnQtyColumn.setCellFactory(column -> new TableCell<ReturnLineItem, Integer>() {
             @Override
@@ -259,17 +227,14 @@ public class Returns {
                     Spinner<Integer> spinner = new Spinner<>(0, lineItem.transaction.getQuantity(), item != null ? item : 0, 1);
                     spinner.setPrefWidth(80);
                     spinner.setEditable(true);
-                    spinner.valueProperty().addListener((obs, oldVal, newVal) -> {
-                        lineItem.returnData.returnQty.set(newVal);
-                    });
+                    spinner.valueProperty().addListener((obs, oldVal, newVal) -> lineItem.returnData.returnQty.set(newVal));
                     setGraphic(spinner);
                     setText(null);
                 }
             }
         });
         
-        // Condition dropdown column
-        TableColumn<ReturnLineItem, String> conditionColumn = new TableColumn<>("Return Reason");
+        TableColumn<ReturnLineItem, String> conditionColumn = new TableColumn<>("Condition");
         conditionColumn.setPrefWidth(180);
         conditionColumn.setCellValueFactory(cellData -> cellData.getValue().returnData.conditionProperty());
         conditionColumn.setCellFactory(column -> new TableCell<ReturnLineItem, String>() {
@@ -281,12 +246,11 @@ public class Returns {
                     setText(null);
                 } else {
                     ComboBox<String> comboBox = new ComboBox<>();
-                    comboBox.setItems(FXCollections.observableArrayList(
-                        "Wrong Item (Restock)",
-                        "Damaged/Faulty (Quarantine)"
-                    ));
+                    comboBox.getItems().addAll("Wrong Item (Restock)", "Damaged/Faulty (Quarantine)");
+                    comboBox.getStyleClass().add("condition-dropdown");
                     comboBox.setValue(item != null ? item : "Wrong Item (Restock)");
                     comboBox.setPrefWidth(170);
+                    comboBox.setPrefHeight(36);
                     ReturnLineItem lineItem = getTableView().getItems().get(getIndex());
                     comboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
                         if (newVal != null) {
@@ -300,46 +264,40 @@ public class Returns {
         });
         
         itemsTable.getColumns().addAll(selectColumn, medicineColumn, batchColumn, quantityColumn, priceColumn, returnQtyColumn, conditionColumn);
-        leftPanel.getChildren().add(itemsTable);
-        VBox.setVgrow(itemsTable, Priority.ALWAYS);
         
-        // Right side: Refund Summary
-        VBox rightPanel = new VBox(15);
-        rightPanel.setPrefWidth(320);
-        rightPanel.setPadding(new Insets(22));
-        rightPanel.setStyle("-fx-background-color: " + PANEL_BG + "; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-border-width: 1; -fx-effect: dropshadow(three-pass-box, rgba(15,23,42,0.08), 14, 0, 0, 3);");
+        tableStack.getChildren().addAll(placeholderBox, itemsTable);
+        
+        leftCard.getChildren().addAll(sectionTitle, sectionSubtitle, searchFieldRow, transactionDetailsBox, returnItemsLabel, tableStack);
+        
+        VBox rightPanel = new VBox(20);
+        rightPanel.setPrefWidth(360);
+        rightPanel.setPadding(new Insets(24));
+        rightPanel.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 18; -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.10), 24, 0, 0, 12);");
         
         Label refundTitleLabel = new Label("Refund Summary");
-        refundTitleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #111827;");
-        rightPanel.getChildren().add(refundTitleLabel);
+        refundTitleLabel.setStyle("-fx-font-size: 20; -fx-font-weight: 800; -fx-text-fill: #0B1120;");
         
-        Label refundInfoLabel = new Label("Refund totals will update as you choose return items.");
-        refundInfoLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #475569;");
+        Label refundInfoLabel = new Label("Refund totals update automatically as return items are selected.");
+        refundInfoLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #64748B;");
         refundInfoLabel.setWrapText(true);
-        rightPanel.getChildren().add(refundInfoLabel);
         
         Separator sep1 = new Separator();
-        rightPanel.getChildren().add(sep1);
         
         Label subtotalLabel = new Label("Refund Subtotal: Rs. 0.00");
-        subtotalLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #334155;");
+        subtotalLabel.setStyle("-fx-font-size: 14; -fx-text-fill: #334155;");
         
         Label itemCountLabel = new Label("Selected Return Qty: 0");
-        itemCountLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #334155;");
-        
-        rightPanel.getChildren().addAll(subtotalLabel, itemCountLabel);
+        itemCountLabel.setStyle("-fx-font-size: 14; -fx-text-fill: #334155;");
         
         Separator separator = new Separator();
-        rightPanel.getChildren().add(separator);
         
         Label totalRefundLabel = new Label("Calculated Refund (Incl. Tax): Rs. 0.00");
-        totalRefundLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #047857;");
+        totalRefundLabel.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #0D9488;");
         
         Separator sep2 = new Separator();
-        rightPanel.getChildren().add(sep2);
         
         Label logicTitleLabel = new Label("Logic Execution Status");
-        logicTitleLabel.setStyle("-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #111827;");
+        logicTitleLabel.setStyle("-fx-font-size: 13; -fx-font-weight: 700; -fx-text-fill: #111827;");
         
         CheckBox inventoryCheck = new CheckBox("Increment Inventory (SQL)");
         inventoryCheck.setSelected(true);
@@ -356,65 +314,45 @@ public class Returns {
         restockCheck.setDisable(true);
         restockCheck.setStyle("-fx-font-size: 12; -fx-text-fill: #475569;");
         
-        rightPanel.getChildren().addAll(totalRefundLabel, logicTitleLabel, inventoryCheck, ledgerCheck, restockCheck);
-        
-        // Add listener for table item changes (after labels are defined)
-        itemsTable.getItems().addListener((javafx.collections.ListChangeListener<? super ReturnLineItem>) change -> {
-            updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel);
-        });
-        
-        // Reference to currently selected customer from lookup
-        final Customer[] selectedCustomer = new Customer[1];
-        
-        // Process button
-        Button processButton = new Button("Process Refund");
+        Button processButton = new Button("Confirm Refund");
+        processButton.getStyleClass().addAll("button-base", "confirm-button");
         processButton.setPrefWidth(Double.MAX_VALUE);
-        processButton.setStyle("-fx-background-color: " + PRIMARY_BLUE + "; -fx-text-fill: white; -fx-padding: 12; -fx-font-size: 13; -fx-font-weight: 700; -fx-background-radius: 10;");
-        processButton.setOnAction(e -> {
-            if (itemsList.isEmpty()) {
-                showAlert(Alert.AlertType.WARNING, "No Items", "No items to return.");
-                return;
-            }
-            
-            if (selectedCustomer[0] == null) {
-                showAlert(Alert.AlertType.WARNING, "No Customer Selected", "Please search for a customer first.");
-                return;
-            }
-            
-            processReturn(itemsTable, selectedCustomer[0], stage);
-            updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel);
-        });
-        rightPanel.getChildren().add(processButton);
+        processButton.setPrefHeight(48);
+        
+        rightPanel.getChildren().addAll(refundTitleLabel, refundInfoLabel, sep1, subtotalLabel, itemCountLabel, separator, totalRefundLabel, sep2, logicTitleLabel, inventoryCheck, ledgerCheck, restockCheck, processButton);
         VBox.setVgrow(rightPanel, Priority.ALWAYS);
         
-        mainContent.getChildren().addAll(leftPanel, rightPanel);
-        HBox.setHgrow(leftPanel, Priority.ALWAYS);
-        root.getChildren().add(mainContent);
-        VBox.setVgrow(mainContent, Priority.ALWAYS);
+        HBox mainContent = new HBox(24, leftCard, rightPanel);
+        mainContent.setAlignment(Pos.TOP_LEFT);
+        HBox.setHgrow(leftCard, Priority.ALWAYS);
         
-        // Lookup button action
-        lookupButton.setOnAction(e -> {
-            String searchText = customerNameField.getText().trim();
+        root.setCenter(mainContent);
+        
+        final Customer[] selectedCustomer = new Customer[1];
+        
+        searchButton.setOnAction(e -> {
+            String searchText = transactionIdField.getText().trim();
             if (searchText.isEmpty()) {
-                showAlert(Alert.AlertType.WARNING, "Empty Input", "Please enter customer email or ID to search.");
+                showAlert(Alert.AlertType.WARNING, "Empty Input", "Please enter a transaction ID to search.");
                 itemsList.clear();
-                historyTable.setItems(FXCollections.observableArrayList());
-                customerInfoLabel.setText("");
+                customerInfoLabel.setText("Search a transaction to review return details.");
+                placeholderBox.setVisible(true);
+                itemsTable.setVisible(false);
                 return;
             }
             
             try {
                 CustomerService customerService = new CustomerService(new MySQLCustomerRepository(DatabaseManager.getConnection()));
                 SalesService salesService = new SalesService(new MySQLSaleRepository(DatabaseManager.getConnection()));
-                
                 Customer customer = null;
                 try {
-                    int id = Integer.parseInt(searchText);
+                    int id = Integer.parseInt(searchText.replaceAll("[^0-9]", ""));
                     customer = customerService.getCustomerById(id);
                 } catch (NumberFormatException ignored) {
                 }
                 
                 if (customer == null) {
+  
                     for (Customer c : customerService.getAllCustomers()) {
                         if (c.getEmail().equalsIgnoreCase(searchText) || c.getName().equalsIgnoreCase(searchText)) {
                             customer = c;
@@ -424,45 +362,66 @@ public class Returns {
                 }
                 
                 if (customer == null) {
-                    showAlert(Alert.AlertType.WARNING, "Not Found", "Customer not found.");
+                    showAlert(Alert.AlertType.WARNING, "Not Found", "Transaction or customer not found.");
                     itemsList.clear();
-                    historyTable.setItems(FXCollections.observableArrayList());
-                    customerInfoLabel.setText("");
+                    customerInfoLabel.setText("Search a transaction to review return details.");
+                    placeholderBox.setVisible(true);
+                    itemsTable.setVisible(false);
                     return;
                 }
                 
                 selectedCustomer[0] = customer;
-                customerInfoLabel.setText("Customer: " + customer.getName() + "\nID: " + customer.getId() + 
-                                         "\nEmail: " + customer.getEmail());
+                customerInfoLabel.setText("Customer: " + customer.getName() + "\nID: " + customer.getId() + "\nEmail: " + customer.getEmail());
                 
-                // Show transaction history (we assume we can get all sales, then filter by some logic if needed, 
-                // but the current SalesService returns all sales. We don't have a getSalesByCustomer, so we'll show all or recent.)
                 java.util.List<Sale> allSales = salesService.getAllSales();
+                ObservableList<Sale> historyItems = FXCollections.observableArrayList(allSales);
                 
-                ObservableList<Sale> historyItems = FXCollections.observableArrayList(allSales); // in reality, filter by customerId if that existed in Sale model
-                historyTable.setItems(historyItems);
-                
-                // Populate return items
                 itemsList.clear();
                 for (Sale txn : historyItems) {
                     ReturnLineItem lineItem = new ReturnLineItem(txn);
-                    lineItem.returnData.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                        updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel);
-                    });
-                    lineItem.returnData.returnQtyProperty().addListener((obs, oldVal, newVal) -> {
-                        updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel);
-                    });
+                    lineItem.returnData.selectedProperty().addListener((obs2, oldVal2, newVal2) -> updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel));
+                    lineItem.returnData.returnQtyProperty().addListener((obs2, oldVal2, newVal2) -> updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel));
                     itemsList.add(lineItem);
                 }
                 
-                showNotification("✓ Customer found: " + customer.getName());
-
+                placeholderBox.setVisible(false);
+                itemsTable.setVisible(true);
+                playTableReveal(itemsTable);
+                showNotification("✓ Transaction found and ready for return selection.");
             } catch (Exception ex) {
-                showAlert(Alert.AlertType.ERROR, "Backend Error", "Failed to fetch customer data: " + ex.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Backend Error", "Failed to fetch transaction data: " + ex.getMessage());
             }
         });
         
-        return new Scene(root, 1280, 800);
+        processButton.setOnAction(e -> {
+            if (itemsList.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "No Items", "No return items available.");
+                return;
+            }
+            if (selectedCustomer[0] == null) {
+                showAlert(Alert.AlertType.WARNING, "No Transaction", "Please search for a transaction before confirming refund.");
+                return;
+            }
+            processReturn(itemsTable, selectedCustomer[0], stage);
+            updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel);
+        });
+        
+        Scene scene = new Scene(root, 1280, 800);
+        UiTheme.applyStyleSheet(scene);
+        return scene;
+    }
+    
+    private static void playTableReveal(TableView<ReturnLineItem> itemsTable) {
+        itemsTable.setOpacity(0);
+        itemsTable.setTranslateY(20);
+        javafx.animation.FadeTransition fade = new javafx.animation.FadeTransition(javafx.util.Duration.millis(320), itemsTable);
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        javafx.animation.TranslateTransition slide = new javafx.animation.TranslateTransition(javafx.util.Duration.millis(320), itemsTable);
+        slide.setFromY(20);
+        slide.setToY(0);
+        javafx.animation.ParallelTransition transition = new javafx.animation.ParallelTransition(fade, slide);
+        transition.play();
     }
     
     private static HBox createHeader(Stage stage) {
@@ -478,7 +437,7 @@ public class Returns {
             stage.setScene(dashboardScene);
         });
         
-        Label title = new Label("Sales Returns");
+        Label title = new Label("Process Sales Return");
         title.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
         
         header.getChildren().addAll(backButton, title);
@@ -506,6 +465,20 @@ public class Returns {
         subtotalLabel.setText(String.format("Refund Subtotal: Rs. %.2f", totalRefund));
         itemCountLabel.setText("Selected Return Qty: " + itemCount);
         totalRefundLabel.setText(String.format("Calculated Refund (Incl. Tax): Rs. %.2f", totalRefund));
+        if (itemCount > 0) {
+            pulseRefundTotal(totalRefundLabel);
+        }
+    }
+    
+    private static void pulseRefundTotal(Label label) {
+        javafx.animation.ScaleTransition pulse = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(220), label);
+        pulse.setFromX(1.0);
+        pulse.setFromY(1.0);
+        pulse.setToX(1.05);
+        pulse.setToY(1.05);
+        pulse.setCycleCount(2);
+        pulse.setAutoReverse(true);
+        pulse.play();
     }
     
     private static void processReturn(TableView<ReturnLineItem> table, Customer customer, Stage stage) {
