@@ -180,7 +180,7 @@ public class LoginPage {
         center.setPadding(new Insets(10, 28, 26, 28));
         root.setCenter(center);
 
-        Scene scene = new Scene(root, 1200, 760);
+        Scene scene = new Scene(root, 1280, 800);
         UiTheme.applyStyleSheet(scene);
         Animations.applyPageTransition(root);
         return scene;
