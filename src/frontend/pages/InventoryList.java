@@ -30,7 +30,18 @@ public class InventoryList {
             inventoryService = new InventoryService(repo);
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Unable to connect to the database.");
-            return new Scene(new VBox(new Label("Database Connection Error")), 1920, 1080);
+            VBox errorBox = new VBox(15);
+            errorBox.setAlignment(Pos.CENTER);
+            Label errorLabel = new Label("Database Connection Error");
+            errorLabel.setStyle("-fx-font-size: 24; -fx-text-fill: red;");
+            Button errorBackButton = new Button("← Back to Dashboard");
+            errorBackButton.setStyle("-fx-font-size: 14; -fx-padding: 10 20;");
+            errorBackButton.setOnAction(evt -> {
+                Scene dashboardScene = Dashboard.createDashboardScene(stage);
+                stage.setScene(dashboardScene);
+            });
+            errorBox.getChildren().addAll(errorLabel, errorBackButton);
+            return new Scene(errorBox, 1280, 800);
         }
         
         final InventoryService finalInventoryService = inventoryService;
@@ -264,7 +275,7 @@ public class InventoryList {
         
         VBox.setVgrow(table, Priority.ALWAYS);
         
-        return new Scene(root, 720, 720);
+        return new Scene(root, 1280, 800);
     }
     
     /**
