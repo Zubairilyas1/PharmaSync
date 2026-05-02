@@ -39,7 +39,7 @@ public class PrescriptionCheck {
         mainLayout.getChildren().addAll(header, scrollPane);
         VBox.setVgrow(scrollPane, javafx.scene.layout.Priority.ALWAYS);
         
-        return new Scene(mainLayout, 1200, 800);
+        return new Scene(mainLayout, 1920, 1080);
     }
     
     private static HBox createHeader(Stage stage) {
