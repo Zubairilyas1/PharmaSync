@@ -47,7 +47,7 @@ public class Procurement {
         VBox.setVgrow(contentArea, Priority.ALWAYS);
         mainContainer.getChildren().add(contentArea);
 
-        return new Scene(mainContainer, 1500, 850);
+        return new Scene(mainContainer, 1920, 1080);
     }
 
     private static HBox createHeader(Stage stage) {
@@ -133,6 +133,8 @@ public class Procurement {
 
         return card;
     }
+
+    private static TableView<ProcurementItem> ordersTableRef;
 
     private static TableView<ProcurementItem> createSuggestedOrdersTable() {
         TableView<ProcurementItem> table = new TableView<>();
@@ -264,16 +266,31 @@ public class Procurement {
         table.getColumns().addAll(selectCol, medicineCol, stockCol, minCol, suggestedCol, priceCol, vendorCol);
         table.setPrefHeight(400);
 
-        // Add sample procurement items
-        table.getItems().addAll(
-                new ProcurementItem("Aspirin", 8, 10, 100, 0.50, "Medco Supplies", false),
-                new ProcurementItem("Ibuprofen", 5, 20, 150, 0.75, "PharmaBulk", false),
-                new ProcurementItem("Amoxicillin", 3, 15, 120, 1.25, "HealthCare Distributors", false),
-                new ProcurementItem("Metformin", 7, 25, 200, 0.60, "MediPro Ventures", false),
-                new ProcurementItem("Paracetamol", 12, 30, 100, 0.40, "Medco Supplies", false),
-                new ProcurementItem("Cough Syrup", 4, 12, 80, 2.50, "PharmaBulk", false)
-        );
+        try {
+            backend.repositories.MedicineRepository medRepo = new backend.repositories.MySQLMedicineRepository(backend.database.DatabaseManager.getConnection());
+            backend.services.InventoryService invService = new backend.services.InventoryService(medRepo);
+            List<backend.models.Medicine> medicines = invService.getAllMedicines();
+            
+            for (backend.models.Medicine m : medicines) {
+                if (m.getStockLevel() <= 20) { // Assuming 20 is min threshold for demo
+                    int suggested = Math.max(100, 50 - m.getStockLevel());
+                    table.getItems().add(new ProcurementItem(m.getName(), m.getStockLevel(), 20, suggested, m.getPrice() * 0.7, "Medco Supplies", false));
+                }
+            }
+        } catch (Exception ex) {
+            System.err.println("Error loading inventory for procurement: " + ex.getMessage());
+            // Fallback
+            table.getItems().addAll(
+                    new ProcurementItem("Aspirin", 8, 10, 100, 0.50, "Medco Supplies", false),
+                    new ProcurementItem("Ibuprofen", 5, 20, 150, 0.75, "PharmaBulk", false),
+                    new ProcurementItem("Amoxicillin", 3, 15, 120, 1.25, "HealthCare Distributors", false),
+                    new ProcurementItem("Metformin", 7, 25, 200, 0.60, "MediPro Ventures", false),
+                    new ProcurementItem("Paracetamol", 12, 30, 100, 0.40, "Medco Supplies", false),
+                    new ProcurementItem("Cough Syrup", 4, 12, 80, 2.50, "PharmaBulk", false)
+            );
+        }
 
+        ordersTableRef = table;
         return table;
     }
 
@@ -333,13 +350,42 @@ public class Procurement {
             if (selectedItems.isEmpty()) {
                 showPOAlert("Warning", "Please select at least one item to generate PO.");
             } else {
+                try {
+                    backend.repositories.AuditLogRepository logRepo = new backend.repositories.MySQLAuditLogRepository(backend.database.DatabaseManager.getConnection());
+                    backend.services.AuditService auditService = new backend.services.AuditService(logRepo);
+                    
+                    backend.repositories.MedicineRepository medRepo = new backend.repositories.MySQLMedicineRepository(backend.database.DatabaseManager.getConnection());
+                    backend.services.InventoryService invService = new backend.services.InventoryService(medRepo);
+                    
+                    double totalCost = 0;
+                    for(ProcurementItem pi : selectedItems) {
+                        totalCost += pi.suggestedQty * pi.unitPrice;
+                        
+                        // Update stock in backend directly for simplicity of demo
+                        backend.models.Medicine m = invService.getMedicineByName(pi.medicineName);
+                        if (m != null) {
+                            m.setStockLevel(m.getStockLevel() + pi.suggestedQty);
+                            invService.updateMedicine(m);
+                        }
+                    }
+                    
+                    auditService.logAction("Anonymous", "Procurement", "Generated PO for " + selectedItems.size() + " items, Est. Cost: $" + totalCost);
+                } catch (Exception ex) {
+                    System.err.println("Error generating PO: " + ex.getMessage());
+                }
+
                 int poNumber = poCounter++;
                 showPOAlert("Success", "Purchase Order PO-" + poNumber + " sent to Supplier API.\n\nEstimated delivery: 3-5 business days.");
-                itemCountLabel.setText("Selected Items: 0");
-                totalQtyLabel.setText("Total Qty: 0 units");
-                estimatedCostLabel.setText("Est. Cost: $0.00");
-                selectedItemsList.getItems().clear();
-                selectedItems.clear();
+                poSummaryLabels[0].setText("Selected Items: 0");
+                poSummaryLabels[1].setText("Total Qty: 0 units");
+                poSummaryLabels[2].setText("Est. Cost: $0.00");
+                poItemsList.getItems().clear();
+                
+                // Refresh table
+                if (ordersTableRef != null) {
+                    ordersTableRef.getItems().clear();
+                    createSuggestedOrdersTable(); // repopulate
+                }
             }
         });
 
@@ -373,13 +419,26 @@ public class Procurement {
     private static Runnable updatePOSummaryMethod;
 
     private static void updatePOSummary() {
+        if (ordersTableRef == null || poSummaryLabels == null || poItemsList == null) return;
+        
         selectedItems.clear();
         int totalQty = 0;
         double totalCost = 0.0;
         poItemsList.getItems().clear();
 
-        // This is a placeholder - in a real implementation, you'd query the table
-        // For now, we'll update the display when the button is clicked
+        for (ProcurementItem item : ordersTableRef.getItems()) {
+            if (item.selected) {
+                selectedItems.add(item);
+                totalQty += item.suggestedQty;
+                double cost = item.suggestedQty * item.unitPrice;
+                totalCost += cost;
+                poItemsList.getItems().add(item.suggestedQty + "x " + item.medicineName + " ($" + String.format("%.2f", cost) + ")");
+            }
+        }
+        
+        poSummaryLabels[0].setText("Selected Items: " + selectedItems.size());
+        poSummaryLabels[1].setText("Total Qty: " + totalQty + " units");
+        poSummaryLabels[2].setText("Est. Cost: $" + String.format("%.2f", totalCost));
     }
 
     private static void showPOAlert(String title, String message) {
