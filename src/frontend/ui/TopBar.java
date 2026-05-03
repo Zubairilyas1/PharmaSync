@@ -26,6 +26,7 @@ public final class TopBar {
     private static Popup          activePopup = null;
     private static Circle          bellBadge   = null;   // red dot
     private static FadeTransition  bellPulse   = null;   // pulse animation
+    private static boolean         globalNotifsRead = false; // persist read state across pages
 
     private TopBar() {}
 
@@ -155,6 +156,11 @@ public final class TopBar {
         bellBadge = badge;
         bellPulse = pulse;
 
+        if (globalNotifsRead) {
+            badge.setVisible(false);
+            pulse.stop();
+        }
+
         sp.getChildren().addAll(bell, badge);
         iconHover(sp);
 
@@ -220,7 +226,8 @@ public final class TopBar {
         Button markRead = new Button("Mark all read");
         markRead.setStyle("-fx-background-color: transparent; -fx-text-fill: #6366F1; -fx-font-size: 12; -fx-font-weight: 600; -fx-cursor: hand; -fx-padding: 0;");
         markRead.setOnAction(e -> {
-            // Hide the red dot and stop pulse
+            // Hide the red dot, stop pulse, and mark globally read
+            globalNotifsRead = true;
             if (bellBadge != null) {
                 bellBadge.setVisible(false);
             }
@@ -274,7 +281,8 @@ public final class TopBar {
         viewAll.setAlignment(Pos.CENTER);
         if (stage != null) {
             viewAll.setOnAction(e -> {
-                // Hide red dot — user is going to procurement (audit logs)
+                // Hide red dot and mark globally read — user is going to procurement
+                globalNotifsRead = true;
                 if (bellBadge != null) bellBadge.setVisible(false);
                 if (bellPulse != null) bellPulse.stop();
                 if (activePopup != null) activePopup.hide();
