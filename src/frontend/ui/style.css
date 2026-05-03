@@ -32,6 +32,128 @@
     -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.05), 15, 0, 0, 2);
 }
 
+/* ==========================================================
+   Premium TopBar — Apple-Style Floating Header
+   Applied by frontend.ui.TopBar
+   ========================================================== */
+
+/* Root bar */
+.top-bar-premium {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent transparent #E2E8F0 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 5);
+    -fx-pref-height: 70;
+    -fx-min-height: 70;
+    -fx-max-height: 70;
+}
+
+/* Page title — Inter Bold 18px */
+.top-bar-title {
+    -fx-font-size: 18;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0B1120;
+    -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
+}
+
+/* Breadcrumb — Inter Regular 12px muted gray */
+.top-bar-breadcrumb {
+    -fx-font-size: 12;
+    -fx-font-weight: normal;
+    -fx-text-fill: #64748B;
+    -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
+}
+
+/* Search container — pill wrapper that sits behind the text field */
+.top-bar-search-container {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 20;
+    -fx-border-color: transparent;
+    -fx-border-radius: 20;
+    -fx-padding: 0 4 0 14;
+    -fx-alignment: center-left;
+}
+
+/* Search icon inside the pill */
+.top-bar-search-icon {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 16;
+    -fx-padding: 0 6 0 0;
+}
+
+/* The actual TextField inside the pill — transparent so the pill bg shows */
+.top-bar-search {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 20;
+    -fx-text-fill: #0B1120;
+    -fx-prompt-text-fill: #94A3B8;
+    -fx-font-size: 13;
+    -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
+    -fx-padding: 0 8 0 0;
+}
+
+/* When the search pill is focused, the whole container glows indigo */
+.top-bar-search-container:focused-within {
+    -fx-border-color: #6366F1;
+    -fx-border-width: 1.5;
+    -fx-background-color: #FFFFFF;
+    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.18), 10, 0, 0, 0);
+}
+
+/* Focused state for the inner TextField (removes default blue glow) */
+.top-bar-search:focused {
+    -fx-background-color: transparent;
+}
+
+/* Icon button — notification bell wrapper */
+.top-bar-icon-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-pref-width: 40;
+    -fx-pref-height: 40;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+}
+
+.top-bar-icon-btn:hover {
+    -fx-background-color: #F1F5F9;
+}
+
+/* Profile chip pill */
+.top-bar-profile-chip {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 24;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+
+/* Hover state — applied/removed programmatically for ScaleTransition compat */
+.top-bar-profile-chip--hover {
+    -fx-background-color: #EEF2FF;
+    -fx-border-color: #A5B4FC;
+}
+
+/* Name label inside chip */
+.top-bar-profile-name {
+    -fx-font-size: 13;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0B1120;
+    -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
+}
+
+/* Role label inside chip */
+.top-bar-profile-role {
+    -fx-font-size: 10;
+    -fx-font-weight: normal;
+    -fx-text-fill: #64748B;
+    -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
+}
+
 /* Typography */
 .heading-l {
     -fx-font-size: 28;
@@ -594,4 +716,10 @@
     -fx-padding: 4 8;
     -fx-font-size: 10pt;
     -fx-font-weight: bold;
+}
+
+/* Notification alert badge on bell icon (animated pulse) */
+.top-bar-notif-badge {
+    /* Visual styling is applied inline in TopBar.java via Circle.setFill();
+       this class reserved for future overrides. */
 }
