@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import frontend.ui.UiTheme;
+import frontend.ui.TopBar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,14 +84,19 @@ public class Returns {
     }
     
     private static Scene createReturnsSceneInternal(Stage stage) {
+        // Outer wrapper: TopBar on top, content below
+        VBox wrapper = new VBox();
+        wrapper.getStyleClass().add("app-background");
+
+        HBox topBar = TopBar.create("Sales Returns", "Dashboard > Sales Returns");
+        wrapper.getChildren().add(topBar);
+
+        // Inner BorderPane for the actual page layout
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(24));
-        root.setStyle(UiTheme.appBackground());
         root.getStyleClass().add("app-background");
-        
-        HBox header = createHeader(stage);
-        BorderPane.setMargin(header, new Insets(0, 0, 20, 0));
-        root.setTop(header);
+        VBox.setVgrow(root, javafx.scene.layout.Priority.ALWAYS);
+        wrapper.getChildren().add(root);
         
         VBox leftCard = new VBox(18);
         leftCard.setPadding(new Insets(22));
@@ -406,7 +412,7 @@ public class Returns {
             updateRefundSummary(itemsTable, subtotalLabel, itemCountLabel, totalRefundLabel);
         });
         
-        Scene scene = new Scene(root, 1280, 800);
+        Scene scene = new Scene(wrapper, 1280, 800);
         UiTheme.applyStyleSheet(scene);
         return scene;
     }
@@ -424,28 +430,8 @@ public class Returns {
         transition.play();
     }
     
-    private static HBox createHeader(Stage stage) {
-        HBox header = new HBox();
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 14; -fx-border-color: #E5EAF2; -fx-border-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(13, 38, 76, 0.10), 16, 0, 0, 4);");
-        
-        Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle("-fx-background-color: #EEF4FF; -fx-text-fill: " + PRIMARY_BLUE + "; -fx-padding: 8 14; -fx-font-size: 12; -fx-font-weight: 700; -fx-cursor: hand; -fx-background-radius: 10;");
-        backButton.setOnAction(e -> {
-            Scene dashboardScene = Dashboard.createDashboardScene(stage);
-            stage.setScene(dashboardScene);
-        });
-        
-        Label title = new Label("Process Sales Return");
-        title.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
-        
-        header.getChildren().addAll(backButton, title);
-        HBox.setHgrow(title, Priority.ALWAYS);
-        
-        return header;
-    }
-    
+    // createHeader() removed — replaced by frontend.ui.TopBar
+
     private static void updateRefundSummary(TableView<ReturnLineItem> table, 
                                            Label subtotalLabel, Label itemCountLabel, Label totalRefundLabel) {
         double totalRefund = 0;
