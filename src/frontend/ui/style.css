@@ -33,61 +33,63 @@
 }
 
 /* ==========================================================
-   Premium TopBar — Indigo Gradient Header
+   ONYX LUXURY TopBar
+   Near-black · flat · 1px indigo accent line · white text
    Applied by frontend.ui.TopBar
    ========================================================== */
 
-/* Root bar — deep indigo → violet gradient */
+/* Root bar — near-black, razor-flat */
 .top-bar-premium {
-    -fx-background-color: linear-gradient(to right, #4338CA, #7C3AED);
-    -fx-border-color: transparent;
-    -fx-border-width: 0;
-    -fx-effect: dropshadow(three-pass-box, rgba(67, 56, 202, 0.40), 18, 0, 0, 7);
+    -fx-background-color: #0C0C12;
+    -fx-border-color: transparent transparent #6366F1 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.55), 14, 0, 0, 4);
     -fx-pref-height: 70;
     -fx-min-height: 70;
     -fx-max-height: 70;
 }
 
-/* Page title — white, heavy weight */
+/* Page title — pure white, heavy */
 .top-bar-title {
     -fx-font-size: 20;
     -fx-font-weight: 800;
-    -fx-text-fill: white;
+    -fx-text-fill: #FFFFFF;
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
 }
 
-/* Breadcrumb — semi-transparent white */
+/* Breadcrumb — dim muted slate */
 .top-bar-breadcrumb {
     -fx-font-size: 11;
     -fx-font-weight: normal;
-    -fx-text-fill: rgba(255, 255, 255, 0.62);
+    -fx-text-fill: #4B5563;
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
 }
 
-/* Glassmorphism Back to Dashboard button */
+/* Back button — outline-only white pill */
 .top-bar-back-btn {
-    -fx-background-color: rgba(255, 255, 255, 0.14);
-    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-text-fill: #D1D5DB;
     -fx-background-radius: 22;
-    -fx-border-color: rgba(255, 255, 255, 0.32);
+    -fx-border-color: rgba(255, 255, 255, 0.18);
     -fx-border-radius: 22;
     -fx-border-width: 1;
-    -fx-padding: 8 20;
-    -fx-font-weight: 700;
+    -fx-padding: 7 18;
+    -fx-font-weight: 600;
     -fx-font-size: 12;
     -fx-cursor: hand;
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
 }
 
 .top-bar-back-btn--hover {
-    -fx-background-color: rgba(255, 255, 255, 0.26);
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.25), 10, 0, 0, 0);
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-border-color: rgba(255, 255, 255, 0.40);
+    -fx-text-fill: #FFFFFF;
 }
 
 /* Notification bell wrapper */
 .top-bar-icon-btn {
     -fx-background-color: transparent;
-    -fx-background-radius: 12;
+    -fx-background-radius: 10;
     -fx-cursor: hand;
     -fx-pref-width: 40;
     -fx-pref-height: 40;
@@ -96,52 +98,52 @@
 }
 
 .top-bar-icon-btn--hover {
-    -fx-background-color: rgba(255, 255, 255, 0.16);
-    -fx-background-radius: 12;
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-background-radius: 10;
 }
 
-/* Profile chip — glassmorphism on gradient bar */
+/* Profile chip — dark glass, very subtle border */
 .top-bar-profile-chip {
-    -fx-background-color: rgba(255, 255, 255, 0.13);
+    -fx-background-color: rgba(255, 255, 255, 0.05);
     -fx-background-radius: 24;
-    -fx-border-color: rgba(255, 255, 255, 0.28);
+    -fx-border-color: rgba(255, 255, 255, 0.10);
     -fx-border-radius: 24;
     -fx-border-width: 1;
     -fx-cursor: hand;
 }
 
 .top-bar-profile-chip--hover {
-    -fx-background-color: rgba(255, 255, 255, 0.24);
-    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+    -fx-border-color: rgba(99, 102, 241, 0.60);
 }
 
-/* Name label inside chip */
+/* Name inside chip */
 .top-bar-profile-name {
     -fx-font-size: 13;
     -fx-font-weight: 700;
-    -fx-text-fill: white;
+    -fx-text-fill: #F9FAFB;
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
 }
 
-/* Role label inside chip */
+/* Role inside chip */
 .top-bar-profile-role {
     -fx-font-size: 10;
     -fx-font-weight: normal;
-    -fx-text-fill: rgba(255, 255, 255, 0.60);
+    -fx-text-fill: #4B5563;
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
 }
 
-/* Typography — indigo-tinted headings */
+/* Typography */
 .heading-l {
-    -fx-font-size: 28;
+    -fx-font-size: 26;
     -fx-font-weight: 800;
-    -fx-text-fill: #3730A3;
+    -fx-text-fill: #1E1B4B;
 }
 
 .heading-m {
-    -fx-font-size: 18;
-    -fx-font-weight: bold;
-    -fx-text-fill: #4338CA;
+    -fx-font-size: 17;
+    -fx-font-weight: 700;
+    -fx-text-fill: #312E81;
 }
 
 .body-text {
