@@ -38,9 +38,9 @@
    Applied by frontend.ui.TopBar
    ========================================================== */
 
-/* Root bar — near-black, razor-flat */
+/* Root bar — same dark navy as the sidebar for seamless continuity */
 .top-bar-premium {
-    -fx-background-color: #0C0C12;
+    -fx-background-color: #0B1120;
     -fx-border-color: transparent transparent #6366F1 transparent;
     -fx-border-width: 0 0 1 0;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.55), 14, 0, 0, 4);
@@ -102,19 +102,18 @@
     -fx-background-radius: 10;
 }
 
-/* Profile chip — dark glass, very subtle border */
+/* Profile chip — fully transparent, no border, no background */
 .top-bar-profile-chip {
-    -fx-background-color: rgba(255, 255, 255, 0.05);
-    -fx-background-radius: 24;
-    -fx-border-color: rgba(255, 255, 255, 0.10);
-    -fx-border-radius: 24;
-    -fx-border-width: 1;
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-cursor: hand;
 }
 
 .top-bar-profile-chip--hover {
-    -fx-background-color: rgba(255, 255, 255, 0.10);
-    -fx-border-color: rgba(99, 102, 241, 0.60);
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-border-color: transparent;
 }
 
 /* Name inside chip */
