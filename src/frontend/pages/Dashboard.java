@@ -24,7 +24,7 @@ public class Dashboard {
         mainLayout.getStyleClass().add("app-background");
 
         // ── Premium TopBar (sticky, outside scroll) ──────────────────────
-        HBox topBar = TopBar.create("Dashboard", "Dashboard");
+        HBox topBar = TopBar.create("Dashboard", "Dashboard", stage, false);
         mainLayout.setTop(topBar);
 
         VBox shell = new VBox(16);
