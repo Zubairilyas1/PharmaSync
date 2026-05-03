@@ -13,6 +13,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import frontend.ui.UiTheme;
+import frontend.ui.TopBar;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -24,19 +25,20 @@ public class Reports {
 
     private static Scene createReportsSceneInternal(Stage stage) {
         VBox mainContainer = new VBox();
-        mainContainer.setStyle(UiTheme.appBackground());
+        mainContainer.getStyleClass().add("app-background");
 
-        // Header with back button
-        HBox header = createHeader(stage);
-        mainContainer.getChildren().add(header);
+        // ── Premium TopBar (sticky, outside scroll) ──
+        HBox topBar = TopBar.create("Reports", "Dashboard > Reports");
+        mainContainer.getChildren().add(topBar);
 
         // Scrollable content area
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-width: 0;");
 
         VBox contentArea = new VBox(20);
         contentArea.setPadding(UiTheme.pagePadding());
-        contentArea.setStyle(UiTheme.appBackground());
+        contentArea.getStyleClass().add("app-background");
 
         // Summary Cards Section
         javafx.scene.layout.FlowPane summaryCards = createSummaryCards();
@@ -58,30 +60,14 @@ public class Reports {
         VBox.setVgrow(scrollPane, Priority.ALWAYS);
         mainContainer.getChildren().add(scrollPane);
 
-        return new Scene(mainContainer, 1280, 800);
+        TopBar.bindShadowToScroll(topBar, scrollPane);
+
+        Scene scene = new Scene(mainContainer, 1280, 800);
+        UiTheme.applyStyleSheet(scene);
+        return scene;
     }
 
-    private static HBox createHeader(Stage stage) {
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle(UiTheme.topBar());
-
-        Button backButton = new Button("← Back to Dashboard");
-        backButton.getStyleClass().addAll("glass-button", "button-base");
-        backButton.setOnAction(e -> {
-            Scene dashboardScene = Dashboard.createDashboardScene(stage);
-            stage.setScene(dashboardScene);
-        });
-
-        Label headerTitle = new Label("Reports & Analytics");
-        headerTitle.setStyle("-fx-font-size: 18; -fx-font-weight: 800; -fx-text-fill: #111827;");
-
-        header.getChildren().addAll(backButton, headerTitle);
-        HBox.setHgrow(headerTitle, Priority.ALWAYS);
-
-        return header;
-    }
+    // createHeader() removed — replaced by frontend.ui.TopBar
 
     private static javafx.scene.layout.FlowPane createSummaryCards() {
         javafx.scene.layout.FlowPane cardsContainer = new javafx.scene.layout.FlowPane(15, 15);
