@@ -264,17 +264,17 @@ public final class TopBar {
 
         // Footer
         Separator sep2 = new Separator();
-        Button viewAll = new Button("View All in Audit Logs →");
+        Button viewAll = new Button("View All in Procurement →");
         viewAll.setStyle("-fx-background-color: transparent; -fx-text-fill: #6366F1; -fx-font-size: 13; -fx-font-weight: 600; -fx-cursor: hand; -fx-padding: 14 18;");
         viewAll.setMaxWidth(Double.MAX_VALUE);
         viewAll.setAlignment(Pos.CENTER);
         if (stage != null) {
             viewAll.setOnAction(e -> {
-                // Hide red dot — user is going to audit logs
+                // Hide red dot — user is going to procurement (audit logs)
                 if (bellBadge != null) bellBadge.setVisible(false);
                 if (bellPulse != null) bellPulse.stop();
                 if (activePopup != null) activePopup.hide();
-                stage.setScene(frontend.pages.AuditLogs.createAuditLogsScene(stage));
+                stage.setScene(frontend.pages.Procurement.createProcurementScene(stage));
             });
         }
         panel.getChildren().addAll(sep2, viewAll);
