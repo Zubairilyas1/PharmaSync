@@ -28,7 +28,7 @@ public class Reports {
         mainContainer.getStyleClass().add("app-background");
 
         // ── Premium TopBar (sticky, outside scroll) ──
-        HBox topBar = TopBar.create("Reports", "Dashboard > Reports");
+        HBox topBar = TopBar.create("Reports", "Dashboard > Reports", stage);
         mainContainer.getChildren().add(topBar);
 
         // Scrollable content area
