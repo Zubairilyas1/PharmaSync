@@ -17,6 +17,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import frontend.ui.UiTheme;
+import frontend.ui.TopBar;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -46,33 +47,17 @@ public class InventoryList {
         
         final InventoryService finalInventoryService = inventoryService;
 
-        VBox root = new VBox(15);
-        root.setPadding(UiTheme.pagePadding());
-        root.setStyle(UiTheme.appBackground());
-        
-        // Header with back button
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle(UiTheme.topBar());
-        
-        Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
-        backButton.setOnAction(e -> {
-            Scene dashboardScene = Dashboard.createDashboardScene(stage);
-            stage.setScene(dashboardScene);
-        });
-        
-        Label headerTitle = new Label("Inventory Management");
-        headerTitle.setStyle(UiTheme.headingM());
-        
-        header.getChildren().addAll(backButton, headerTitle);
-        HBox.setHgrow(headerTitle, Priority.ALWAYS);
-        root.getChildren().add(header);
-        
-        // Title
-        Label titleLabel = new Label("Inventory Management");
-        titleLabel.setStyle(UiTheme.headingL());
+        // Root layout: TopBar pinned on top, rest scrollable
+        BorderPane root = new BorderPane();
+        root.getStyleClass().add("app-background");
+
+        HBox topBar = TopBar.create("Inventory", "Dashboard > Inventory");
+        root.setTop(topBar);
+
+        // Inner content
+        VBox contentBox = new VBox(15);
+        contentBox.setPadding(UiTheme.pagePadding());
+        contentBox.getStyleClass().add("app-background");
         
         // Search bar container
         HBox searchContainer = new HBox(10);
@@ -263,8 +248,8 @@ public class InventoryList {
         
         buttonContainer.getChildren().addAll(addButton, editButton, deleteButton);
         
-        // Add all to root
-        root.getChildren().addAll(
+        // Add all to contentBox
+        contentBox.getChildren().addAll(
             titleLabel,
             searchContainer,
             new Label("Medicine Inventory"),
@@ -272,10 +257,18 @@ public class InventoryList {
             summaryBox,
             buttonContainer
         );
-        
+
         VBox.setVgrow(table, Priority.ALWAYS);
-        
-        return new Scene(root, 1280, 800);
+
+        ScrollPane scroll = new ScrollPane(contentBox);
+        scroll.setFitToWidth(true);
+        scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-width: 0;");
+        root.setCenter(scroll);
+        TopBar.bindShadowToScroll(topBar, scroll);
+
+        Scene scene = new Scene(root, 1280, 800);
+        UiTheme.applyStyleSheet(scene);
+        return scene;
     }
     
     /**
