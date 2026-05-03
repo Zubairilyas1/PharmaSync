@@ -16,47 +16,63 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * Premium TopBar — Indigo gradient, no search bar.
+ * ONYX LUXURY TopBar for PharmaSync.
+ *
+ * Design language: Bloomberg Terminal × Apple Pro Display
+ * - Near-black  #0C0C12  flat bar
+ * - 1px indigo  #6366F1  bottom accent line
+ * - Pure white title, dim gray breadcrumb
+ * - Transparent-outline back button (no fill)
+ * - Indigo avatar dot — only pop of color
  *
  * Usage:
- *   TopBar.create("Dashboard", "Dashboard")             // Dashboard (no back btn)
- *   TopBar.create("Inventory", "Dashboard > Inventory", stage)  // All other pages
+ *   TopBar.create("Dashboard", "Dashboard")                       // no back btn
+ *   TopBar.create("Inventory", "Dashboard > Inventory", stage)   // with back btn
  */
 public final class TopBar {
 
+    // Indigo accent — only color touch on the dark bar
+    private static final String ACCENT   = "#6366F1";
     private static final String BADGE_RED = "#EF4444";
 
     private TopBar() {}
 
     // ── Public API ──────────────────────────────────────────────────────────
 
-    /** Dashboard — no back button. */
     public static HBox create(String title, String breadcrumb) {
         return build(title, breadcrumb, null, "Admin");
     }
 
-    /** Sub-pages — shows glassmorphism Back to Dashboard button. */
     public static HBox create(String title, String breadcrumb, Stage stage) {
         return build(title, breadcrumb, stage, "Admin");
     }
 
+    public static HBox create(String title, String breadcrumb, Stage stage, String username) {
+        return build(title, breadcrumb, stage, username);
+    }
+
     // ── Shadow Scroll ───────────────────────────────────────────────────────
 
+    /**
+     * Deepens the bar's drop-shadow as the user scrolls down —
+     * makes the bar appear to "lift" above the content.
+     */
     public static void bindShadowToScroll(HBox bar, javafx.scene.control.ScrollPane sp) {
-        bar.setEffect(shadow(Color.rgb(67, 56, 202, 0.28), 14, 0, 6));
+        bar.setEffect(mkShadow(Color.rgb(0, 0, 0, 0.45), 10, 0, 3));
         sp.vvalueProperty().addListener((obs, o, n) -> {
             double v = n.doubleValue();
-            bar.setEffect(shadow(
-                Color.rgb(67, 56, 202, lerp(0.28, 0.60, v)),
-                lerp(14, 30, v), 0, lerp(6, 12, v)));
+            bar.setEffect(mkShadow(
+                Color.rgb(0, 0, 0, lerp(0.45, 0.80, v)),
+                lerp(10, 28, v), 0, lerp(3, 10, v)));
         });
     }
 
-    // ── Builder ─────────────────────────────────────────────────────────────
+    // ── Core Builder ────────────────────────────────────────────────────────
 
     private static HBox build(String title, String breadcrumb, Stage stage, String username) {
         HBox bar = new HBox(0);
@@ -66,25 +82,32 @@ public final class TopBar {
         bar.setMaxHeight(70);
         bar.getStyleClass().add("top-bar-premium");
 
-        HBox left = buildLeft(title, breadcrumb);
+        // Apply resting shadow
+        bar.setEffect(mkShadow(Color.rgb(0, 0, 0, 0.50), 12, 0, 4));
 
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox left    = buildLeft(title, breadcrumb);
+        Region space = new Region();
+        HBox.setHgrow(space, Priority.ALWAYS);
+        HBox right   = buildRight(stage, username);
 
-        HBox right = buildRight(stage, username);
-
-        bar.getChildren().addAll(left, spacer, right);
+        bar.getChildren().addAll(left, space, right);
         return bar;
     }
 
-    // ── Left: title + breadcrumb ────────────────────────────────────────────
+    // ── Left: brand mark + title + breadcrumb ──────────────────────────────
 
     private static HBox buildLeft(String title, String breadcrumb) {
-        HBox sec = new HBox();
+        HBox sec = new HBox(14);
         sec.setAlignment(Pos.CENTER_LEFT);
         sec.setPadding(new Insets(0, 0, 0, 26));
 
-        VBox stack = new VBox(2);
+        // Thin indigo brand bar (vertical)
+        Rectangle brandBar = new Rectangle(3, 34);
+        brandBar.setArcWidth(3);
+        brandBar.setArcHeight(3);
+        brandBar.setFill(Color.web(ACCENT));
+
+        VBox stack = new VBox(3);
         stack.setAlignment(Pos.CENTER_LEFT);
 
         Label titleLbl = new Label(title);
@@ -94,33 +117,37 @@ public final class TopBar {
         breadLbl.getStyleClass().add("top-bar-breadcrumb");
 
         stack.getChildren().addAll(titleLbl, breadLbl);
-        sec.getChildren().add(stack);
+        sec.getChildren().addAll(brandBar, stack);
         return sec;
     }
 
-    // ── Right: [back btn] [bell] [profile] ──────────────────────────────────
+    // ── Right: [back] | [bell] | [profile] ─────────────────────────────────
 
     private static HBox buildRight(Stage stage, String username) {
-        HBox sec = new HBox(10);
+        HBox sec = new HBox(8);
         sec.setAlignment(Pos.CENTER_RIGHT);
         sec.setPadding(new Insets(0, 24, 0, 0));
 
         if (stage != null) {
-            sec.getChildren().add(buildBackButton(stage));
+            sec.getChildren().add(buildBackBtn(stage));
+            // Thin separator
+            Rectangle sep = new Rectangle(1, 28);
+            sep.setFill(Color.rgb(255, 255, 255, 0.08));
+            sec.getChildren().add(sep);
         }
 
         sec.getChildren().addAll(buildBell(), buildProfile(username));
         return sec;
     }
 
-    // ── Back to Dashboard — glassmorphism pill button ───────────────────────
+    // ── Back button — transparent outline pill ──────────────────────────────
 
-    private static Button buildBackButton(Stage stage) {
+    private static Button buildBackBtn(Stage stage) {
         Button btn = new Button("⌂   Dashboard");
         btn.getStyleClass().add("top-bar-back-btn");
 
-        ScaleTransition in  = scale(btn, 1.0, 1.06, 150);
-        ScaleTransition out = scale(btn, 1.06, 1.0, 150);
+        ScaleTransition in  = scaleAnim(btn, 1.0, 1.05, 140);
+        ScaleTransition out = scaleAnim(btn, 1.05, 1.0, 140);
 
         btn.setOnMouseEntered(e -> {
             out.stop();
@@ -134,11 +161,10 @@ public final class TopBar {
         });
         btn.setOnAction(e -> stage.setScene(
                 frontend.pages.Dashboard.createDashboardScene(stage)));
-
         return btn;
     }
 
-    // ── Notification bell ────────────────────────────────────────────────────
+    // ── Notification bell ───────────────────────────────────────────────────
 
     private static StackPane buildBell() {
         StackPane sp = new StackPane();
@@ -147,19 +173,21 @@ public final class TopBar {
         sp.getStyleClass().add("top-bar-icon-btn");
 
         Label bell = new Label("🔔");
-        bell.setStyle("-fx-font-size: 17;");
+        bell.setStyle("-fx-font-size: 16;");
 
-        Circle badge = new Circle(6);
+        // Red badge
+        Circle badge = new Circle(5.5);
         badge.setFill(Color.web(BADGE_RED));
-        badge.setStroke(Color.WHITE);
-        badge.setStrokeWidth(2);
+        badge.setStroke(Color.web("#0C0C12"));
+        badge.setStrokeWidth(1.5);
         StackPane.setAlignment(badge, Pos.TOP_RIGHT);
-        badge.setTranslateX(4);
-        badge.setTranslateY(-2);
+        badge.setTranslateX(3);
+        badge.setTranslateY(-1);
 
-        FadeTransition pulse = new FadeTransition(Duration.millis(900), badge);
+        // Pulse
+        FadeTransition pulse = new FadeTransition(Duration.millis(1000), badge);
         pulse.setFromValue(1.0);
-        pulse.setToValue(0.3);
+        pulse.setToValue(0.25);
         pulse.setAutoReverse(true);
         pulse.setCycleCount(javafx.animation.Animation.INDEFINITE);
         pulse.play();
@@ -178,26 +206,33 @@ public final class TopBar {
         chip.setPadding(new Insets(6, 14, 6, 10));
         chip.getStyleClass().add("top-bar-profile-chip");
 
+        // Avatar — indigo circle with white initials (the ONE color accent)
         StackPane av = new StackPane();
-        av.setPrefSize(34, 34);
-        av.setMinSize(34, 34);
-        av.setMaxSize(34, 34);
-        Circle bg = new Circle(17);
-        bg.setStyle("-fx-fill: rgba(255,255,255,0.22); -fx-stroke: rgba(255,255,255,0.45); -fx-stroke-width: 1.5;");
-        Label initials = new Label(initials(username));
-        initials.setStyle("-fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 13;");
-        av.getChildren().addAll(bg, initials);
+        av.setPrefSize(32, 32);
+        av.setMinSize(32, 32);
+        av.setMaxSize(32, 32);
 
+        Circle bg = new Circle(16);
+        bg.setFill(Color.web(ACCENT));
+        bg.setStroke(Color.rgb(255, 255, 255, 0.15));
+        bg.setStrokeWidth(1.0);
+
+        Label initLbl = new Label(initials(username));
+        initLbl.setStyle("-fx-text-fill: white; -fx-font-weight: 800; -fx-font-size: 12;");
+
+        av.getChildren().addAll(bg, initLbl);
+
+        // Name + role
         VBox names = new VBox(0);
         names.setAlignment(Pos.CENTER_LEFT);
-        Label name = new Label(username);
-        name.getStyleClass().add("top-bar-profile-name");
-        Label role = new Label("Administrator");
-        role.getStyleClass().add("top-bar-profile-role");
-        names.getChildren().addAll(name, role);
+        Label nameL = new Label(username);
+        nameL.getStyleClass().add("top-bar-profile-name");
+        Label roleL = new Label("Administrator");
+        roleL.getStyleClass().add("top-bar-profile-role");
+        names.getChildren().addAll(nameL, roleL);
 
         Label caret = new Label("⌄");
-        caret.setStyle("-fx-text-fill: rgba(255,255,255,0.65); -fx-font-size: 14;");
+        caret.setStyle("-fx-text-fill: rgba(255,255,255,0.30); -fx-font-size: 13;");
 
         chip.getChildren().addAll(av, names, caret);
         chipHover(chip);
@@ -207,32 +242,49 @@ public final class TopBar {
     // ── Hover helpers ─────────────────────────────────────────────────────────
 
     private static void iconHover(StackPane node) {
-        ScaleTransition in  = scale(node, 1.0, 1.08, 160);
-        ScaleTransition out = scale(node, 1.08, 1.0, 160);
-        node.setOnMouseEntered(e -> { out.stop(); node.getStyleClass().add("top-bar-icon-btn--hover"); in.playFromStart(); });
-        node.setOnMouseExited(e  -> { in.stop();  node.getStyleClass().remove("top-bar-icon-btn--hover"); out.playFromStart(); });
+        ScaleTransition in  = scaleAnim(node, 1.0, 1.08, 150);
+        ScaleTransition out = scaleAnim(node, 1.08, 1.0, 150);
+        node.setOnMouseEntered(e -> {
+            out.stop();
+            node.getStyleClass().add("top-bar-icon-btn--hover");
+            in.playFromStart();
+        });
+        node.setOnMouseExited(e -> {
+            in.stop();
+            node.getStyleClass().remove("top-bar-icon-btn--hover");
+            out.playFromStart();
+        });
         node.setStyle("-fx-cursor: hand;");
     }
 
     private static void chipHover(HBox chip) {
-        ScaleTransition in  = scale(chip, 1.0, 1.03, 160);
-        ScaleTransition out = scale(chip, 1.03, 1.0, 160);
-        chip.setOnMouseEntered(e -> { out.stop(); chip.getStyleClass().remove("top-bar-profile-chip--hover"); chip.getStyleClass().add("top-bar-profile-chip--hover"); in.playFromStart(); });
-        chip.setOnMouseExited(e  -> { in.stop();  chip.getStyleClass().remove("top-bar-profile-chip--hover"); out.playFromStart(); });
+        ScaleTransition in  = scaleAnim(chip, 1.0, 1.03, 150);
+        ScaleTransition out = scaleAnim(chip, 1.03, 1.0, 150);
+        chip.setOnMouseEntered(e -> {
+            out.stop();
+            chip.getStyleClass().remove("top-bar-profile-chip--hover");
+            chip.getStyleClass().add("top-bar-profile-chip--hover");
+            in.playFromStart();
+        });
+        chip.setOnMouseExited(e -> {
+            in.stop();
+            chip.getStyleClass().remove("top-bar-profile-chip--hover");
+            out.playFromStart();
+        });
         chip.setStyle("-fx-cursor: hand;");
     }
 
     // ── Utilities ─────────────────────────────────────────────────────────────
 
-    private static ScaleTransition scale(javafx.scene.Node n, double from, double to, int ms) {
+    private static ScaleTransition scaleAnim(javafx.scene.Node n, double f, double t, int ms) {
         ScaleTransition st = new ScaleTransition(Duration.millis(ms), n);
-        st.setFromX(from); st.setFromY(from);
-        st.setToX(to);     st.setToY(to);
+        st.setFromX(f); st.setFromY(f);
+        st.setToX(t);   st.setToY(t);
         st.setInterpolator(Interpolator.EASE_BOTH);
         return st;
     }
 
-    private static DropShadow shadow(Color c, double r, double x, double y) {
+    private static DropShadow mkShadow(Color c, double r, double x, double y) {
         DropShadow ds = new DropShadow();
         ds.setColor(c); ds.setRadius(r); ds.setOffsetX(x); ds.setOffsetY(y);
         return ds;
