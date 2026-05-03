@@ -17,6 +17,16 @@ import frontend.ui.UiTheme;
 import frontend.ui.Animations;
 import frontend.ui.TopBar;
 
+import backend.database.DatabaseManager;
+import backend.models.*;
+import backend.repositories.*;
+import backend.services.*;
+
+import java.sql.Connection;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 public class Dashboard {
 
     public static Scene createDashboardScene(Stage stage) {
@@ -99,14 +109,104 @@ public class Dashboard {
         heroSub.getStyleClass().add("body-text");
         hero.getChildren().addAll(heroTitle, heroSub);
 
+        // Fetch Live Backend Data
+        String salesStr = "$0.00";
+        String topMedStr = "No sales today";
+        String inventoryRiskStr = "0 Items";
+        String inventoryRiskDetail = "All stock optimal";
+        String totalInvValue = "0 Items";
+        String totalInvDetail = "Valuation: $0.00";
+        String customerCountStr = "0";
+        String auditStr = "0 Events";
+        String auditDetail = "No recent activity";
+
+        try {
+            Connection conn = DatabaseManager.getConnection();
+            
+            // 1. Sales Today
+            SaleRepository saleRepo = new MySQLSaleRepository(conn);
+            SalesService salesSvc = new SalesService(saleRepo);
+            List<Sale> allSales = salesSvc.getAllSales();
+            LocalDate today = LocalDate.now();
+            
+            double totalSalesToday = 0;
+            java.util.Map<Integer, Integer> medSalesCount = new java.util.HashMap<>();
+            
+            for (Sale s : allSales) {
+                if (s.getTimestamp() != null && s.getTimestamp().toLocalDate().isEqual(today)) {
+                    totalSalesToday += s.getTotalPrice();
+                    medSalesCount.put(s.getMedicineId(), medSalesCount.getOrDefault(s.getMedicineId(), 0) + s.getQuantity());
+                }
+            }
+            salesStr = String.format("$%,.2f", totalSalesToday);
+
+            MedicineRepository medRepo = new MySQLMedicineRepository(conn);
+            InventoryService invSvc = new InventoryService(medRepo);
+            List<Medicine> allMeds = invSvc.getAllMedicines();
+            
+            if (!medSalesCount.isEmpty()) {
+                int topMedId = medSalesCount.entrySet().stream().max(java.util.Map.Entry.comparingByValue()).get().getKey();
+                Medicine topMed = invSvc.getMedicineById(topMedId);
+                topMedStr = "Top Medicine: " + topMed.getName();
+            }
+
+            // 2. Inventory Stats
+            int riskCount = 0;
+            double totalValuation = 0;
+            StringBuilder riskNames = new StringBuilder();
+            
+            for (Medicine m : allMeds) {
+                totalValuation += (m.getPrice() * m.getStockLevel());
+                
+                boolean atRisk = false;
+                if (m.getStockLevel() <= 20) atRisk = true;
+                if (m.getExpiryDate() != null && ChronoUnit.DAYS.between(today, m.getExpiryDate()) <= 30) atRisk = true;
+                
+                if (atRisk) {
+                    riskCount++;
+                    if (riskCount <= 2) {
+                        if (riskNames.length() > 0) riskNames.append(" • ");
+                        riskNames.append(m.getName());
+                    }
+                }
+            }
+            
+            if (riskCount > 0) {
+                inventoryRiskStr = "Red-Alert: " + riskCount + " Items";
+                inventoryRiskDetail = riskNames.toString() + (riskCount > 2 ? " (+" + (riskCount - 2) + " more)" : "");
+            } else {
+                inventoryRiskStr = "All Clear";
+            }
+            totalInvValue = allMeds.size() + " Unique Items";
+            totalInvDetail = String.format("Total Valuation: $%,.2f", totalValuation);
+
+            // 3. Customers
+            CustomerRepository custRepo = new MySQLCustomerRepository(conn);
+            CustomerService custSvc = new CustomerService(custRepo);
+            customerCountStr = String.valueOf(custSvc.getAllCustomers().size());
+
+            // 4. Audit Trail
+            AuditLogRepository auditRepo = new MySQLAuditLogRepository(conn);
+            AuditService auditSvc = new AuditService(auditRepo);
+            List<AuditLog> logs = auditSvc.getAllLogs();
+            long recentLogs = logs.stream().filter(l -> l.getTimestamp() != null && l.getTimestamp().toLocalDate().isEqual(today)).count();
+            auditStr = recentLogs + " Events";
+            if (!logs.isEmpty()) {
+                auditDetail = "Latest: " + logs.get(logs.size() - 1).getAction();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         GridPane statsGrid = new GridPane();
         statsGrid.setHgap(14);
         statsGrid.setVgap(14);
-        statsGrid.add(createMetricCard("Sales Performance Today", "$14,250.00", "Top Medicine: Panadol 500mg", UiTheme.COLOR_PRIMARY), 0, 0);
-        statsGrid.add(createAlertCard(stage), 1, 0);
-        statsGrid.add(createMetricCard("Procurement & Vendor Health", "92%", "Supplier API Health", "#0D9488"), 0, 1);
-        statsGrid.add(createMetricCard("Pending Validations", "7", "Prescriptions: 5 | Returns: 2", UiTheme.COLOR_PRIMARY), 1, 1);
-        statsGrid.add(createMetricCard("Security Audit Trail", "24h", "Critical security events", "#4F46E5"), 0, 2);
+        statsGrid.add(createMetricCard("Sales Performance Today", salesStr, topMedStr, UiTheme.COLOR_PRIMARY), 0, 0);
+        statsGrid.add(createAlertCard(stage, inventoryRiskStr, inventoryRiskDetail), 1, 0);
+        statsGrid.add(createMetricCard("Total Active Inventory", totalInvValue, totalInvDetail, "#0D9488"), 0, 1);
+        statsGrid.add(createMetricCard("Customer Database", customerCountStr, "Registered Profiles", UiTheme.COLOR_PRIMARY), 1, 1);
+        statsGrid.add(createMetricCard("Security Audit Trail (Today)", auditStr, auditDetail, "#4F46E5"), 0, 2);
         statsGrid.add(createActionCard(stage), 1, 2);
 
         main.getChildren().addAll(hero, statsGrid);
@@ -131,7 +231,7 @@ public class Dashboard {
         return card;
     }
 
-    private static VBox createAlertCard(Stage stage) {
+    private static VBox createAlertCard(Stage stage, String stripText, String detailText) {
         VBox card = createPanel(12);
         card.setPrefWidth(420);
         card.setMinHeight(140);
@@ -139,10 +239,10 @@ public class Dashboard {
         Label title = new Label("Inventory at Risk (FEFO/Quarantine)");
         title.getStyleClass().add("heading-m");
 
-        Label alertStrip = new Label("Red-Alert: 12 Items");
+        Label alertStrip = new Label(stripText);
         alertStrip.getStyleClass().add("alert-strip");
 
-        Label detail = new Label("Warfarin 5mg (Quarantine)   •   Aspirin 81mg (Near-Expiry)");
+        Label detail = new Label(detailText);
         detail.setWrapText(true);
         detail.getStyleClass().add("body-text");
 
