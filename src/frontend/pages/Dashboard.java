@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import frontend.ui.UiTheme;
 import frontend.ui.Animations;
+import frontend.ui.TopBar;
 
 public class Dashboard {
 
@@ -22,10 +23,12 @@ public class Dashboard {
         BorderPane mainLayout = new BorderPane();
         mainLayout.getStyleClass().add("app-background");
 
+        // ── Premium TopBar (sticky, outside scroll) ──────────────────────
+        HBox topBar = TopBar.create("Dashboard", "Dashboard");
+        mainLayout.setTop(topBar);
+
         VBox shell = new VBox(16);
         shell.setPadding(new Insets(22));
-
-        shell.getChildren().add(createTopHeader());
         shell.getChildren().add(createDashboardBody(stage));
 
         ScrollPane scrollPane = new ScrollPane();
@@ -34,8 +37,10 @@ public class Dashboard {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setContent(shell);
-
         mainLayout.setCenter(scrollPane);
+
+        // Shadow deepens as user scrolls
+        TopBar.bindShadowToScroll(topBar, scrollPane);
 
         Scene scene = new Scene(mainLayout, 1280, 800);
         UiTheme.applyStyleSheet(scene);
@@ -44,38 +49,11 @@ public class Dashboard {
         stage.setMinWidth(1000);
         stage.setMinHeight(700);
 
-        // Apply page transition
         Animations.applyPageTransition(mainLayout);
-
         return scene;
     }
 
-    private static HBox createTopHeader() {
-        HBox header = new HBox(12);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(12, 18, 12, 18));
-        header.getStyleClass().add("top-bar");
-
-        VBox titleWrap = new VBox(2);
-        Label title = new Label("PharmaSync");
-        title.getStyleClass().add("heading-l");
-        Label subtitle = new Label("PharmaSync Executive Dashboard");
-        subtitle.getStyleClass().add("body-text");
-        titleWrap.getChildren().addAll(title, subtitle);
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        Label welcome = new Label("Welcome back, Admin");
-        welcome.getStyleClass().add("body-text");
-
-        Button profileButton = new Button("Admin");
-        profileButton.getStyleClass().addAll("button-base", "secondary-button");
-        Animations.bindPulseOnClick(profileButton);
-
-        header.getChildren().addAll(titleWrap, spacer, welcome, profileButton);
-        return header;
-    }
+    // createTopHeader() removed — replaced by frontend.ui.TopBar
 
     private static HBox createDashboardBody(Stage stage) {
         HBox body = new HBox(20);
