@@ -29,7 +29,7 @@ public class AuditLogs {
         mainContainer.getStyleClass().add("app-background");
 
         // ── Premium TopBar (sticky) ──
-        HBox topBar = TopBar.create("Audit Logs", "Dashboard > Audit Logs");
+        HBox topBar = TopBar.create("Audit Logs", "Dashboard > Audit Logs", stage);
         mainContainer.getChildren().add(topBar);
 
         // Main content area with side panel
