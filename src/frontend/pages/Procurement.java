@@ -28,7 +28,7 @@ public class Procurement {
         mainContainer.getStyleClass().add("app-background");
 
         // ── Premium TopBar (sticky) ──
-        HBox topBar = TopBar.create("Procurement", "Dashboard > Procurement");
+        HBox topBar = TopBar.create("Procurement", "Dashboard > Procurement", stage);
         mainContainer.getChildren().add(topBar);
 
         // Main content area with SplitPane
