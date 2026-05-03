@@ -29,7 +29,7 @@ public class PrescriptionCheck {
         mainLayout.getStyleClass().add("app-background");
 
         // ── Premium TopBar (sticky) ──
-        HBox topBar = TopBar.create("Prescriptions", "Dashboard > Prescriptions");
+        HBox topBar = TopBar.create("Prescriptions", "Dashboard > Prescriptions", stage);
         mainLayout.getChildren().add(topBar);
 
         // Main content area with scroll
