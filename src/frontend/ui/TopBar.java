@@ -32,15 +32,19 @@ public final class TopBar {
     // ── Public API ──────────────────────────────────────────────────────────
 
     public static HBox create(String title, String breadcrumb) {
-        return build(title, breadcrumb, null, "Admin");
+        return build(title, breadcrumb, null, "Admin", false);
     }
 
     public static HBox create(String title, String breadcrumb, Stage stage) {
-        return build(title, breadcrumb, stage, "Admin");
+        return build(title, breadcrumb, stage, "Admin", true);
+    }
+
+    public static HBox create(String title, String breadcrumb, Stage stage, boolean showBackBtn) {
+        return build(title, breadcrumb, stage, "Admin", showBackBtn);
     }
 
     public static HBox create(String title, String breadcrumb, Stage stage, String username) {
-        return build(title, breadcrumb, stage, username);
+        return build(title, breadcrumb, stage, username, true);
     }
 
     // ── Shadow Scroll ───────────────────────────────────────────────────────
@@ -56,7 +60,7 @@ public final class TopBar {
 
     // ── Builder ─────────────────────────────────────────────────────────────
 
-    private static HBox build(String title, String breadcrumb, Stage stage, String username) {
+    private static HBox build(String title, String breadcrumb, Stage stage, String username, boolean showBackBtn) {
         HBox bar = new HBox(0);
         bar.setAlignment(Pos.CENTER);
         bar.setPrefHeight(70); bar.setMinHeight(70); bar.setMaxHeight(70);
@@ -66,7 +70,7 @@ public final class TopBar {
         Region space = new Region();
         HBox.setHgrow(space, Priority.ALWAYS);
 
-        bar.getChildren().addAll(buildLeft(title, breadcrumb), space, buildRight(stage, username));
+        bar.getChildren().addAll(buildLeft(title, breadcrumb), space, buildRight(stage, username, showBackBtn));
         return bar;
     }
 
@@ -95,12 +99,12 @@ public final class TopBar {
 
     // ── Right ─────────────────────────────────────────────────────────────────
 
-    private static HBox buildRight(Stage stage, String username) {
+    private static HBox buildRight(Stage stage, String username, boolean showBackBtn) {
         HBox sec = new HBox(8);
         sec.setAlignment(Pos.CENTER_RIGHT);
         sec.setPadding(new Insets(0, 24, 0, 0));
 
-        if (stage != null) {
+        if (showBackBtn && stage != null) {
             sec.getChildren().add(buildBackBtn(stage));
             Rectangle sep = new Rectangle(1, 28);
             sep.setFill(Color.rgb(255, 255, 255, 0.08));
