@@ -9,6 +9,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import frontend.ui.UiTheme;
+import frontend.ui.TopBar;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,26 +25,26 @@ public class Procurement {
 
     private static Scene createProcurementSceneInternal(Stage stage) {
         VBox mainContainer = new VBox();
-        mainContainer.setStyle(UiTheme.appBackground());
+        mainContainer.getStyleClass().add("app-background");
 
-        // Header with back button
-        HBox header = createHeader(stage);
-        mainContainer.getChildren().add(header);
+        // ── Premium TopBar (sticky) ──
+        HBox topBar = TopBar.create("Procurement", "Dashboard > Procurement");
+        mainContainer.getChildren().add(topBar);
 
         // Main content area with SplitPane
         SplitPane contentArea = new SplitPane();
         contentArea.setOrientation(javafx.geometry.Orientation.VERTICAL);
         contentArea.setDividerPositions(0.35);
         contentArea.setPadding(new Insets(15));
-        contentArea.setStyle(UiTheme.appBackground());
+        contentArea.getStyleClass().add("app-background");
 
         // Top side - Red Alert Dashboard
         VBox topPanel = createRedAlertDashboard();
 
         // Bottom side - HBox with Suggested Orders and PO Generator
         HBox bottomPanel = new HBox(15);
-        bottomPanel.setStyle(UiTheme.appBackground());
-        
+        bottomPanel.getStyleClass().add("app-background");
+
         VBox ordersPanel = new VBox(15);
         Label ordersTitle = new Label("Suggested Orders - Low Stock Items");
         ordersTitle.getStyleClass().add("text-title");
@@ -61,30 +62,12 @@ public class Procurement {
         VBox.setVgrow(contentArea, Priority.ALWAYS);
         mainContainer.getChildren().add(contentArea);
 
-        return new Scene(mainContainer, 1280, 800);
+        Scene scene = new Scene(mainContainer, 1280, 800);
+        UiTheme.applyStyleSheet(scene);
+        return scene;
     }
 
-    private static HBox createHeader(Stage stage) {
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle(UiTheme.topBar());
-
-        Button backButton = new Button("← Back to Dashboard");
-        backButton.getStyleClass().addAll("glass-button", "button-base");
-        backButton.setOnAction(e -> {
-            Scene dashboardScene = Dashboard.createDashboardScene(stage);
-            stage.setScene(dashboardScene);
-        });
-
-        Label headerTitle = new Label("Procurement Management");
-        headerTitle.setStyle(UiTheme.headingM());
-
-        header.getChildren().addAll(backButton, headerTitle);
-        HBox.setHgrow(headerTitle, Priority.ALWAYS);
-
-        return header;
-    }
+    // createHeader() removed — replaced by frontend.ui.TopBar
 
     private static VBox createRedAlertDashboard() {
         VBox alertSection = new VBox(10);
