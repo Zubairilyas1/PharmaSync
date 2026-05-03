@@ -78,7 +78,7 @@ public class SalesTerminal {
         root.getStyleClass().add("app-background");
 
         // ── Premium TopBar ──
-        HBox topBar = TopBar.create("Sales & Dispensing", "Dashboard > Sales & Dispensing");
+        HBox topBar = TopBar.create("Sales & Dispensing", "Dashboard > Sales & Dispensing", stage);
         root.setTop(topBar);
 
         // ─── MAIN CONTENT: LEFT (Catalog) + RIGHT (Order) ───
