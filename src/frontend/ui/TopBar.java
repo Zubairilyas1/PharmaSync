@@ -23,7 +23,9 @@ public final class TopBar {
     private static final String ACCENT    = "#6366F1";
     private static final String BADGE_RED = "#EF4444";
 
-    private static Popup activePopup = null;
+    private static Popup          activePopup = null;
+    private static Circle          bellBadge   = null;   // red dot
+    private static FadeTransition  bellPulse   = null;   // pulse animation
 
     private TopBar() {}
 
@@ -145,7 +147,10 @@ public final class TopBar {
         pulse.setCycleCount(Animation.INDEFINITE);
         pulse.play();
 
-        sp.getChildren().addAll(bell, badge);
+        // Persist refs so "Mark all read" can reach them
+        bellBadge = badge;
+        bellPulse = pulse;
+
         iconHover(sp);
 
         // ── Click: toggle notification panel ──
@@ -209,7 +214,16 @@ public final class TopBar {
 
         Button markRead = new Button("Mark all read");
         markRead.setStyle("-fx-background-color: transparent; -fx-text-fill: #6366F1; -fx-font-size: 12; -fx-font-weight: 600; -fx-cursor: hand; -fx-padding: 0;");
-        markRead.setOnAction(e -> { if (activePopup != null) activePopup.hide(); });
+        markRead.setOnAction(e -> {
+            // Hide the red dot and stop pulse
+            if (bellBadge != null) {
+                bellBadge.setVisible(false);
+            }
+            if (bellPulse != null) {
+                bellPulse.stop();
+            }
+            if (activePopup != null) activePopup.hide();
+        });
 
         header.getChildren().addAll(titleLbl, countLbl, sp, markRead);
 
@@ -255,6 +269,9 @@ public final class TopBar {
         viewAll.setAlignment(Pos.CENTER);
         if (stage != null) {
             viewAll.setOnAction(e -> {
+                // Hide red dot — user is going to audit logs
+                if (bellBadge != null) bellBadge.setVisible(false);
+                if (bellPulse != null) bellPulse.stop();
                 if (activePopup != null) activePopup.hide();
                 stage.setScene(frontend.pages.AuditLogs.createAuditLogsScene(stage));
             });
