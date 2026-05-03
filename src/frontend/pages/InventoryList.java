@@ -53,7 +53,7 @@ public class InventoryList {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("app-background");
 
-        HBox topBar = TopBar.create("Inventory", "Dashboard > Inventory");
+        HBox topBar = TopBar.create("Inventory", "Dashboard > Inventory", stage);
         root.setTop(topBar);
 
         // Inner content
