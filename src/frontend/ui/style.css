@@ -33,81 +33,58 @@
 }
 
 /* ==========================================================
-   Premium TopBar — Apple-Style Floating Header
+   Premium TopBar — Indigo Gradient Header
    Applied by frontend.ui.TopBar
    ========================================================== */
 
-/* Root bar */
+/* Root bar — deep indigo → violet gradient */
 .top-bar-premium {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: transparent transparent #E2E8F0 transparent;
-    -fx-border-width: 0 0 1 0;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 5);
+    -fx-background-color: linear-gradient(to right, #4338CA, #7C3AED);
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(67, 56, 202, 0.40), 18, 0, 0, 7);
     -fx-pref-height: 70;
     -fx-min-height: 70;
     -fx-max-height: 70;
 }
 
-/* Page title — Inter Bold 18px */
+/* Page title — white, heavy weight */
 .top-bar-title {
-    -fx-font-size: 18;
+    -fx-font-size: 20;
     -fx-font-weight: 800;
-    -fx-text-fill: #0B1120;
+    -fx-text-fill: white;
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
 }
 
-/* Breadcrumb — Inter Regular 12px muted gray */
+/* Breadcrumb — semi-transparent white */
 .top-bar-breadcrumb {
-    -fx-font-size: 12;
+    -fx-font-size: 11;
     -fx-font-weight: normal;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: rgba(255, 255, 255, 0.62);
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
 }
 
-/* Search container — pill wrapper that sits behind the text field */
-.top-bar-search-container {
-    -fx-background-color: #F1F5F9;
-    -fx-background-radius: 20;
-    -fx-border-color: transparent;
-    -fx-border-radius: 20;
-    -fx-padding: 0 4 0 14;
-    -fx-alignment: center-left;
-}
-
-/* Search icon inside the pill */
-.top-bar-search-icon {
-    -fx-text-fill: #94A3B8;
-    -fx-font-size: 16;
-    -fx-padding: 0 6 0 0;
-}
-
-/* The actual TextField inside the pill — transparent so the pill bg shows */
-.top-bar-search {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-border-width: 0;
-    -fx-background-radius: 20;
-    -fx-text-fill: #0B1120;
-    -fx-prompt-text-fill: #94A3B8;
-    -fx-font-size: 13;
+/* Glassmorphism Back to Dashboard button */
+.top-bar-back-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.14);
+    -fx-text-fill: white;
+    -fx-background-radius: 22;
+    -fx-border-color: rgba(255, 255, 255, 0.32);
+    -fx-border-radius: 22;
+    -fx-border-width: 1;
+    -fx-padding: 8 20;
+    -fx-font-weight: 700;
+    -fx-font-size: 12;
+    -fx-cursor: hand;
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
-    -fx-padding: 0 8 0 0;
 }
 
-/* When the search pill is focused, the whole container glows indigo */
-.top-bar-search-container:focused-within {
-    -fx-border-color: #6366F1;
-    -fx-border-width: 1.5;
-    -fx-background-color: #FFFFFF;
-    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.18), 10, 0, 0, 0);
+.top-bar-back-btn--hover {
+    -fx-background-color: rgba(255, 255, 255, 0.26);
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.25), 10, 0, 0, 0);
 }
 
-/* Focused state for the inner TextField (removes default blue glow) */
-.top-bar-search:focused {
-    -fx-background-color: transparent;
-}
-
-/* Icon button — notification bell wrapper */
+/* Notification bell wrapper */
 .top-bar-icon-btn {
     -fx-background-color: transparent;
     -fx-background-radius: 12;
@@ -118,31 +95,31 @@
     -fx-min-height: 40;
 }
 
-.top-bar-icon-btn:hover {
-    -fx-background-color: #F1F5F9;
+.top-bar-icon-btn--hover {
+    -fx-background-color: rgba(255, 255, 255, 0.16);
+    -fx-background-radius: 12;
 }
 
-/* Profile chip pill */
+/* Profile chip — glassmorphism on gradient bar */
 .top-bar-profile-chip {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: rgba(255, 255, 255, 0.13);
     -fx-background-radius: 24;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: rgba(255, 255, 255, 0.28);
     -fx-border-radius: 24;
     -fx-border-width: 1;
     -fx-cursor: hand;
 }
 
-/* Hover state — applied/removed programmatically for ScaleTransition compat */
 .top-bar-profile-chip--hover {
-    -fx-background-color: #EEF2FF;
-    -fx-border-color: #A5B4FC;
+    -fx-background-color: rgba(255, 255, 255, 0.24);
+    -fx-border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Name label inside chip */
 .top-bar-profile-name {
     -fx-font-size: 13;
     -fx-font-weight: 700;
-    -fx-text-fill: #0B1120;
+    -fx-text-fill: white;
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
 }
 
@@ -150,21 +127,21 @@
 .top-bar-profile-role {
     -fx-font-size: 10;
     -fx-font-weight: normal;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: rgba(255, 255, 255, 0.60);
     -fx-font-family: "Inter", "Segoe UI", "Arial", sans-serif;
 }
 
-/* Typography */
+/* Typography — indigo-tinted headings */
 .heading-l {
     -fx-font-size: 28;
     -fx-font-weight: 800;
-    -fx-text-fill: #0B1120;
+    -fx-text-fill: #3730A3;
 }
 
 .heading-m {
     -fx-font-size: 18;
     -fx-font-weight: bold;
-    -fx-text-fill: #0B1120;
+    -fx-text-fill: #4338CA;
 }
 
 .body-text {
