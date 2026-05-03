@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import frontend.ui.UiTheme;
 import frontend.ui.Animations;
+import frontend.ui.TopBar;
 
 import backend.models.Customer;
 import backend.services.CustomerService;
@@ -76,36 +77,9 @@ public class SalesTerminal {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("app-background");
 
-        // ─── TOP HEADER BAR ───
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(10, 16, 10, 16));
-        header.getStyleClass().add("top-bar");
-
-        Button backButton = new Button("← Dashboard");
-        backButton.getStyleClass().addAll("button-base", "secondary-button");
-        backButton.setStyle("-fx-font-size: 12;");
-        backButton.setOnAction(e -> stage.setScene(Dashboard.createDashboardScene(stage)));
-        Animations.bindPulseOnClick(backButton);
-
-        VBox titleWrap = new VBox(1);
-        Label headerTitle = new Label("Sales & Dispensing");
-        headerTitle.getStyleClass().add("heading-l");
-        headerTitle.setStyle("-fx-font-size: 22;");
-        Label headerSub = new Label("Point-of-Sale Terminal  ·  Real-time Inventory");
-        headerSub.getStyleClass().add("body-text");
-        headerSub.setStyle("-fx-font-size: 11;");
-        titleWrap.getChildren().addAll(headerTitle, headerSub);
-
-        Region hspacer = new Region();
-        HBox.setHgrow(hspacer, Priority.ALWAYS);
-
-        Label liveBadge = new Label("● LIVE");
-        liveBadge.setStyle("-fx-background-color: #ECFDF5; -fx-text-fill: #059669; -fx-background-radius: 999; -fx-padding: 4 12; -fx-font-size: 10; -fx-font-weight: 800;");
-
-        header.getChildren().addAll(backButton, titleWrap, hspacer, liveBadge);
-        root.setTop(header);
-        header.setMargin(header, new Insets(12, 16, 0, 16));
+        // ── Premium TopBar ──
+        HBox topBar = TopBar.create("Sales & Dispensing", "Dashboard > Sales & Dispensing");
+        root.setTop(topBar);
 
         // ─── MAIN CONTENT: LEFT (Catalog) + RIGHT (Order) ───
         HBox content = new HBox(12);
