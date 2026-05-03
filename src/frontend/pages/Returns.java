@@ -88,7 +88,7 @@ public class Returns {
         VBox wrapper = new VBox();
         wrapper.getStyleClass().add("app-background");
 
-        HBox topBar = TopBar.create("Sales Returns", "Dashboard > Sales Returns");
+        HBox topBar = TopBar.create("Sales Returns", "Dashboard > Sales Returns", stage);
         wrapper.getChildren().add(topBar);
 
         // Inner BorderPane for the actual page layout
