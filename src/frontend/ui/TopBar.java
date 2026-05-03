@@ -151,6 +151,7 @@ public final class TopBar {
         bellBadge = badge;
         bellPulse = pulse;
 
+        sp.getChildren().addAll(bell, badge);
         iconHover(sp);
 
         // ── Click: toggle notification panel ──
