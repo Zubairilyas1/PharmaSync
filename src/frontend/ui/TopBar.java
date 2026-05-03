@@ -63,11 +63,11 @@ public final class TopBar {
      * makes the bar appear to "lift" above the content.
      */
     public static void bindShadowToScroll(HBox bar, javafx.scene.control.ScrollPane sp) {
-        bar.setEffect(mkShadow(Color.rgb(0, 0, 0, 0.45), 10, 0, 3));
+        bar.setEffect(mkShadow(Color.rgb(0, 0, 0, 0.50), 10, 0, 3));
         sp.vvalueProperty().addListener((obs, o, n) -> {
             double v = n.doubleValue();
             bar.setEffect(mkShadow(
-                Color.rgb(0, 0, 0, lerp(0.45, 0.80, v)),
+                Color.rgb(0, 0, 0, lerp(0.50, 0.85, v)),
                 lerp(10, 28, v), 0, lerp(3, 10, v)));
         });
     }
