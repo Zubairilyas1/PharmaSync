@@ -58,7 +58,11 @@ public class InventoryList {
         VBox contentBox = new VBox(15);
         contentBox.setPadding(UiTheme.pagePadding());
         contentBox.getStyleClass().add("app-background");
-        
+
+        // Title
+        Label titleLabel = new Label("Inventory Management");
+        titleLabel.getStyleClass().add("heading-l");
+
         // Search bar container
         HBox searchContainer = new HBox(10);
         searchContainer.setAlignment(Pos.CENTER_LEFT);
