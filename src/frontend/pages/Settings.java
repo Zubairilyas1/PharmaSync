@@ -24,7 +24,7 @@ public class Settings {
         mainContainer.getStyleClass().add("app-background");
 
         // ── Premium TopBar (sticky) ──
-        HBox topBar = TopBar.create("Settings", "Dashboard > Admin");
+        HBox topBar = TopBar.create("Settings", "Dashboard > Admin", stage);
         mainContainer.getChildren().add(topBar);
 
         // Scrollable content area
