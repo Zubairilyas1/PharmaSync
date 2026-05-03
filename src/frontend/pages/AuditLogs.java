@@ -9,6 +9,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import frontend.ui.UiTheme;
+import frontend.ui.TopBar;
 import backend.models.AuditLog;
 import backend.services.AuditService;
 import backend.repositories.MySQLAuditLogRepository;
@@ -25,15 +26,15 @@ public class AuditLogs {
 
     private static Scene createAuditLogsSceneInternal(Stage stage) {
         VBox mainContainer = new VBox();
-        mainContainer.setStyle(UiTheme.appBackground());
+        mainContainer.getStyleClass().add("app-background");
 
-        // Header with back button
-        HBox header = createHeader(stage);
-        mainContainer.getChildren().add(header);
+        // ── Premium TopBar (sticky) ──
+        HBox topBar = TopBar.create("Audit Logs", "Dashboard > Audit Logs");
+        mainContainer.getChildren().add(topBar);
 
         // Main content area with side panel
         HBox contentArea = new HBox();
-        contentArea.setStyle(UiTheme.appBackground());
+        contentArea.getStyleClass().add("app-background");
 
         // Left side - Audit logs
         VBox leftPanel = createAuditPanel();
@@ -47,30 +48,12 @@ public class AuditLogs {
         VBox.setVgrow(contentArea, Priority.ALWAYS);
         mainContainer.getChildren().add(contentArea);
 
-        return new Scene(mainContainer, 1280, 800);
+        Scene scene = new Scene(mainContainer, 1280, 800);
+        UiTheme.applyStyleSheet(scene);
+        return scene;
     }
 
-    private static HBox createHeader(Stage stage) {
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(12, 16, 12, 16));
-        header.setStyle(UiTheme.topBar());
-
-        Button backButton = new Button("← Back to Dashboard");
-        backButton.setStyle(UiTheme.secondaryButton() + " -fx-padding: 8 14;");
-        backButton.setOnAction(e -> {
-            Scene dashboardScene = Dashboard.createDashboardScene(stage);
-            stage.setScene(dashboardScene);
-        });
-
-        Label headerTitle = new Label("Audit Logs and Security");
-        headerTitle.setStyle(UiTheme.headingM());
-
-        header.getChildren().addAll(backButton, headerTitle);
-        HBox.setHgrow(headerTitle, Priority.ALWAYS);
-
-        return header;
-    }
+    // createHeader() removed — replaced by frontend.ui.TopBar
 
     private static VBox createAuditPanel() {
         VBox auditPanel = new VBox(15);
